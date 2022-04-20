@@ -1,0 +1,9 @@
+.table {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table tr:hover {
+    cursor: default;
+    text-decoration: underline;
+}
