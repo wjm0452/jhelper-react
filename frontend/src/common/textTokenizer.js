@@ -83,7 +83,7 @@ export default class TextTokenizer {
 					c = this.get();
 
 					if (end.charAt(0) == c) {
-						if (end == this.getString(end.length())) {
+						if (end == this.getString(end.length)) {
 							break;
 						}
 					}
