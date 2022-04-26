@@ -55,10 +55,14 @@ export default class Query extends React.Component<any, any> {
 
   componentDidMount() {
 
-    this.cacheContext.loadCache(["vendor", "owner", "query"]).then(() => {
+    this.cacheContext.loadCache(["vendor", "owner"]).then(() => {
       if (this.state.vendor) {
         this.loadTemplate(this.state.vendor);
       }
+    });
+
+    this.cacheContext.getCache('query').then((value) => {
+      this.sqlElement.current.value = value;
     });
   }
 
@@ -303,8 +307,7 @@ export default class Query extends React.Component<any, any> {
             <textarea
               className="form-control w-100 h-100"
               ref={this.sqlElement}
-              value={this.state.query}
-              onChange={(e) => { this.cacheContext.setState({ query: e.currentTarget.value }); }}
+              onChange={(e) => { this.cacheContext.setCache('query', e.currentTarget.value); }}
               onKeyUp={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
                 if (e.ctrlKey && e.key === "Enter") {
                   this.onSql();

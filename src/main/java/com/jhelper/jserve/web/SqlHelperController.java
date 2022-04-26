@@ -29,9 +29,14 @@ public class SqlHelperController {
     @Qualifier("sqlHelperJdbcTemplate")
     JdbcTemplate jdbcTemplate;
 
-    public SqlVO select(final String sql, String[] params) {
+    public SqlVO select(String sql, String[] params) {
 
         logger.debug("sql: {}", sql);
+
+        sql = sql.trim();
+        if (sql.endsWith(";")) {
+            sql = sql.substring(0, sql.lastIndexOf(";"));
+        }
 
         List<String[]> resultList = new ArrayList<String[]>();
 
