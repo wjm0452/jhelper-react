@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.jhelper'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '1.8'
 
 configurations {
 	compileOnly {
@@ -37,13 +37,17 @@ def webappDir = "$projectDir/frontend"
 sourceSets {
 	main {
 		resources {
-			srcDirs = ["$webappDir/build", "$projectDir/src/main/resources"]
+			srcDirs = ["$projectDir/src/main/resources"]
 		}
 	}
 }
 
 processResources {
-	dependsOn "buildFrontEnd"
+	dependsOn "copyFrontEndBuildFiles"
+}
+
+task copyFrontEndBuildFiles(type: Copy) {
+	dependsOn "buildFrontEnd" from "$webappDir/build" into "$projectDir/build/resources/main/static"
 }
 
 task buildFrontEnd(type: Exec) {
