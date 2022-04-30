@@ -88,8 +88,15 @@ export default class Query extends React.Component<any, any> {
   }
 
   loadTemplateByName(name: string) {
+    if (!name) {
+      return;
+    }
     var conn = this.state.connections.find((conn: any) => conn.name == name);
     return this.loadTemplate(conn.vendor);
+  }
+
+  onChangeConnections() {
+    this.fetchConnections();
   }
 
   fetchConnections() {
@@ -228,6 +235,17 @@ export default class Query extends React.Component<any, any> {
     });
   }
 
+  writeQuery(query: string) {
+    var oldQuery = this.sqlElement.current.value;
+
+    query = query.trim();
+    if (!query.trim().endsWith(";")) {
+      query += "\n;";
+    }
+
+    this.sqlElement.current.value = query + "\n" + oldQuery;
+  }
+
   createSQLTokenizer(sql: string) {
     var cus: any = {};
     cus["/*"] = "*/";
@@ -242,7 +260,12 @@ export default class Query extends React.Component<any, any> {
     return (
       <div className="w-100 h-100 d-flex flex-row">
         <div>
-          <ConnManager ref={this.connManagerRef}></ConnManager>
+          <ConnManager
+            ref={this.connManagerRef}
+            onChangeConnections={() => {
+              this.onChangeConnections();
+            }}
+          ></ConnManager>
         </div>
         <div
           className="flex-grow-0 flex-shrink-1 d-flex flex-column p-2"
@@ -364,6 +387,80 @@ export default class Query extends React.Component<any, any> {
                     }}
                   >
                     find
+                  </button>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm me-1"
+                    onClick={() => {
+                      var data = {
+                        owner: this.state.owner,
+                        tableName: this.state.selectedTableName,
+                      };
+
+                      var name = this.state.name;
+
+                      this.jsql.selectQuery(data, { name }).then((query) => {
+                        this.writeQuery(query);
+                      });
+                    }}
+                  >
+                    select
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm me-1"
+                    onClick={() => {
+                      var data = {
+                        owner: this.state.owner,
+                        tableName: this.state.selectedTableName,
+                      };
+
+                      var name = this.state.name;
+
+                      this.jsql.insertQuery(data, { name }).then((query) => {
+                        this.writeQuery(query);
+                      });
+                    }}
+                  >
+                    insert
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm me-1"
+                    onClick={() => {
+                      var data = {
+                        owner: this.state.owner,
+                        tableName: this.state.selectedTableName,
+                      };
+
+                      var name = this.state.name;
+
+                      this.jsql.updateQuery(data, { name }).then((query) => {
+                        this.writeQuery(query);
+                      });
+                    }}
+                  >
+                    update
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm me-1"
+                    onClick={() => {
+                      var data = {
+                        owner: this.state.owner,
+                        tableName: this.state.selectedTableName,
+                      };
+
+                      var name = this.state.name;
+
+                      this.jsql.deleteQuery(data, { name }).then((query) => {
+                        this.writeQuery(query);
+                      });
+                    }}
+                  >
+                    delete
                   </button>
                 </div>
               </div>

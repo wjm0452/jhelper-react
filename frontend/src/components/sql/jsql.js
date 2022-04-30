@@ -88,17 +88,17 @@ export default function Jsql(options) {
     return "";
   };
 
-  this.selectQuery = function (data) {
+  this.selectQuery = function (data, params) {
     if (!data.owner || !data.tableName) {
       alert("owner, tableName을 입력해주세요.");
-      return;
+      return Promise.reject();
     }
 
     var that = this;
 
     return Promise.all([
-      this.findColumnInfo(data),
-      this.findIndexesInfo(data),
+      this.findColumnInfo(data, params),
+      this.findIndexesInfo(data, params),
     ]).then(function (returnValue) {
       var columns = returnValue[0].result,
         indexes = returnValue[1].result;
@@ -125,15 +125,15 @@ export default function Jsql(options) {
     });
   };
 
-  this.insertQuery = function (data) {
+  this.insertQuery = function (data, params) {
     if (!data.owner || !data.tableName) {
       alert("owner, tableName을 입력해주세요.");
-      return;
+      return Promise.reject();
     }
 
     var that = this;
 
-    return this.findColumnInfo(data).then(function (columns) {
+    return this.findColumnInfo(data, params).then(function (columns) {
       columns = columns.result;
 
       var coltext = columns
@@ -158,17 +158,17 @@ export default function Jsql(options) {
     });
   };
 
-  this.updateQuery = function (data) {
+  this.updateQuery = function (data, params) {
     if (!data.owner || !data.tableName) {
       alert("owner, tableName을 입력해주세요.");
-      return;
+      return Promise.reject();
     }
 
     var that = this;
 
     return Promise.all([
-      this.findColumnInfo(data),
-      this.findIndexesInfo(data),
+      this.findColumnInfo(data, params),
+      this.findIndexesInfo(data, params),
     ]).then(function (returnValue) {
       var columns = returnValue[0].result,
         indexes = returnValue[1].result;
@@ -195,15 +195,15 @@ export default function Jsql(options) {
     });
   };
 
-  this.deleteQuery = function (data) {
+  this.deleteQuery = function (data, params) {
     if (!data.owner || !data.tableName) {
       alert("owner, tableName을 입력해주세요.");
-      return;
+      return Promise.reject();
     }
 
     var that = this;
 
-    return this.findIndexesInfo(data).then(function (indexes) {
+    return this.findIndexesInfo(data, params).then(function (indexes) {
       indexes = indexes.result;
 
       var idxtext = indexes
