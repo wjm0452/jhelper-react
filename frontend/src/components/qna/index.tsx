@@ -25,7 +25,7 @@ export default class Qna extends React.Component<any, any> {
 
   fetchData() {
     readAll().then((data) => {
-      this.setState({ data });
+      this.setState({ data: data });
     });
   }
 
@@ -37,15 +37,28 @@ export default class Qna extends React.Component<any, any> {
     this.openDetails("");
   }
 
-  renderData() {
+  renderQuestions() {
     const data: any[] = this.state.data;
-    return data.map((q: any, i: number) => (
-      <tr key={q.id}>
-        <th scope="row">{i + 1}</th>
-        <td onClick={() => this.openDetails(q.id)}>{q.title}</td>
-        <td>{q.registerId}</td>
-      </tr>
-    ));
+    return (
+      <table className="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">title</th>
+            <th scope="col">register</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((q: any, i: number) => (
+            <tr key={q.id}>
+              <th scope="row">{i + 1}</th>
+              <td onClick={() => this.openDetails(q.id)}>{q.title}</td>
+              <td>{q.registerId}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
   }
 
   render() {
@@ -63,18 +76,7 @@ export default class Qna extends React.Component<any, any> {
             등록
           </button>
         </div>
-        <div>
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">title</th>
-                <th scope="col">register</th>
-              </tr>
-            </thead>
-            <tbody>{this.renderData()}</tbody>
-          </table>
-        </div>
+        <div>{this.renderQuestions()}</div>
       </div>
     );
   }

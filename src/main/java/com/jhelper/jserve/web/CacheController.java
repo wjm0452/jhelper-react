@@ -3,7 +3,7 @@ package com.jhelper.jserve.web;
 import java.util.List;
 
 import com.jhelper.jserve.web.cache.CacheService;
-import com.jhelper.jserve.web.entity.CacheVO;
+import com.jhelper.jserve.web.entity.Cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +26,17 @@ public class CacheController {
     CacheService cacheService;
 
     @GetMapping
-    public List<CacheVO> allCache() {
+    public List<Cache> allCache() {
         return cacheService.findAll();
     }
 
     @GetMapping("/{id}")
-    public CacheVO get(@PathVariable String id) {
+    public Cache get(@PathVariable String id) {
         return cacheService.findById(id);
     }
 
     @PostMapping
-    public CacheVO save(@RequestBody CacheVO cacheVO) {
+    public Cache save(@RequestBody Cache cacheVO) {
         return cacheService.save(cacheVO);
     }
 

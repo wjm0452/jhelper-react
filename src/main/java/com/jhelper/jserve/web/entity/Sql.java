@@ -3,7 +3,7 @@ package com.jhelper.jserve.web.entity;
 import lombok.Data;
 
 @Data
-public class SqlVO {
+public class Sql {
     private String scheme;
     private String tableName;
     private String[] columnNames;

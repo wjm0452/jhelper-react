@@ -3,7 +3,7 @@ package com.jhelper.jserve.web.memo;
 import java.util.Date;
 import java.util.List;
 
-import com.jhelper.jserve.web.entity.MemoVO;
+import com.jhelper.jserve.web.entity.Memo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,21 +14,21 @@ public class MemoService {
     @Autowired
     MemoRepository memoRepository;
 
-    public List<MemoVO> findAll() {
+    public List<Memo> findAll() {
         return memoRepository.findAll();
     }
 
-    public MemoVO findById(Integer id) {
+    public Memo findById(Integer id) {
         return memoRepository.findById(id).orElse(null);
     }
 
-    public MemoVO create(MemoVO memoVO) {
-        memoVO.setRegisterDate(new Date());
-        return memoRepository.save(memoVO);
+    public Memo create(Memo memo) {
+        memo.setRegisterDate(new Date());
+        return memoRepository.save(memo);
     }
 
-    public MemoVO update(MemoVO memoVO) {
-        return memoRepository.save(memoVO);
+    public Memo update(Memo memo) {
+        return memoRepository.save(memo);
     }
 
     public void delete(Integer id) {

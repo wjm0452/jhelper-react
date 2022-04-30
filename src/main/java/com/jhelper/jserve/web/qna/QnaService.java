@@ -3,7 +3,7 @@ package com.jhelper.jserve.web.qna;
 import java.util.Date;
 import java.util.List;
 
-import com.jhelper.jserve.web.entity.QnaVO;
+import com.jhelper.jserve.web.entity.Qna;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,22 +14,22 @@ public class QnaService {
     @Autowired
     QnaRepository qnaRepository;
 
-    public List<QnaVO> findAll() {
+    public List<Qna> findAll() {
         return qnaRepository.findAll();
     }
 
-    public QnaVO findById(Integer id) {
+    public Qna findById(Integer id) {
         return qnaRepository.findById(id).orElse(null);
     }
 
-    public QnaVO create(QnaVO qnaVO) {
-        qnaVO.setRegisterId("wjm");
-        qnaVO.setRegisterDate(new Date());
-        return qnaRepository.save(qnaVO);
+    public Qna create(Qna qna) {
+        qna.setRegisterId("wjm");
+        qna.setRegisterDate(new Date());
+        return qnaRepository.save(qna);
     }
 
-    public QnaVO update(QnaVO qnaVO) {
-        return qnaRepository.save(qnaVO);
+    public Qna update(Qna qna) {
+        return qnaRepository.save(qna);
     }
 
     public void delete(Integer id) {

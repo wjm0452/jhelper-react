@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Entity(name = "qna")
-public class QnaVO {
+public class Qna {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
