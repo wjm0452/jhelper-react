@@ -298,6 +298,7 @@ export default class Query extends React.Component<any, any> {
                 <input
                   type="text"
                   className="form-control"
+                  style={{ width: "10rem" }}
                   value={this.state.owner}
                   placeholder="owner"
                   onChange={(e) => {
@@ -316,6 +317,8 @@ export default class Query extends React.Component<any, any> {
                 <input
                   type="text"
                   className="form-control"
+                  style={{ width: "10rem" }}
+                  value={this.state.tableName}
                   placeholder="table"
                   onChange={(e) => {
                     this.setState({ tableName: e.currentTarget.value });
@@ -329,7 +332,7 @@ export default class Query extends React.Component<any, any> {
               </div>
               <div className="col-auto">
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary btn-sm me-1"
                   onClick={(e) => {
                     this.fetchTables();
                   }}
@@ -337,7 +340,7 @@ export default class Query extends React.Component<any, any> {
                   find
                 </button>
                 <button
-                  className="btn btn-secondary btn-sm"
+                  className="btn btn-secondary btn-sm me-1"
                   onClick={(e) => {
                     this.connManagerRef.current?.show();
                   }}
