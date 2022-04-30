@@ -27,8 +27,12 @@ async function deleteData(id: number) {
 }
 
 export default class ConnManager extends React.Component<any, any> {
+  private changeConnectionsHandler: Function;
+
   constructor(props: any) {
     super(props);
+
+    this.changeConnectionsHandler = props.onChangeConnections;
 
     this.state = {
       visible: false,
@@ -54,6 +58,7 @@ export default class ConnManager extends React.Component<any, any> {
 
   hide() {
     this.setState({ visible: false });
+    this.changeConnectionsHandler();
   }
 
   toggle() {
@@ -179,7 +184,7 @@ export default class ConnManager extends React.Component<any, any> {
               <button
                 type="button"
                 className="btn-close"
-                onClick={() => this.setState({ visible: false })}
+                onClick={() => this.hide()}
               ></button>
             </div>
             <div className="modal-body">
@@ -270,7 +275,7 @@ export default class ConnManager extends React.Component<any, any> {
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={() => this.setState({ visible: false })}
+                onClick={() => this.hide()}
               >
                 Close
               </button>
