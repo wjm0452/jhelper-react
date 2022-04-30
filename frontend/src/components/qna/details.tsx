@@ -73,26 +73,28 @@ export default class QnaDetails extends React.Component<any, any> {
 
     return readData(id).then((data) => {
       this.id = data.id;
-      this.setState({ data });
+      this.setState({ data: data });
     });
   }
 
   saveData() {
     const item = this.state.data;
 
-    if (!item.title.trim() || !item.content.trim()) { return; }
+    if (!item.title.trim() || !item.content.trim()) {
+      return;
+    }
 
     if (item.id) {
       updateData({
         id: item.id,
         title: item.title,
-        content: item.content
+        content: item.content,
       });
     } else {
       item.registerDate = new Date();
       createData({
         title: item.title,
-        content: item.content
+        content: item.content,
       });
     }
   }
@@ -141,7 +143,7 @@ export default class QnaDetails extends React.Component<any, any> {
                     value={data.registerId}
                     onChange={(e) => {
                       data.registerId = e.target.value;
-                      this.setState(data);
+                      this.setState({ data });
                     }}
                   ></input>
                 </div>
@@ -153,7 +155,7 @@ export default class QnaDetails extends React.Component<any, any> {
                     value={data.registerDate}
                     onChange={(e) => {
                       data.registerDate = e.target.value;
-                      this.setState(data);
+                      this.setState({ data });
                     }}
                   ></input>
                 </div>
@@ -165,7 +167,7 @@ export default class QnaDetails extends React.Component<any, any> {
                     value={data.title}
                     onChange={(e) => {
                       data.title = e.target.value;
-                      this.setState(data);
+                      this.setState({ data });
                     }}
                   ></input>
                 </div>
@@ -177,7 +179,7 @@ export default class QnaDetails extends React.Component<any, any> {
                     value={data.content}
                     onChange={(e) => {
                       data.content = e.target.value;
-                      this.setState(data);
+                      this.setState({ data });
                     }}
                   ></textarea>
                 </div>

@@ -32,10 +32,12 @@ export default class Memo extends React.Component<any, any> {
     super(props);
 
     this.state = {
-      title: "",
-      content: "",
+      data: {
+        title: "",
+        content: "",
+      },
       filter: "",
-      data: [],
+      memos: [],
     };
   }
 
@@ -45,21 +47,28 @@ export default class Memo extends React.Component<any, any> {
 
   fetchData() {
     readAll().then((data) => {
-      this.setState({ data });
+      this.setState({ memos: data });
     });
   }
 
   createData() {
     var data = {
-      title: this.state.title,
-      content: this.state.content,
       registerId: "wjm",
+      ...this.state.data,
     };
 
-    if (!data.title.trim() || !data.content.trim()) { return; }
+    if (!data.title.trim() || !data.content.trim()) {
+      return;
+    }
 
     createData(data).then((data) => {
-      this.setState({ title: "", content: "", data: [data, ...this.state.data] });
+      this.setState({
+        data: {
+          title: "",
+          content: "",
+        },
+        memos: [data, ...this.state.memos],
+      });
     });
   }
 
@@ -67,18 +76,18 @@ export default class Memo extends React.Component<any, any> {
     updateData(data);
   }
 
-  renderData() {
+  renderMemos() {
     let filter: string = this.state.filter;
-    let data: any[] = this.state.data;
+    let memos: any[] = this.state.memos;
 
     if (filter) {
-      data = data.filter(
+      memos = memos.filter(
         (item: any) =>
           item.title.indexOf(filter) > -1 || item.content.indexOf(filter) > -1
       );
     }
 
-    return data.map((item: any, i: number) => (
+    return memos.map((item: any) => (
       <div key={item.id} className="p-3 border-bottom border-dark">
         <div className="row g-3">
           <div className="">
@@ -123,6 +132,8 @@ export default class Memo extends React.Component<any, any> {
   }
 
   render() {
+    var data = this.state.data;
+
     return (
       <div className="container h-100 overflow-auto">
         <div>
@@ -142,8 +153,11 @@ export default class Memo extends React.Component<any, any> {
               <input
                 type="text"
                 className="form-control"
-                value={this.state.title}
-                onChange={(e) => this.setState({ title: e.target.value })}
+                value={data.title}
+                onChange={(e) => {
+                  data.title = e.target.value;
+                  this.setState({ data });
+                }}
               ></input>
             </div>
             <div className="">
@@ -151,8 +165,11 @@ export default class Memo extends React.Component<any, any> {
               <textarea
                 className="form-control"
                 style={{ height: "250px" }}
-                value={this.state.content}
-                onChange={(e) => this.setState({ content: e.target.value })}
+                value={data.content}
+                onChange={(e) => {
+                  data.content = e.target.value;
+                  this.setState({ data });
+                }}
               ></textarea>
             </div>
             <div className="d-flex flex-row justify-content-end">
@@ -160,13 +177,13 @@ export default class Memo extends React.Component<any, any> {
                 className="btn btn-primary"
                 onClick={() => this.createData()}
               >
-                New
+                Save changes
               </button>
             </div>
           </div>
         </div>
-        <div>{this.renderData()}</div>
-      </div >
+        <div>{this.renderMemos()}</div>
+      </div>
     );
   }
 }

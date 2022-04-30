@@ -2,7 +2,7 @@ package com.jhelper.jserve.web;
 
 import java.util.List;
 
-import com.jhelper.jserve.web.entity.QnaVO;
+import com.jhelper.jserve.web.entity.Qna;
 import com.jhelper.jserve.web.qna.QnaService;
 
 import org.slf4j.Logger;
@@ -27,22 +27,22 @@ public class QnAController {
     QnaService qnaService;
 
     @GetMapping
-    public List<QnaVO> allQna() {
+    public List<Qna> allQna() {
         return qnaService.findAll();
     }
 
     @GetMapping("/{id}")
-    public QnaVO qna(@PathVariable Integer id) {
+    public Qna qna(@PathVariable Integer id) {
         return qnaService.findById(id);
     }
 
     @PostMapping
-    public QnaVO createQna(@RequestBody QnaVO qnaVO) {
+    public Qna createQna(@RequestBody Qna qnaVO) {
         return qnaService.create(qnaVO);
     }
 
     @PutMapping
-    public QnaVO updateQna(@RequestBody QnaVO qnaVO) {
+    public Qna updateQna(@RequestBody Qna qnaVO) {
         return qnaService.update(qnaVO);
     }
 

@@ -2,8 +2,8 @@ package com.jhelper.jserve.web;
 
 import java.util.List;
 
-import com.jhelper.jserve.web.entity.Memo;
-import com.jhelper.jserve.web.memo.MemoService;
+import com.jhelper.jserve.web.entity.ConnInfo;
+import com.jhelper.jserve.web.sql.ConnInfoService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,36 +18,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/memo")
-public class MemoController {
+@RequestMapping("/api/conn-info")
+public class ConnInfoController {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    MemoService memoService;
+    ConnInfoService connInfoService;
 
     @GetMapping
-    public List<Memo> allQna() {
-        return memoService.findAll();
+    public List<ConnInfo> allCache() {
+        return connInfoService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Memo qna(@PathVariable Integer id) {
-        return memoService.findById(id);
-    }
-
-    @PostMapping
-    public Memo createQna(@RequestBody Memo memoVO) {
-        return memoService.create(memoVO);
+    public ConnInfo get(@PathVariable int id) {
+        return connInfoService.findById(id);
     }
 
     @PutMapping
-    public Memo updateQna(@RequestBody Memo memoVO) {
-        return memoService.update(memoVO);
+    public ConnInfo save(@RequestBody ConnInfo connInfo) {
+        return connInfoService.save(connInfo);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteQna(@PathVariable Integer id) {
-        memoService.delete(id);
+    public void deleteCache(@PathVariable int id) {
+        connInfoService.delete(id);
     }
 }

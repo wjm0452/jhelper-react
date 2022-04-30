@@ -1,33 +1,40 @@
-import React from "react";
+import React, { RefObject } from "react";
 import axios from "axios";
 import Jsql from "./jsql";
 import TextTokenizer from "../../common/textTokenizer";
 import CacheContext from "../../common/cacheContext";
 import "./style.scss";
+import ConnManager from "./connManager";
 
-async function runSql(query: string) {
-  var res: any = await axios.post("/api/sql", { query });
+async function runSql(query: string, params: any) {
+  var res: any = await axios.post("/api/sql", { query, ...params });
   return res.data;
 }
 
-export default class Query extends React.Component<any, any> {
+async function readConnections() {
+  const res = await axios.get(`/api/conn-info`);
+  const data = res.data;
 
+  return data;
+}
+
+export default class Query extends React.Component<any, any> {
   private jsql: Jsql;
   private sqlElement: any;
 
   private cacheContext: CacheContext;
+  private connManagerRef: RefObject<ConnManager>;
 
   constructor(props: any) {
     super(props);
 
     this.sqlElement = React.createRef<any>();
     this.jsql = new Jsql({
-      tablePrefix: 'T_',
-      url: '/api/sql'
+      url: "/api/sql",
     });
 
     this.state = {
-      vendor: "",
+      name: "",
       owner: "",
       tableName: "",
 
@@ -35,6 +42,8 @@ export default class Query extends React.Component<any, any> {
 
       selectedTableName: "",
       columnName: "",
+
+      connections: [],
 
       tables: {
         columnNames: [],
@@ -51,36 +60,53 @@ export default class Query extends React.Component<any, any> {
     };
 
     this.cacheContext = new CacheContext(this);
+    this.connManagerRef = React.createRef<ConnManager>();
   }
 
   componentDidMount() {
-
-    this.cacheContext.loadCache(["vendor", "owner"]).then(() => {
-      if (this.state.vendor) {
-        this.loadTemplate(this.state.vendor);
+    Promise.all([
+      this.fetchConnections(),
+      this.cacheContext.loadCache(["name", "owner"]),
+    ]).then(() => {
+      const name = this.state.name;
+      if (name) {
+        return this.loadTemplateByName(name);
       }
     });
 
-    this.cacheContext.getCache('query').then((value) => {
+    this.cacheContext.getCache("query").then((value) => {
       this.sqlElement.current.value = value;
     });
   }
 
-  loadTemplate(value: string) {
-    this.jsql.loadTemplate(value).then(() => {
+  loadTemplate(vendor: string) {
+    this.jsql.loadTemplate(vendor).then(() => {
       if (this.state.owner) {
         this.fetchTables();
       }
     });
   }
 
+  loadTemplateByName(name: string) {
+    var conn = this.state.connections.find((conn: any) => conn.name == name);
+    return this.loadTemplate(conn.vendor);
+  }
+
+  fetchConnections() {
+    return readConnections().then((connections) => {
+      this.setState({ connections });
+    });
+  }
+
   fetchTables() {
     var data = {
       owner: this.state.owner,
-      tableName: this.state.tableName
+      tableName: this.state.tableName,
     };
 
-    this.jsql.findTableInfo(data).then((data: any) => {
+    var name = this.state.name;
+
+    this.jsql.findTableInfo(data, { name }).then((data: any) => {
       this.setState({
         tables: data,
       });
@@ -94,7 +120,9 @@ export default class Query extends React.Component<any, any> {
       columnName: this.state.columnName,
     };
 
-    this.jsql.findColumnInfo(data).then((data: any) => {
+    var name = this.state.name;
+
+    this.jsql.findColumnInfo(data, { name }).then((data: any) => {
       this.setState({
         columns: data,
       });
@@ -107,7 +135,7 @@ export default class Query extends React.Component<any, any> {
       click: (item: any) => {
         this.setState({ selectedTableName: item[0] });
         Promise.resolve().then(() => this.fetchColumns());
-      }
+      },
     });
   }
 
@@ -119,17 +147,16 @@ export default class Query extends React.Component<any, any> {
 
   renderResults() {
     return this.renderTable({
-      data: this.state.sqlResults
+      data: this.state.sqlResults,
     });
   }
 
   renderTable(options: any) {
-
     const data = options.data;
     const columnNames = data.columnNames || [];
     const result = data.result || [];
 
-    const clickHandler = options.click || function () { };
+    const clickHandler = options.click || function () {};
 
     return (
       <table className="table table-hover table-bordered table-sm">
@@ -194,8 +221,9 @@ export default class Query extends React.Component<any, any> {
 
   runSql(query: string) {
     console.log("runSql %s", query);
+    var name = this.state.name;
 
-    runSql(query).then((data: any) => {
+    runSql(query, { name }).then((data: any) => {
       this.setState({ sqlResults: data });
     });
   }
@@ -213,35 +241,57 @@ export default class Query extends React.Component<any, any> {
   render() {
     return (
       <div className="w-100 h-100 d-flex flex-row">
-        <div className="flex-grow-0 flex-shrink-1 d-flex flex-column p-2" style={{ maxWidth: "500px" }}>
+        <div>
+          <ConnManager ref={this.connManagerRef}></ConnManager>
+        </div>
+        <div
+          className="flex-grow-0 flex-shrink-1 d-flex flex-column p-2"
+          style={{ maxWidth: "500px" }}
+        >
           <div className="flex-grow-1 d-flex flex-column overflow-hidden">
             <div className="row g-3">
               <div className="col-auto">
-                <select className="form-control" value={this.state.vendor} onChange={(e) => {
-                  this.cacheContext.setState({ vendor: e.currentTarget.value });
-                  this.loadTemplate(e.currentTarget.value);
-                }}>
-                  <option value="">Vendor</option>
-                  <option value="oracle">oracle</option>
-                  <option value="db2">db2</option>
+                <select
+                  className="form-select"
+                  value={this.state.name}
+                  onChange={(e) => {
+                    this.cacheContext.setState({
+                      name: e.currentTarget.value,
+                    });
+                    this.loadTemplateByName(e.currentTarget.value);
+                  }}
+                >
+                  <option value=""></option>
+                  {this.state.connections.map((conn: any) => {
+                    return (
+                      <option key={conn.name} value={conn.name}>
+                        {conn.name}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
               <div className="col-auto">
-                <input type="text"
+                <input
+                  type="text"
                   className="form-control"
                   value={this.state.owner}
                   placeholder="owner"
                   onChange={(e) => {
-                    this.cacheContext.setState({ owner: e.currentTarget.value });
+                    this.cacheContext.setState({
+                      owner: e.currentTarget.value,
+                    });
                   }}
                   onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === "Enter") {
                       this.fetchTables();
                     }
-                  }} />
+                  }}
+                />
               </div>
               <div className="col-auto">
-                <input type="text"
+                <input
+                  type="text"
                   className="form-control"
                   placeholder="table"
                   onChange={(e) => {
@@ -255,25 +305,45 @@ export default class Query extends React.Component<any, any> {
                 />
               </div>
               <div className="col-auto">
-                <button className="btn btn-primary btn-sm" onClick={(e) => {
-                  this.fetchTables();
-                }}>find</button>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={(e) => {
+                    this.fetchTables();
+                  }}
+                >
+                  find
+                </button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={(e) => {
+                    this.connManagerRef.current?.show();
+                  }}
+                >
+                  settings
+                </button>
               </div>
             </div>
-            <div className="mt-1 overflow-auto">
-              {this.renderTables()}
-            </div>
+            <div className="mt-1 overflow-auto">{this.renderTables()}</div>
           </div>
           <div className="mt-2">
             <div>
               <div className="row g-3">
                 <div className="col-auto">
-                  <input type="text" className="form-control" value={this.state.selectedTableName} placeholder="table" onChange={(e) => {
-                    this.setState({ selectedTableName: e.currentTarget.value });
-                  }} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={this.state.selectedTableName}
+                    placeholder="table"
+                    onChange={(e) => {
+                      this.setState({
+                        selectedTableName: e.currentTarget.value,
+                      });
+                    }}
+                  />
                 </div>
                 <div className="col-auto">
-                  <input type="text"
+                  <input
+                    type="text"
                     className="form-control"
                     placeholder="column"
                     onChange={(e) => {
@@ -283,12 +353,18 @@ export default class Query extends React.Component<any, any> {
                       if (e.key === "Enter") {
                         this.fetchColumns();
                       }
-                    }} />
+                    }}
+                  />
                 </div>
                 <div className="col-auto">
-                  <button className="btn btn-primary btn-sm" onClick={(e) => {
-                    this.fetchColumns();
-                  }}>find</button>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={(e) => {
+                      this.fetchColumns();
+                    }}
+                  >
+                    find
+                  </button>
                 </div>
               </div>
               <div className="mt-1 overflow-auto" style={{ height: "300px" }}>
@@ -297,9 +373,15 @@ export default class Query extends React.Component<any, any> {
             </div>
           </div>
         </div>
-        <div className="flex-grow-1 flex-shrink-1 d-flex flex-column overflow-auto p-2" style={{ minWidth: "500px" }}>
+        <div
+          className="flex-grow-1 flex-shrink-1 d-flex flex-column overflow-auto p-2"
+          style={{ minWidth: "500px" }}
+        >
           <div>
-            <button className="btn btn-primary btn-sm" onClick={() => this.onSql()} >
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => this.onSql()}
+            >
               run
             </button>
           </div>
@@ -307,7 +389,9 @@ export default class Query extends React.Component<any, any> {
             <textarea
               className="form-control w-100 h-100"
               ref={this.sqlElement}
-              onChange={(e) => { this.cacheContext.setCache('query', e.currentTarget.value); }}
+              onChange={(e) => {
+                this.cacheContext.setCache("query", e.currentTarget.value);
+              }}
               onKeyUp={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
                 if (e.ctrlKey && e.key === "Enter") {
                   this.onSql();
@@ -315,12 +399,14 @@ export default class Query extends React.Component<any, any> {
               }}
             ></textarea>
           </div>
-          <div className="mt-1 overflow-auto" style={{ height: "350px" }}>{this.renderResults()}</div>
+          <div className="mt-1 overflow-auto" style={{ height: "350px" }}>
+            {this.renderResults()}
+          </div>
           <div>
             <span>{this.state.sqlResults.result.length}</span> fetched rows
           </div>
         </div>
-      </div >
+      </div>
     );
   }
 }
