@@ -1,6 +1,7 @@
 package com.jhelper.jserve.web.sql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,9 @@ import com.jhelper.jserve.web.entity.ConnInfo;
 import com.jhelper.jserve.web.entity.Sql;
 import com.jhelper.jserve.web.sql.model.QueryVO;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,6 +26,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
 
+@Aspect
 @Service
 public class SqlHelperService implements InitializingBean {
 
@@ -35,6 +40,38 @@ public class SqlHelperService implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         this.loadDataSource();
+    }
+
+    @After("execution(* com.jhelper.jserve.web.sql.ConnInfoService.save(..))")
+    public void afterAppendConnInfo(JoinPoint joinPoint) {
+        logger.info("append datasource");
+
+        Object[] args = joinPoint.getArgs();
+
+        ConnInfo connInfo = (ConnInfo) Arrays.stream(args).filter(arg -> arg instanceof ConnInfo).findFirst().get();
+
+        JdbcTemplate jdbcTemplate = jdbcTemplates.get(connInfo.getName());
+
+        if (jdbcTemplate != null) {
+            jdbcTemplates.remove(connInfo.getName());
+        }
+
+        addJdbcTemplate(connInfo);
+    }
+
+    @After("execution(* com.jhelper.jserve.web.sql.ConnInfoService.delete(..))")
+    public void afterDeleteConnInfo(JoinPoint joinPoint) {
+        logger.info("append datasource");
+
+        Object[] args = joinPoint.getArgs();
+
+        String name = (String) Arrays.stream(args).filter(arg -> arg instanceof String).findFirst().get();
+
+        JdbcTemplate jdbcTemplate = jdbcTemplates.get(name);
+
+        if (jdbcTemplate != null) {
+            jdbcTemplates.remove(name);
+        }
     }
 
     public void loadDataSource() {
