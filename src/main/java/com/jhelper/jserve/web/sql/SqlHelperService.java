@@ -61,7 +61,6 @@ public class SqlHelperService implements InitializingBean {
 
     @After("execution(* com.jhelper.jserve.web.sql.ConnInfoService.delete(..))")
     public void afterDeleteConnInfo(JoinPoint joinPoint) {
-        logger.info("append datasource");
 
         Object[] args = joinPoint.getArgs();
 
