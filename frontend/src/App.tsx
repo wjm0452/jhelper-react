@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Link, Routes } from "react-router-dom";
+import { HashRouter, Route, Link, Routes } from "react-router-dom";
 import Sql from "./components/sql";
 import Rest from "./components/rest";
 import Qna from "./components/qna";
@@ -8,7 +8,7 @@ import "./App.scss";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div
         className="d-flex flex-column"
         style={{ width: "100vw", height: "100vh" }}
@@ -52,7 +52,7 @@ function App() {
           </Routes>
         </main>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
