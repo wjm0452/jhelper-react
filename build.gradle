@@ -25,6 +25,8 @@ dependencies {
 	implementation 'org.springframework.session:spring-session-core'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
 	implementation 'com.oracle.ojdbc:ojdbc8:19.3.0.0'
+	implementation 'com.ibm.db2.jcc:db2jcc:db2jcc4'
+	implementation 'com.microsoft.sqlserver:mssql-jdbc:10.2.1.jre8'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
