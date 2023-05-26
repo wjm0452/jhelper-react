@@ -48,7 +48,7 @@ export default class Rest extends React.Component<any, any> {
           <div className="input-group-text">
             <select
               className="form-select"
-              value={this.state.method}
+              value={this.state.method || 'GET'}
               onChange={(e) => this.cacheContext.setState({ method: e.target.value })}
             >
               <option value="GET">GET</option>

@@ -1,6 +1,5 @@
 import React from "react";
 import axios from "axios";
-import "./style.scss";
 
 async function readData() {
   const res = await axios.get(`/api/conn-info`);

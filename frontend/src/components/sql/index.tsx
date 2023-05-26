@@ -3,8 +3,8 @@ import axios from "axios";
 import Jsql from "./jsql";
 import TextTokenizer from "../../common/textTokenizer";
 import CacheContext from "../../common/cacheContext";
-import "./style.scss";
 import ConnManager from "./connManager";
+import TableView from "./tableView";
 
 async function runSql(query: string, params: any) {
   var res: any = await axios.post("/api/sql", { query, ...params });
@@ -134,59 +134,6 @@ export default class Query extends React.Component<any, any> {
         columns: data,
       });
     });
-  }
-
-  renderTables() {
-    return this.renderTable({
-      data: this.state.tables,
-      click: (item: any) => {
-        this.setState({ selectedTableName: item[0] });
-        Promise.resolve().then(() => this.fetchColumns());
-      },
-    });
-  }
-
-  renderColumns() {
-    return this.renderTable({
-      data: this.state.columns,
-    });
-  }
-
-  renderResults() {
-    return this.renderTable({
-      data: this.state.sqlResults,
-    });
-  }
-
-  renderTable(options: any) {
-    const data = options.data;
-    const columnNames = data.columnNames || [];
-    const result = data.result || [];
-
-    const clickHandler = options.click || function () {};
-
-    return (
-      <table className="table table-hover table-bordered table-sm">
-        <thead className="table-light">
-          <tr>
-            {columnNames.map((columnName: string) => (
-              <th key={columnName}>{columnName}</th>
-            ))}
-          </tr>
-        </thead>
-        {
-          <tbody>
-            {result.map((row: string[], i: number) => (
-              <tr key={i} onClick={() => clickHandler(row)}>
-                {row.map((cell: string, j) => (
-                  <td key={j}>{cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        }
-      </table>
-    );
   }
 
   onSql() {
@@ -349,7 +296,16 @@ export default class Query extends React.Component<any, any> {
                 </button>
               </div>
             </div>
-            <div className="mt-1 overflow-auto">{this.renderTables()}</div>
+            <div className="mt-1 overflow-auto">
+              <TableView
+                header={this.state.tables.columnNames}
+                data={this.state.tables.result}
+                onClick={(item: any[]) => {
+                  this.setState({ selectedTableName: item[0] });
+                  Promise.resolve().then(() => this.fetchColumns());
+                }}
+              ></TableView>
+            </div>
           </div>
           <div className="mt-2">
             <div>
@@ -468,7 +424,10 @@ export default class Query extends React.Component<any, any> {
                 </div>
               </div>
               <div className="mt-1 overflow-auto" style={{ height: "300px" }}>
-                {this.renderColumns()}
+                <TableView
+                  header={this.state.columns.columnNames}
+                  data={this.state.columns.result}
+                ></TableView>
               </div>
             </div>
           </div>
@@ -500,7 +459,10 @@ export default class Query extends React.Component<any, any> {
             ></textarea>
           </div>
           <div className="mt-1 overflow-auto" style={{ height: "350px" }}>
-            {this.renderResults()}
+            <TableView
+              header={this.state.sqlResults.columnNames}
+              data={this.state.sqlResults.result}
+            ></TableView>
           </div>
           <div>
             <span>{this.state.sqlResults.result.length}</span> fetched rows
