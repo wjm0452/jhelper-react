@@ -1,6 +1,5 @@
 import React from "react";
 import axios from "axios";
-import { timeStamp } from "console";
 
 async function readData(id: string) {
   const res = await axios.get(`/api/qna/${id}`);
@@ -26,8 +25,13 @@ async function updateData(obj: { id: string; title: string; content: string }) {
 export default class QnaDetails extends React.Component<any, any> {
   private id: string;
 
+  private saveHandler: Function;
+
   constructor(props: any) {
     super(props);
+
+    this.saveHandler = props.onSave;
+
     this.state = {
       data: {
         id: "",
@@ -89,12 +93,20 @@ export default class QnaDetails extends React.Component<any, any> {
         id: item.id,
         title: item.title,
         content: item.content,
+      }).then(() => {
+        if (this.saveHandler) {
+          this.saveHandler();
+        }
       });
     } else {
       item.registerDate = new Date();
       createData({
         title: item.title,
         content: item.content,
+      }).then(() => {
+        if (this.saveHandler) {
+          this.saveHandler();
+        }
       });
     }
   }
@@ -140,7 +152,7 @@ export default class QnaDetails extends React.Component<any, any> {
                   <input
                     type="text"
                     className="form-control"
-                    value={data.registerId}
+                    value={data.registerId || ''}
                     onChange={(e) => {
                       data.registerId = e.target.value;
                       this.setState({ data });
@@ -152,7 +164,7 @@ export default class QnaDetails extends React.Component<any, any> {
                   <input
                     type="datetime-local"
                     className="form-control"
-                    value={data.registerDate}
+                    value={data.registerDate || ''}
                     onChange={(e) => {
                       data.registerDate = e.target.value;
                       this.setState({ data });
@@ -164,7 +176,7 @@ export default class QnaDetails extends React.Component<any, any> {
                   <input
                     type="text"
                     className="form-control"
-                    value={data.title}
+                    value={data.title || ''}
                     onChange={(e) => {
                       data.title = e.target.value;
                       this.setState({ data });
@@ -176,7 +188,7 @@ export default class QnaDetails extends React.Component<any, any> {
                   <textarea
                     className="form-control"
                     style={{ height: "250px" }}
-                    value={data.content}
+                    value={data.content || ''}
                     onChange={(e) => {
                       data.content = e.target.value;
                       this.setState({ data });
