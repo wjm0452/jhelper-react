@@ -217,6 +217,7 @@ export default class ConnManager extends React.Component<any, any> {
                       <option value="">Select</option>
                       <option value="oracle">oracle</option>
                       <option value="db2">db2</option>
+                      <option value="mssql">mssql</option>
                     </select>
                   </div>
                   <div className="mb-3">
