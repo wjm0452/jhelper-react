@@ -1,27 +1,29 @@
 <root>
     <sql id="table">
         select *
-          from (select a.name as 'schema',
-                       b.name as table_name,
-                       (select value from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, default, default)) as comments
+          from (select b.name as table_name,
+                       (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, default, default)) as comments
                   from sys.schemas a
                   join sys.tables b
                     on a.schema_id = b.schema_id
                  where a.name = '{{owner}}') a
          where 1=1
          {{#tableName}}
-           and (table_name = '{{tableName}}' OR comments LIKE '%' || '{{tableName}}' || '%')
+           and (table_name = '{{tableName}}' OR comments LIKE '%' + '{{tableName}}' + '%')
          {{/tableName}}
          order by table_name
     </sql>
     <sql id="columns">
-        select *
-          from (select a.name as 'schema',
-                       b.name as table_name,
-                       (select value from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, default, default)) as table_comments
+        select table_name,
+               column_name,
+               comments,
+               data_type,
+               data_length
+          from (select b.name as table_name,
+                       (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, default, default)) as table_comments,
                        c.name as column_name,
                        c.column_id,
-                       (select value from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, 'column', default)) as comments,
+                       (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, 'column', default)) as comments,
                        (select name from sys.systypes where xusertype = c.user_type_id) as data_type,
                        c.max_length as data_length,
                        c.precision,
@@ -35,17 +37,15 @@
                  where a.name = '{{owner}}') a
          where 1=1
          {{#tableName}}
-         and (table_name = '{{tableName}}' OR table_comments LIKE '%' || '{{tableName}}' || '%')
+         and (table_name = '{{tableName}}' OR table_comments LIKE '%' + '{{tableName}}' + '%')
          {{/tableName}}
          {{#columnName}}
-         and (column_name = '{{columnName}}' OR comments LIKE '%' || '{{columnName}}' || '%')
+         and (column_name = '{{columnName}}' OR comments LIKE '%' + '{{columnName}}' + '%')
          {{/columnName}}
          order by a.column_id asc
     </sql>
     <sql id="indexes">
-        select a.name as 'schema',
-               b.name as table_name,
-               e.name as index_column,
+        select e.name as index_column
           from sys.schemas a
           join sys.tables b
             on a.schema_id = b.schema_id
