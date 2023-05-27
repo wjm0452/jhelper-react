@@ -36,7 +36,7 @@ export default class BodyValue extends React.Component<any, any> {
     const value = this.state.value;
     let lines: string[] = value.split(/\r\n|\n/g);
 
-    return lines.map((line, i) => <div key={i}>{line}</div>);
+    return lines.map((line, i) => `<div>${line}</div>`).join("");
   }
 
   renderBody() {
@@ -47,15 +47,15 @@ export default class BodyValue extends React.Component<any, any> {
           style={{ whiteSpace: "pre" }}
           contentEditable="true"
           ref={this.valueRef}
-          onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          onKeyUp={(e: React.KeyboardEvent<HTMLDivElement>) => {
             if (e.ctrlKey && e.shiftKey && e.key == "F") {
               this.pretty();
             } else if (e.key == "{") {
             } else if (e.key == "[") {
             }
           }}
-          suppressContentEditableWarning={true}
-        >{this.renderValue()}</div>
+          dangerouslySetInnerHTML={{ __html: this.renderValue() }}
+        ></div>
       </div>
     );
   }
