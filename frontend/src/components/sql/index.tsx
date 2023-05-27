@@ -438,6 +438,15 @@ export default class Query extends React.Component<any, any> {
         >
           <div>
             <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => {
+                this.sqlElement.current.value = "";
+                this.sqlElement.current.focus();
+              }}
+            >
+              clear
+            </button>
+            <button
               className="btn btn-primary btn-sm"
               onClick={() => this.onSql()}
             >
