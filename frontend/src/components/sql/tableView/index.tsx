@@ -1,8 +1,5 @@
 import React, { RefObject } from "react";
-import axios from "axios";
-import Jsql from "../jsql";
-import TextTokenizer from "../../../common/textTokenizer";
-import CacheContext from "../../../common/cacheContext";
+import guid from "../../../common/guid";
 import "./style.scss";
 
 export default class TableView extends React.Component<any, any> {
@@ -20,16 +17,16 @@ export default class TableView extends React.Component<any, any> {
         <thead className="table-light">
           <tr>
             {header.map((columnName: string) => (
-              <th key={columnName}>{columnName}</th>
+              <th key={guid()}>{columnName}</th>
             ))}
           </tr>
         </thead>
         {
           <tbody>
             {data.map((row: string[], i: number) => (
-              <tr key={i} onClick={() => clickHandler(row)}>
+              <tr key={guid()} onClick={() => clickHandler(row)}>
                 {row.map((cell: string, j) => (
-                  <td key={j}>{cell}</td>
+                  <td key={guid()}>{cell}</td>
                 ))}
               </tr>
             ))}

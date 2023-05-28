@@ -1,4 +1,4 @@
-package com.jhelper.jserve.utils;
+package com.jhelper.utils;
 
 import java.util.Map;
 
