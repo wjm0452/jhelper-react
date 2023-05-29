@@ -17,7 +17,7 @@ public class ConnInfoService {
         return connInfoRepository.findAll();
     }
 
-    public ConnInfo findById(Integer id) {
+    public ConnInfo findById(String id) {
         return connInfoRepository.findById(id).orElse(null);
     }
 
@@ -25,7 +25,7 @@ public class ConnInfoService {
         return connInfoRepository.save(connInfo);
     }
 
-    public void delete(Integer id) {
+    public void delete(String id) {
         connInfoRepository.deleteById(id);
     }
 }

@@ -1,14 +1,14 @@
 package com.jhelper.jserve.web;
 
-import com.jhelper.jserve.web.entity.Sql;
-import com.jhelper.jserve.web.sql.SqlExportService;
 import com.jhelper.jserve.web.sql.SqlHelperService;
+import com.jhelper.jserve.web.sql.SqlResult;
+import com.jhelper.jserve.web.sql.export.SqlExcelExportService;
+import com.jhelper.jserve.web.sql.export.SqlTextExportService;
 import com.jhelper.jserve.web.sql.model.QueryVO;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +33,14 @@ public class SqlExportController {
     SqlHelperService sqlHelperService;
 
     @Autowired
-    SqlExportService sqlExportService;
+    SqlExcelExportService sqlExcelExportService;
+
+    @Autowired
+    SqlTextExportService sqlTextExportService;
 
     @PostMapping
-    public ResponseEntity<Resource> query(@RequestBody QueryVO queryVo) throws IOException {
-        Sql sql = sqlHelperService.select(queryVo);
-        File file = sqlExportService.export(sql);
+    public ResponseEntity<Resource> exportExcel(@RequestBody QueryVO queryVo) throws IOException {
+        File file = sqlExcelExportService.export(queryVo);
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
@@ -49,25 +51,14 @@ public class SqlExportController {
     }
 
     @PostMapping("/text")
-    public ResponseEntity<String> downloadText(@RequestBody QueryVO queryVo) throws IOException {
-        Sql sql = sqlHelperService.select(queryVo);
+    public ResponseEntity<Resource> exportText(@RequestBody QueryVO queryVo) throws IOException {
+        File file = sqlTextExportService.export(queryVo);
+
+        Resource resource = new InputStreamResource(new FileInputStream(file));
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.txt\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.xlsx\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(sqlToString(sql));
-    }
-
-    private String sqlToString(Sql sql) {
-
-        String result = String.join("\t", sql.getColumnNames());
-
-        String[] rows = Arrays.stream(sql.getResult()).map(row -> {
-            return String.join("\t", row);
-        }).toArray(String[]::new);
-
-        result += "\r\n" + String.join("\r\n", rows);
-
-        return result;
+                .body(resource);
     }
 }

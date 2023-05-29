@@ -1,7 +1,7 @@
 package com.jhelper.jserve.web;
 
-import com.jhelper.jserve.web.entity.Sql;
 import com.jhelper.jserve.web.sql.SqlHelperService;
+import com.jhelper.jserve.web.sql.SqlResult;
 import com.jhelper.jserve.web.sql.model.QueryVO;
 
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class SqlHelperController {
     SqlHelperService sqlHelperService;
 
     @PostMapping
-    public Sql query(@RequestBody QueryVO queryVo) {
+    public SqlResult query(@RequestBody QueryVO queryVo) {
         return sqlHelperService.select(queryVo);
     }
 }
