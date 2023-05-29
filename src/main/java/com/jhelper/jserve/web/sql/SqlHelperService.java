@@ -12,7 +12,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
@@ -56,18 +58,18 @@ public class SqlHelperService {
         }
 
         logger.debug("query: {}", query);
-
-        jdbcTemplate.query(query, new RowCallbackHandler() {
+        jdbcTemplate.query(query, new ResultSetExtractor<Object>() {
             @Override
-            public void processRow(ResultSet rs) throws SQLException {
+            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
                 resultHandler.process(rs);
+                return null;
             }
         }, params);
     }
 
     class SqlResultHandler implements ResultSetHandler {
 
-        SqlResult sqlResult;
+        SqlResult sqlResult = new SqlResult();;
 
         @Override
         public void process(ResultSet rs) throws SQLException {
@@ -90,7 +92,6 @@ public class SqlHelperService {
                 resultList.add(columns);
             }
 
-            sqlResult = new SqlResult();
             sqlResult.setColumnNames(columnNames);
             sqlResult.setResult(resultList.toArray(new Object[0][]));
         }
