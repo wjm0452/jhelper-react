@@ -212,30 +212,55 @@ export default class Query extends React.Component<any, any> {
       responseType: "blob",
       data: { query: executedQuery, name },
     }).then((res) => {
-      const blob = new Blob([res.data]);
-      const fileObjectUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = fileObjectUrl;
-      link.style.display = "none";
-
-      link.download = ((res) => {
-        const disposition = res.headers["content-disposition"] || "";
-
-        if (disposition.indexOf("filename") > -1) {
-          let fileName = disposition.substring(disposition.indexOf("filename"));
-          return fileName.split("=")[1].replace(/\"/g, "");
-        }
-
-        return "sql_result.xlsx";
-      })(res);
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      window.URL.revokeObjectURL(fileObjectUrl);
+      this.downloadFile(res, "sql_result.xlsx");
     });
+  }
+
+  exportText() {
+    let executedQuery = this.state.executedQuery;
+
+    if (!executedQuery || !executedQuery.toLowerCase().startsWith("select")) {
+      alert("조회 후 사용해 주세요.");
+      return;
+    }
+
+    var name = this.state.name;
+    console.log(executedQuery);
+
+    axios({
+      method: "post",
+      url: "/api/sql-export/text",
+      responseType: "blob",
+      data: { query: executedQuery, name },
+    }).then((res) => {
+      this.downloadFile(res, "sql_result.txt");
+    });
+  }
+
+  downloadFile(res: any, downloadName: any) {
+    const blob = new Blob([res.data]);
+    const fileObjectUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = fileObjectUrl;
+    link.style.display = "none";
+
+    link.download = ((res) => {
+      const disposition = res.headers["content-disposition"] || "";
+
+      if (disposition.indexOf("filename") > -1) {
+        let fileName = disposition.substring(disposition.indexOf("filename"));
+        return fileName.split("=")[1].replace(/\"/g, "");
+      }
+
+      return downloadName;
+    })(res);
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(fileObjectUrl);
   }
 
   createSQLTokenizer(sql: string) {
@@ -261,7 +286,7 @@ export default class Query extends React.Component<any, any> {
         </div>
         <div
           className="flex-grow-0 flex-shrink-1 d-flex flex-column p-2"
-          style={{ maxWidth: "500px" }}
+          style={{ maxWidth: "500px", minWidth: "500px" }}
         >
           <div className="flex-grow-1 d-flex flex-column overflow-hidden">
             <div className="row g-3">
@@ -530,6 +555,14 @@ export default class Query extends React.Component<any, any> {
                 }}
               >
                 excel
+              </button>
+              <button
+                className="btn btn-primary btn-sm me-1"
+                onClick={(e) => {
+                  this.exportText();
+                }}
+              >
+                text
               </button>
             </div>
           </div>
