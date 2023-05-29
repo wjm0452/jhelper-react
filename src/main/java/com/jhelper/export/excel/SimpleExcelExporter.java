@@ -1,5 +1,6 @@
 package com.jhelper.export.excel;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,14 +14,24 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.stereotype.Component;
 
 import com.jhelper.export.ExcelWriter;
 
-@Component
-public class SimpleExcelExporter {
+public class SimpleExcelExporter implements Closeable {
 
+	private ExcelWriter excelWriter;
 	private String tmpdir;
+
+	private CellStyleSupport headerStyle;
+	private CellStyleSupport bodyStyle;
+
+	public SimpleExcelExporter() {
+		this.excelWriter = new ExcelWriter();
+		this.excelWriter.trackAllColumnsForAutoSizing();
+
+		this.headerStyle = ExcelUtils.getHeaderStyle(excelWriter.getWorkbook());
+		this.bodyStyle = ExcelUtils.getDefaultStyle(excelWriter.getWorkbook());
+	}
 
 	public void setTmpdir(String tmpdir) {
 		this.tmpdir = tmpdir;
@@ -38,6 +49,10 @@ public class SimpleExcelExporter {
 
 	}
 
+	public ExcelWriter getExcelWriter() {
+		return excelWriter;
+	}
+
 	private File createTempFile(String suffix) throws IOException {
 
 		Path tmpDirPath = Paths.get(getTmpDir());
@@ -51,14 +66,7 @@ public class SimpleExcelExporter {
 		return Files.createTempFile(tmpDirPath, prefix, suffix).toFile();
 	}
 
-	public ExcelWriter createExcelWriter() {
-		ExcelWriter excelWriter = new ExcelWriter();
-		excelWriter.trackAllColumnsForAutoSizing();
-
-		return excelWriter;
-	}
-
-	public File export(ExcelWriter excelWriter) throws IOException {
+	public File export() throws IOException {
 
 		File savedFile = createTempFile("_xlsx");
 		excelWriter.write(savedFile);
@@ -68,41 +76,36 @@ public class SimpleExcelExporter {
 
 	public File export(String[] head, Collection<SimpleCell[]> data) throws IOException {
 
-		try (ExcelWriter excelWriter = createExcelWriter()) {
+		writeHead(head);
+		writeData(data);
 
-			writeHead(excelWriter, head);
-			writeData(excelWriter, data);
-
-			for (int i = 0; i < head.length; i++) {
-				excelWriter.autoSizeColumn(i);
-			}
-
-			return export(excelWriter);
+		for (int i = 0; i < head.length; i++) {
+			excelWriter.autoSizeColumn(i);
 		}
+
+		return export();
 	}
 
 	public File export(String[] head, ReadHandler readHandler) throws IOException {
 
-		try (ExcelWriter excelWriter = createExcelWriter()) {
+		writeHead(head);
 
-			writeHead(excelWriter, head);
+		while (true) {
+			Collection<Object[]> data = readHandler.read();
 
-			while (true) {
-				Collection<Object[]> data = readHandler.read();
-
-				if (data == null || data.isEmpty()) {
-					break;
-				}
-
-				writeData(excelWriter, toSimpleCell(data));
+			if (data == null || data.isEmpty()) {
+				break;
 			}
 
-			for (int i = 0; i < head.length; i++) {
-				excelWriter.autoSizeColumn(i);
-			}
-
-			return export(excelWriter);
+			writeData(toSimpleCell(data));
 		}
+
+		for (int i = 0; i < head.length; i++) {
+			excelWriter.autoSizeColumn(i);
+		}
+
+		return export();
+
 	}
 
 	public File exportWithMap(String[] head, Collection<Object[]> data) throws IOException {
@@ -111,8 +114,12 @@ public class SimpleExcelExporter {
 
 	public Collection<SimpleCell[]> toSimpleCell(Collection<Object[]> data) {
 		return data.stream()
-				.map(values -> Arrays.stream(values).map(value -> new SimpleCell(value)).toArray(SimpleCell[]::new))
+				.map(values -> Arrays.stream(toSimpleCell(values)).toArray(SimpleCell[]::new))
 				.collect(Collectors.toList());
+	}
+
+	public SimpleCell[] toSimpleCell(Object[] values) {
+		return Arrays.stream(values).map(value -> new SimpleCell(value)).toArray(SimpleCell[]::new);
 	}
 
 	public void setColumnType(Collection<SimpleCell[]> data, int column, SimpleCell.Type type) {
@@ -121,24 +128,29 @@ public class SimpleExcelExporter {
 		});
 	}
 
-	public void writeHead(ExcelWriter excelWriter, String[] head) {
-		excelWriter.setStyleSupport(ExcelUtils.getHeaderStyle(excelWriter.getWorkbook()));
-
-		Arrays.stream(head).forEach(value -> {
+	public void writeHead(String[] values) {
+		excelWriter.setStyleSupport(headerStyle); // header style
+		Arrays.stream(values).forEach(value -> {
 			excelWriter.cell().cellValue(value);
 			excelWriter.nextCell();
 		});
+
+		excelWriter.nextRow();
 	}
 
-	public void writeData(ExcelWriter excelWriter, Iterable<SimpleCell[]> data) {
-		excelWriter.setStyleSupport(ExcelUtils.getDefaultStyle(excelWriter.getWorkbook()));
+	public void writeData(Iterable<SimpleCell[]> data) {
 		data.forEach(row -> {
-			excelWriter.nextRow();
-			Arrays.stream(row).forEach(simpleCell -> {
-				setCellValue(excelWriter.cell(), simpleCell);
-				excelWriter.nextCell();
-			});
+			writeData(row);
 		});
+	}
+
+	public void writeData(SimpleCell[] values) {
+		excelWriter.setStyleSupport(bodyStyle); // body style
+		Arrays.stream(values).forEach(simpleCell -> {
+			setCellValue(excelWriter.cell(), simpleCell);
+			excelWriter.nextCell();
+		});
+		excelWriter.nextRow();
 	}
 
 	private void setCellValue(CellSupport cell, SimpleCell simpleCell) {
@@ -170,7 +182,7 @@ public class SimpleExcelExporter {
 
 		Boolean b = null;
 
-		if (value instanceof Integer) {
+		if (value instanceof Boolean) {
 			b = (Boolean) value;
 		} else if (value instanceof String) {
 			b = Boolean.parseBoolean(Objects.toString(value));
@@ -278,5 +290,10 @@ public class SimpleExcelExporter {
 		} catch (ParseException e) {
 			cell.cellValue(Objects.toString(value));
 		}
+	}
+
+	@Override
+	public void close() throws IOException {
+		excelWriter.close();
 	}
 }

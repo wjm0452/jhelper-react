@@ -31,7 +31,7 @@ public class ConnInfoController {
     }
 
     @GetMapping("/{id}")
-    public ConnInfo get(@PathVariable int id) {
+    public ConnInfo get(@PathVariable String id) {
         return connInfoService.findById(id);
     }
 
@@ -41,7 +41,7 @@ public class ConnInfoController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCache(@PathVariable int id) {
+    public void deleteCache(@PathVariable String id) {
         connInfoService.delete(id);
     }
 }
