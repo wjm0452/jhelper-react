@@ -5,6 +5,7 @@ import Qna from "./components/qna";
 import Memo from "./components/memo";
 
 import "./App.scss";
+import DataLoader from "./components/sql/dataloader";
 
 function App() {
   return (
@@ -23,6 +24,11 @@ function App() {
             <li className="nav-item">
               <Link className="nav-link" to="/sql">
                 Sql
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/dataloader">
+                DataLoader
               </Link>
             </li>
             <li className="nav-item">
@@ -46,6 +52,7 @@ function App() {
           <Routes>
             <Route path="/" element={<div>Main</div>}></Route>
             <Route path="/sql" element={<Sql />}></Route>
+            <Route path="/dataloader" element={<DataLoader />}></Route>
             <Route path="/rest" element={<Rest />}></Route>
             <Route path="/qna" element={<Qna />}></Route>
             <Route path="/memo" element={<Memo />}></Route>
