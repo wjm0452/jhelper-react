@@ -40,6 +40,7 @@ export default class Query extends React.Component<any, any> {
 
       executedQuery: "",
 
+      selectedOwner: "",
       selectedTableName: "",
       columnName: "",
 
@@ -115,6 +116,7 @@ export default class Query extends React.Component<any, any> {
 
     this.jsql.findTableInfo(data, { name }).then((data: any) => {
       this.setState({
+        selectedOwner: this.state.owner,
         tables: data,
       });
     });
@@ -122,7 +124,7 @@ export default class Query extends React.Component<any, any> {
 
   fetchColumns() {
     var data = {
-      owner: this.state.owner,
+      owner: this.state.selectedOwner,
       tableName: this.state.selectedTableName,
       columnName: this.state.columnName,
     };
@@ -424,7 +426,7 @@ export default class Query extends React.Component<any, any> {
                     className="btn btn-secondary btn-sm me-1"
                     onClick={() => {
                       var data = {
-                        owner: this.state.owner,
+                        owner: this.state.selectedOwner,
                         tableName: this.state.selectedTableName,
                       };
 
@@ -442,7 +444,7 @@ export default class Query extends React.Component<any, any> {
                     className="btn btn-secondary btn-sm me-1"
                     onClick={() => {
                       var data = {
-                        owner: this.state.owner,
+                        owner: this.state.selectedOwner,
                         tableName: this.state.selectedTableName,
                       };
 
@@ -460,7 +462,7 @@ export default class Query extends React.Component<any, any> {
                     className="btn btn-secondary btn-sm me-1"
                     onClick={() => {
                       var data = {
-                        owner: this.state.owner,
+                        owner: this.state.selectedOwner,
                         tableName: this.state.selectedTableName,
                       };
 
@@ -478,7 +480,7 @@ export default class Query extends React.Component<any, any> {
                     className="btn btn-secondary btn-sm me-1"
                     onClick={() => {
                       var data = {
-                        owner: this.state.owner,
+                        owner: this.state.selectedOwner,
                         tableName: this.state.selectedTableName,
                       };
 
