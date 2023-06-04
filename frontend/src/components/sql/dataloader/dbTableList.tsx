@@ -27,10 +27,6 @@ export default class DBTableList extends React.Component<any, any> {
         columnNames: [],
         result: [],
       },
-      columns: {
-        columnNames: [],
-        result: [],
-      },
       connections: [],
     };
   }
@@ -86,31 +82,31 @@ export default class DBTableList extends React.Component<any, any> {
     });
   }
 
-  fetchColumns() {
+  fetchColumns(tableName: string) {
     var data = {
       owner: this.state.selectedOwner,
-      tableName: this.state.selectedTableName,
+      tableName: tableName,
       columnName: this.state.columnName,
     };
 
     var name = this.state.name;
 
     return this.jsql.findColumnInfo(data, { name }).then((data: any) => {
-      this.setState({
-        columns: data,
-      });
+      return data;
     });
   }
 
   onClickTables(item: any[]) {
-    this.setState({ selectedTableName: item[0] });
-    this.fetchColumns().then(() => {
+    const tableName: string = item[0];
+
+    this.setState({ selectedTableName: tableName });
+    this.fetchColumns(tableName).then((data) => {
       if (this.props.onClick) {
         var source = {
           name: this.state.name,
           owner: this.state.selectedOwner,
-          tableName: this.state.selectedTableName,
-          columns: { ...this.state.columns },
+          tableName: tableName,
+          columns: data,
         };
 
         this.props.onClick(source);

@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 import com.jhelper.jserve.web.sql.ResultSetHandler;
 import com.jhelper.jserve.web.sql.SqlExportService;
 import com.jhelper.jserve.web.sql.SqlHelperService;
-import com.jhelper.jserve.web.sql.SqlResult;
 import com.jhelper.jserve.web.sql.model.QueryVO;
 
 @Service
