@@ -1,6 +1,7 @@
 <root>
     <sql id="table">
-        select *
+        select table_name as TABLE_NAME,
+               comments as COMMENTS
           from (select b.name as table_name,
                        (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, default, default)) as comments
                   from sys.schemas a
@@ -14,11 +15,11 @@
          order by table_name
     </sql>
     <sql id="columns">
-        select table_name,
-               column_name,
-               comments,
-               data_type,
-               data_length
+        select table_name as TABLE_NAME,
+               column_name as COLUMN_NAME,
+               comments as COMMENTS,
+               data_type as DATA_TYPE,
+               data_length as DATA_LENGTH
           from (select b.name as table_name,
                        (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, default, default)) as table_comments,
                        c.name as column_name,
@@ -45,7 +46,7 @@
          order by a.column_id asc
     </sql>
     <sql id="indexes">
-        select e.name as index_column
+        select e.name as INDEX_COLUMN
           from sys.schemas a
           join sys.tables b
             on a.schema_id = b.schema_id
