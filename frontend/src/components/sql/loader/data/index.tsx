@@ -1,7 +1,7 @@
 import React, { RefObject } from "react";
-import Jsql from "../jsql";
-import DBTableList from "./dbTableList";
-import ColumnMapper from "./columnMapper";
+import Jsql from "../../jsql";
+import DBTableList from "../dbTableList";
+import ColumnMapper from "../columnMapper";
 import axios from "axios";
 
 export default class DataLoader extends React.Component<any, any> {
@@ -18,18 +18,14 @@ export default class DataLoader extends React.Component<any, any> {
 
     this.state = {
       sourceQuery: "",
-      source: {
-        name: "",
-        owner: "",
-        tableName: "",
-        mappingColumns: [],
-      },
-      target: {
-        name: "",
-        owner: "",
-        tableName: "",
-        mappingColumns: [],
-      },
+      sourceName: "",
+      sourceOwner: "",
+      sourceTableName: "",
+      sourceColumns: [],
+      targetName: "",
+      targetOwner: "",
+      targetTableName: "",
+      targetColumns: [],
     };
 
     this.sourceColumnRef = React.createRef<ColumnMapper>();
@@ -48,18 +44,14 @@ export default class DataLoader extends React.Component<any, any> {
 
     this.setState({
       sourceQuery: sourceQuery,
-      source: {
-        name: sourceInfo.name,
-        owner: sourceInfo.owner,
-        tableName: sourceInfo.tableName,
-        mappingColumns: sourceInfo.mappingColumns,
-      },
-      target: {
-        name: targetInfo.name,
-        owner: targetInfo.owner,
-        tableName: targetInfo.tableName,
-        mappingColumns: targetInfo.mappingColumns,
-      },
+      sourceName: sourceInfo.name,
+      sourceOwner: sourceInfo.owner,
+      sourceTableName: sourceInfo.tableName,
+      sourceColumns: sourceInfo.mappingColumns,
+      targetName: targetInfo.name,
+      targetOwner: targetInfo.owner,
+      targetTableName: targetInfo.tableName,
+      targetColumns: targetInfo.mappingColumns,
     });
   }
 
@@ -68,31 +60,20 @@ export default class DataLoader extends React.Component<any, any> {
       return;
     }
 
-    const target = this.state.target;
-    const source = this.state.source;
-
-    const targetInfo = {
-      name: target.name,
-      owner: target.owner,
-      tableName: target.tableName,
-      columns: target.mappingColumns,
-    };
-
-    const sourceInfo = {
-      name: source.name,
-      owner: source.owner,
-      tableName: source.tableName,
-      query: this.state.sourceQuery,
-    };
-
-    console.log(targetInfo, sourceInfo);
+    const state = this.state;
 
     const jsondata = {
-      target: targetInfo,
-      source: sourceInfo,
+      sourceName: state.sourceName,
+      sourceOwner: state.sourceOwner,
+      sourceTableName: state.sourceTableName,
+      sourceQuery: state.sourceQuery,
+      targetName: state.targetName,
+      targetOwner: state.targetOwner,
+      targetTableName: state.targetTableName,
+      targetColumns: state.targetColumns,
     };
 
-    axios.post('/api/dataloader', jsondata);
+    axios.post("/api/dataloader", jsondata);
   }
 
   render() {
@@ -105,27 +86,19 @@ export default class DataLoader extends React.Component<any, any> {
           <div className="flex-grow-1 p-2">
             <DBTableList
               onClick={(source: any) => {
-                this.targetColumnRef.current?.setData(source);
+                this.sourceColumnRef.current?.setData(source);
               }}
             />
           </div>
           <div className="flex-grow-1 p-2">
             <DBTableList
               onClick={(source: any) => {
-                this.sourceColumnRef.current?.setData(source);
+                this.targetColumnRef.current?.setData(source);
               }}
             />
           </div>
         </div>
         <div className="flex-grow-1 d-flex flex-row overflow-hidden">
-          <div
-            className="flex-grow-1 p-2 overflow-hidden"
-            style={{ width: "50%" }}
-          >
-            <div className="h-100 overflow-auto">
-              <ColumnMapper ref={this.targetColumnRef}></ColumnMapper>
-            </div>
-          </div>
           <div
             className="flex-grow-1 p-2 overflow-hidden"
             style={{ width: "50%" }}
@@ -160,6 +133,14 @@ export default class DataLoader extends React.Component<any, any> {
                   ></textarea>
                 </div>
               </div>
+            </div>
+          </div>
+          <div
+            className="flex-grow-1 p-2 overflow-hidden"
+            style={{ width: "50%" }}
+          >
+            <div className="h-100 overflow-auto">
+              <ColumnMapper ref={this.targetColumnRef}></ColumnMapper>
             </div>
           </div>
         </div>

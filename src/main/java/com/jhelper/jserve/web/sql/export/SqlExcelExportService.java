@@ -3,18 +3,13 @@ package com.jhelper.jserve.web.sql.export;
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
 
-import com.jhelper.export.ExcelWriter;
 import com.jhelper.export.excel.SimpleExcelExporter;
 import com.jhelper.jserve.web.sql.ResultSetHandler;
 import com.jhelper.jserve.web.sql.SqlExportService;

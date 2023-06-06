@@ -5,7 +5,8 @@ import Qna from "./components/qna";
 import Memo from "./components/memo";
 
 import "./App.scss";
-import DataLoader from "./components/sql/dataloader";
+import DataLoader from "./components/sql/loader/data";
+import ExcelLoader from "./components/sql/loader/excel";
 
 function App() {
   return (
@@ -27,8 +28,8 @@ function App() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/dataloader">
-                DataLoader
+              <Link className="nav-link" to="/loader">
+              Loader
               </Link>
             </li>
             <li className="nav-item">
@@ -52,7 +53,7 @@ function App() {
           <Routes>
             <Route path="/" element={<div>Main</div>}></Route>
             <Route path="/sql" element={<Sql />}></Route>
-            <Route path="/dataloader" element={<DataLoader />}></Route>
+            <Route path="/loader" element={<ExcelLoader />}></Route>
             <Route path="/rest" element={<Rest />}></Route>
             <Route path="/qna" element={<Qna />}></Route>
             <Route path="/memo" element={<Memo />}></Route>
