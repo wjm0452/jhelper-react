@@ -33,6 +33,11 @@ function App() {
               </Link>
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/excelloader">
+              ExcelLoader
+              </Link>
+            </li>
+            <li className="nav-item">
               <Link className="nav-link" to="/rest">
                 Rest
               </Link>
@@ -53,7 +58,8 @@ function App() {
           <Routes>
             <Route path="/" element={<div>Main</div>}></Route>
             <Route path="/sql" element={<Sql />}></Route>
-            <Route path="/loader" element={<ExcelLoader />}></Route>
+            <Route path="/loader" element={<DataLoader />}></Route>
+            <Route path="/excelLoader" element={<ExcelLoader />}></Route>
             <Route path="/rest" element={<Rest />}></Route>
             <Route path="/qna" element={<Qna />}></Route>
             <Route path="/memo" element={<Memo />}></Route>
