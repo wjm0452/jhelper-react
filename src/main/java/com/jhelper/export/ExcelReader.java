@@ -24,42 +24,59 @@ import org.xml.sax.helpers.XMLReaderFactory;
 @Component
 public class ExcelReader {
 
-    SheetHandler sheetHandler;
+    public List<Object[]> read(File file) throws IOException {
 
-    public void parse(File file) throws IOException, OpenXML4JException, SAXException {
+        List<Object[]> results = new ArrayList<>();
 
-        OPCPackage pkg = OPCPackage.open(file);
-        XSSFReader r = new XSSFReader(pkg);
+        read(file, new RowReadHandler() {
+            @Override
+            public void cellValues(int rowNum, Object[] values) {
+                results.add(values);
+            }
+        });
 
-        StylesTable styles = r.getStylesTable();
-        SharedStrings sst = r.getSharedStringsTable();
+        return results;
+    }
 
-        sheetHandler = new SheetHandler();
+    public void read(File file, RowReadHandler rowReadHandler) throws IOException {
+        read(file, new RowReadSheetHandler(rowReadHandler));
+    }
 
-        XMLReader parser = XMLReaderFactory.createXMLReader();
-        parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        parser.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        parser.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    public void read(File file, SheetContentsHandler sheetContentsHandler) throws IOException {
 
-        parser.setContentHandler(new XSSFSheetXMLHandler(styles, sst, sheetHandler, false));
+        try {
 
-        try (InputStream is = r.getSheetsData().next();) {
-            InputSource sheetSource = new InputSource(is);
+            OPCPackage pkg = OPCPackage.open(file);
+            XSSFReader r = new XSSFReader(pkg);
 
-            parser.parse(sheetSource);
+            StylesTable styles = r.getStylesTable();
+            SharedStrings sst = r.getSharedStringsTable();
+
+            XMLReader parser = XMLReaderFactory.createXMLReader();
+            parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            parser.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            parser.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+            parser.setContentHandler(new XSSFSheetXMLHandler(styles, sst, sheetContentsHandler, false));
+
+            try (InputStream is = r.getSheetsData().next();) {
+                InputSource sheetSource = new InputSource(is);
+                parser.parse(sheetSource);
+            }
+        } catch (OpenXML4JException | SAXException e) {
+            throw new IOException(e);
         }
-
     }
 
-    public List<Object[]> getData() {
-        return sheetHandler.getData();
-    }
+    private class RowReadSheetHandler implements SheetContentsHandler {
 
-    private class SheetHandler implements SheetContentsHandler {
-
-        ArrayList<Object[]> rows = new ArrayList<>();
+        RowReadHandler rowReadHandler;
         ArrayList<Object> cells;
+
+        public RowReadSheetHandler(RowReadHandler rowReadHandler) {
+            this.rowReadHandler = rowReadHandler;
+        }
 
         @Override
         public void startRow(int rowNum) {
@@ -68,7 +85,7 @@ public class ExcelReader {
 
         @Override
         public void endRow(int rowNum) {
-            rows.add(cells.toArray());
+            this.rowReadHandler.cellValues(rowNum, cells.toArray());
             cells = null;
         }
 
@@ -83,10 +100,6 @@ public class ExcelReader {
             }
 
             cells.add(formattedValue);
-        }
-
-        public List<Object[]> getData() {
-            return rows;
         }
     }
 }

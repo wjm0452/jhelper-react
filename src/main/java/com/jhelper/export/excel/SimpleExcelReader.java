@@ -37,13 +37,7 @@ public class SimpleExcelReader {
 	}
 
 	private List<Object[]> readFromFile(File file) throws IOException {
-		try {
-			ExcelReader reader = new ExcelReader();
-			reader.parse(file);
-
-			return reader.getData();
-		} catch (OpenXML4JException | SAXException e) {
-			throw new IOException(e);
-		}
+		ExcelReader reader = new ExcelReader();
+		return reader.read(file);
 	}
 }

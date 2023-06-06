@@ -14,13 +14,15 @@ export default class TableView extends React.Component<any, any> {
 
     return (
       <table className="table table-hover table-bordered table-sm">
-        <thead className="table-light">
-          <tr>
-            {header.map((columnName: string) => (
-              <th key={guid()}>{columnName}</th>
-            ))}
-          </tr>
-        </thead>
+        {header && header.length ? (
+          <thead className="table-light">
+            <tr>
+              {header.map((columnName: string) => (
+                <th key={guid()}>{columnName}</th>
+              ))}
+            </tr>
+          </thead>
+        ) : null}
         {
           <tbody>
             {data.map((row: string[], i: number) => (

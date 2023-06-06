@@ -86,12 +86,12 @@ public class SimpleExcelExporter implements Closeable {
 		return export();
 	}
 
-	public File export(String[] head, ReadHandler readHandler) throws IOException {
+	public File export(String[] head, DataHandler dataHandler) throws IOException {
 
 		writeHead(head);
 
 		while (true) {
-			Collection<Object[]> data = readHandler.read();
+			Collection<Object[]> data = dataHandler.read();
 
 			if (data == null || data.isEmpty()) {
 				break;

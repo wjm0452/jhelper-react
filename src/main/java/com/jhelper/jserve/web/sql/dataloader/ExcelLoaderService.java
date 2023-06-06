@@ -1,40 +1,47 @@
 package com.jhelper.jserve.web.sql.dataloader;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
-import com.jhelper.jserve.web.sql.dataloader.model.DataLoaderVO;
+import com.jhelper.export.ExcelReader;
+import com.jhelper.export.RowReadHandler;
+import com.jhelper.jserve.web.sql.dataloader.model.ExcelLoaderVO;
 import com.jhelper.jserve.web.sql.jdbc.JdbcTemplateManager;
+import com.jhelper.store.Store;
 
 @Service
-public class DataLoaderService {
+public class ExcelLoaderService {
 
     @Autowired
     JdbcTemplateManager jdbcManager;
 
-    public void load(DataLoaderVO dataLoaderVO) {
-        String query = dataLoaderVO.getSourceQuery();
-        JdbcTemplate sourceJdbc = jdbcManager.getJdbcTemplateById(dataLoaderVO.getSourceName());
+    @Autowired
+    Store store;
 
-        Loader loader = new Loader(dataLoaderVO.getTargetName(),
-                dataLoaderVO.getTargetOwner(),
-                dataLoaderVO.getTargetTableName(),
-                dataLoaderVO.getTargetColumns());
+    public void load(ExcelLoaderVO excelLoaderVO) {
 
-        sourceJdbc.query(query, new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                loader.load(rs);
-            }
-        });
+        ExcelReader excelReader = new ExcelReader();
+        Loader loader = new Loader(excelLoaderVO.getTargetName(),
+                excelLoaderVO.getTargetOwner(),
+                excelLoaderVO.getTargetTableName(),
+                excelLoaderVO.getTargetColumns());
+
+        try {
+
+            excelReader.read(store.getPath(excelLoaderVO.getPath()).toFile(), new RowReadHandler() {
+                @Override
+                public void cellValues(int rowNum, Object[] values) {
+                    loader.insert(values);
+                }
+            });
+        } catch (IOException e) {
+        }
     }
 
     class Loader {
@@ -54,39 +61,24 @@ public class DataLoaderService {
             this.columns = columns;
         }
 
-        public void load(ResultSet rs) throws SQLException {
+        public void insert(Object[] values) {
+
             final JdbcTemplate jdbcTemplate = jdbcManager.getJdbcTemplateById(this.name);
             final String statement = getStatement();
 
             int columnsLength = this.columns.length;
-            int count = 0;
             List<Object[]> paramsTemp = new ArrayList<>();
 
-            while (rs.next()) {
+            Object[] params = new Object[columnsLength];
 
-                Object[] params = new Object[columnsLength];
-
-                for (int i = 0; i < columnsLength; i++) {
-                    params[i] = rs.getObject(i);
-                }
-
-                paramsTemp.add(params);
-
-                count++;
-
-                if (count >= 100) {
-                    jdbcTemplate.batchUpdate(statement, paramsTemp);
-                    paramsTemp.clear();
-                    count = 0;
-                }
+            for (int i = 0; i < columnsLength; i++) {
+                params[i] = values[i];
             }
 
-            if (count > 0) {
-                jdbcTemplate.batchUpdate(statement, paramsTemp);
-                paramsTemp.clear();
-                count = 0;
-            }
+            paramsTemp.add(params);
 
+            jdbcTemplate.update(statement, params);
+            paramsTemp.clear();
         }
 
         public String getStatement() {
