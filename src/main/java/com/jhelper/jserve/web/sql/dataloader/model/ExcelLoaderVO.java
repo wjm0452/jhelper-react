@@ -11,4 +11,5 @@ public class ExcelLoaderVO {
     private String[] targetColumns;
     private int startRow = 0;
     private int startCol = 0;
+    private String queryParams;
 }
