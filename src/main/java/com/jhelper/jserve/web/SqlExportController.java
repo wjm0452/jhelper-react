@@ -1,7 +1,6 @@
 package com.jhelper.jserve.web;
 
 import com.jhelper.jserve.web.sql.SqlHelperService;
-import com.jhelper.jserve.web.sql.SqlResult;
 import com.jhelper.jserve.web.sql.export.SqlExcelExportService;
 import com.jhelper.jserve.web.sql.export.SqlTextExportService;
 import com.jhelper.jserve.web.sql.model.QueryVO;

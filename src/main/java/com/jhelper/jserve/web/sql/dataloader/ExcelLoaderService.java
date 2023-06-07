@@ -34,9 +34,21 @@ public class ExcelLoaderService {
 
         try {
 
+            final int startRow = excelLoaderVO.getStartRow();
+            final int startCol = excelLoaderVO.getStartCol();
+
             excelReader.read(store.getPath(excelLoaderVO.getPath()).toFile(), new RowReadHandler() {
                 @Override
                 public void cellValues(int rowNum, Object[] values) {
+
+                    if (rowNum < startRow) {
+                        return;
+                    }
+
+                    if (startCol > 0) {
+                        values = Arrays.copyOfRange(values, startCol, values.length);
+                    }
+
                     loader.insert(values);
                 }
             });
