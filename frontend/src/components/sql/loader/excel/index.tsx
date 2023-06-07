@@ -133,6 +133,34 @@ export default class ExcelLoader extends React.Component<any, any> {
             style={{ width: "50%" }}
           >
             <div className="h-100 d-flex flex-column">
+              <div className="input-group col-auto">
+                <span className="input-group-text">Row</span>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={this.state.startRow}
+                  min={0}
+                  placeholder="row"
+                  onChange={(e) => {
+                    this.setState({
+                      startRow: e.target.value
+                    });
+                  }}
+                />
+                <span className="input-group-text">Col</span>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={this.state.startCol}
+                  min={0}
+                  placeholder="col"
+                  onChange={(e) => {
+                    this.setState({
+                      startCol: e.target.value
+                    });
+                  }}
+                />
+              </div>
               <TableView header={[]} data={this.state.excelData}></TableView>
             </div>
           </div>

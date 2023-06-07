@@ -9,4 +9,6 @@ public class ExcelLoaderVO {
     private String targetOwner;
     private String targetTableName;
     private String[] targetColumns;
+    private int startRow = 0;
+    private int startCol = 0;
 }
