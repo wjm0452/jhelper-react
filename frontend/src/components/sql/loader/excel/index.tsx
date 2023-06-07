@@ -17,6 +17,7 @@ export default class ExcelLoader extends React.Component<any, any> {
       startCol: 0,
       uploadedPath: "",
       excelData: [],
+      queryParams: "",
       targetName: "",
       targetOwner: "",
       targetTableName: "",
@@ -34,6 +35,7 @@ export default class ExcelLoader extends React.Component<any, any> {
       path: this.state.uploadedPath,
       startRow: this.state.startRow,
       startCol: this.state.startCol,
+      queryParams: this.state.queryParams,
       targetName: targetInfo.name,
       targetOwner: targetInfo.owner,
       targetTableName: targetInfo.tableName,
@@ -94,8 +96,31 @@ export default class ExcelLoader extends React.Component<any, any> {
 
         this.setState({
           excelData: data.result,
+        }, () => {
+          this.bindQueryParams();
         });
       });
+  }
+
+  bindQueryParams() {
+
+    const startRow = this.state.startRow;
+    const startCol = this.state.startCol;
+
+    const excelData = this.state.excelData;
+
+    let queryParams = [];
+    if (excelData.length) {
+      const paramLength = excelData[startRow].length - startCol;
+      if (paramLength > 0) {
+        queryParams = new Array(paramLength);
+        queryParams.fill('?');
+      }
+    }
+
+    this.setState({
+      queryParams: queryParams.join(',\r\n')
+    });
   }
 
   render() {
@@ -133,7 +158,7 @@ export default class ExcelLoader extends React.Component<any, any> {
             style={{ width: "50%" }}
           >
             <div className="h-100 d-flex flex-column">
-              <div className="input-group col-auto">
+              <div className="flex-shrink-0 input-group col-auto">
                 <span className="input-group-text">Row</span>
                 <input
                   type="number"
@@ -144,6 +169,8 @@ export default class ExcelLoader extends React.Component<any, any> {
                   onChange={(e) => {
                     this.setState({
                       startRow: e.target.value
+                    }, () => {
+                      this.bindQueryParams()
                     });
                   }}
                 />
@@ -157,11 +184,28 @@ export default class ExcelLoader extends React.Component<any, any> {
                   onChange={(e) => {
                     this.setState({
                       startCol: e.target.value
+                    }, () => {
+                      this.bindQueryParams()
                     });
                   }}
                 />
               </div>
-              <TableView header={[]} data={this.state.excelData}></TableView>
+              <div className="flex-grow-1 overflow-auto">
+                <TableView header={[]} data={this.state.excelData}></TableView>
+              </div>
+              <div className="flex-shrink-0">
+                <div className="mt-1" style={{ height: "250px" }}>
+                  <textarea
+                    className="form-control w-100 h-100"
+                    value={this.state.queryParams}
+                    onChange={(e) => {
+                      this.setState({
+                        queryParams: e.target.value,
+                      });
+                    }}
+                  ></textarea>
+                </div>
+              </div>
             </div>
           </div>
           <div

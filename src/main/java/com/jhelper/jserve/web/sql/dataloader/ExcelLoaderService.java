@@ -30,7 +30,8 @@ public class ExcelLoaderService {
         Loader loader = new Loader(excelLoaderVO.getTargetName(),
                 excelLoaderVO.getTargetOwner(),
                 excelLoaderVO.getTargetTableName(),
-                excelLoaderVO.getTargetColumns());
+                excelLoaderVO.getTargetColumns(),
+                excelLoaderVO.getQueryParams());
 
         try {
 
@@ -62,15 +63,18 @@ public class ExcelLoaderService {
         String owner;
         String tableName;
         String[] columns;
+        String queryParams;
 
         public Loader(String name,
                 String owner,
                 String tableName,
-                String[] columns) {
+                String[] columns,
+                String queryParams) {
             this.name = name;
             this.owner = owner;
             this.tableName = tableName;
             this.columns = columns;
+            this.queryParams = queryParams;
         }
 
         public void insert(Object[] values) {
@@ -98,14 +102,11 @@ public class ExcelLoaderService {
             String tableName = this.tableName;
             String[] columns = this.columns;
 
-            String[] params = new String[columns.length];
-            Arrays.fill(params, 0, params.length, "?");
-
             String statement = String.format("insert into %s.%s(%s) values(%s)",
                     owner,
                     tableName,
                     String.join(", ", columns),
-                    String.join(", ", params));
+                    queryParams);
 
             return statement;
         }
