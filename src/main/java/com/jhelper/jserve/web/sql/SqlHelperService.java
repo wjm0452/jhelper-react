@@ -27,7 +27,11 @@ public class SqlHelperService {
     JdbcTemplateManager jdbcManager;
 
     public SqlResult select(QueryVO queryVo) {
-        return select(queryVo.getName(), queryVo.getQuery(), queryVo.getParams());
+
+        SqlResultHandler sqlResultHandler = new SqlResultHandler();
+
+        select(queryVo, sqlResultHandler);
+        return sqlResultHandler.getResult();
     }
 
     public SqlResult select(String dbName, String query, Object[] params) {
@@ -39,7 +43,21 @@ public class SqlHelperService {
     }
 
     public void select(QueryVO queryVo, ResultSetHandler resultHandler) {
-        select(queryVo.getName(), queryVo.getQuery(), queryVo.getParams(), resultHandler);
+
+        String query = queryVo.getQuery();
+        int offset = queryVo.getOffset();
+        int limit = queryVo.getLimit();
+
+        query = query.trim();
+        if (query.endsWith(";")) {
+            query = query.substring(0, query.lastIndexOf(";"));
+        }
+
+        if (query.toLowerCase().startsWith("select")) {
+            query = String.format("select * from (%s) offset %d rows fetch next %d rows only", query, offset, limit);
+        }
+
+        select(queryVo.getName(), query, queryVo.getParams(), resultHandler);
     }
 
     public void select(String dbName, String query, Object[] params, ResultSetHandler resultHandler) {
@@ -48,11 +66,6 @@ public class SqlHelperService {
 
         if (jdbcTemplate == null) {
             throw new RuntimeException("Jdbc not found");
-        }
-
-        query = query.trim();
-        if (query.endsWith(";")) {
-            query = query.substring(0, query.lastIndexOf(";"));
         }
 
         logger.debug("query: {}", query);
@@ -67,7 +80,7 @@ public class SqlHelperService {
 
     class SqlResultHandler implements ResultSetHandler {
 
-        SqlResult sqlResult = new SqlResult();;
+        SqlResult sqlResult = new SqlResult();
 
         @Override
         public void process(ResultSet rs) throws SQLException {
