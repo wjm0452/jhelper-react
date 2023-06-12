@@ -43,21 +43,7 @@ public class SqlHelperService {
     }
 
     public void select(QueryVO queryVo, ResultSetHandler resultHandler) {
-
-        String query = queryVo.getQuery();
-        int offset = queryVo.getOffset();
-        int limit = queryVo.getLimit();
-
-        query = query.trim();
-        if (query.endsWith(";")) {
-            query = query.substring(0, query.lastIndexOf(";"));
-        }
-
-        if (query.toLowerCase().startsWith("select")) {
-            query = String.format("select * from (%s) offset %d rows fetch next %d rows only", query, offset, limit);
-        }
-
-        select(queryVo.getName(), query, queryVo.getParams(), resultHandler);
+        select(queryVo.getName(), queryVo.getQuery(), queryVo.getParams(), resultHandler);
     }
 
     public void select(String dbName, String query, Object[] params, ResultSetHandler resultHandler) {

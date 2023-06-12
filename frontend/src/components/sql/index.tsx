@@ -38,7 +38,10 @@ export default class Query extends React.Component<any, any> {
       owner: "",
       tableName: "",
 
-      executedQuery: "",
+      queryOffset: 0,
+      queryLimit: 100,
+      executeQuery: "",
+      realExecuteQuery: "",
 
       selectedOwner: "",
       selectedTableName: "",
@@ -176,10 +179,27 @@ export default class Query extends React.Component<any, any> {
   }
 
   runSql(query: string) {
-    console.log("runSql %s", query);
-    var name = this.state.name;
 
-    this.setState({ executedQuery: query });
+    query = query.trim();
+    if (query.endsWith(";")) {
+      query = query.substring(0, query.lastIndexOf(";"));
+    }
+
+    console.log("runSql %s", query);
+
+    const name = this.state.name;
+    const offset = this.state.queryOffset;
+    const limit = this.state.queryLimit;
+    const executeQuery = query;
+
+    if (offset && limit) {
+      query = `select * from (${query}) offset ${offset} rows fetch next ${limit} rows only`;
+    }
+
+    this.setState({
+      executeQuery: executeQuery,
+      realExecuteQuery: query
+    });
 
     runSql(query, { name }).then((data: any) => {
       this.setState({ sqlResults: data });
@@ -198,42 +218,42 @@ export default class Query extends React.Component<any, any> {
   }
 
   exportExcel() {
-    let executedQuery = this.state.executedQuery;
+    let executeQuery = this.state.executeQuery;
 
-    if (!executedQuery || !executedQuery.toLowerCase().startsWith("select")) {
+    if (!executeQuery || !executeQuery.toLowerCase().startsWith("select")) {
       alert("조회 후 사용해 주세요.");
       return;
     }
 
     var name = this.state.name;
-    console.log(executedQuery);
+    console.log(executeQuery);
 
     axios({
       method: "post",
       url: "/api/sql-export",
       responseType: "blob",
-      data: { query: executedQuery, name },
+      data: { query: executeQuery, name },
     }).then((res) => {
       this.downloadFile(res, "sql_result.xlsx");
     });
   }
 
   exportText() {
-    let executedQuery = this.state.executedQuery;
+    let executeQuery = this.state.executeQuery;
 
-    if (!executedQuery || !executedQuery.toLowerCase().startsWith("select")) {
+    if (!executeQuery || !executeQuery.toLowerCase().startsWith("select")) {
       alert("조회 후 사용해 주세요.");
       return;
     }
 
     var name = this.state.name;
-    console.log(executedQuery);
+    console.log(executeQuery);
 
     axios({
       method: "post",
       url: "/api/sql-export/text",
       responseType: "blob",
-      data: { query: executedQuery, name },
+      data: { query: executeQuery, name },
     }).then((res) => {
       this.downloadFile(res, "sql_result.txt");
     });
