@@ -117,7 +117,7 @@ export default class DBTableList extends React.Component<any, any> {
   render() {
     return (
       <div className="flex-grow-1">
-        <div className="row g-3">
+        <div className="row g-1">
           <div className="col-auto">
             <select
               className="form-select"

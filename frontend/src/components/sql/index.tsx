@@ -192,7 +192,7 @@ export default class Query extends React.Component<any, any> {
     const limit = this.state.queryLimit;
     const executeQuery = query;
 
-    if (offset && limit) {
+    if (limit > 0) {
       query = `select * from (${query}) offset ${offset} rows fetch next ${limit} rows only`;
     }
 
@@ -311,7 +311,7 @@ export default class Query extends React.Component<any, any> {
           style={{ maxWidth: "500px", minWidth: "500px" }}
         >
           <div className="flex-grow-1 d-flex flex-column overflow-hidden">
-            <div className="row g-3">
+            <div className="row g-1">
               <div className="col-auto">
                 <select
                   className="form-select"
@@ -401,7 +401,7 @@ export default class Query extends React.Component<any, any> {
           </div>
           <div className="mt-2">
             <div>
-              <div className="row g-3">
+              <div className="row g-1">
                 <div className="col-auto">
                   <input
                     type="text"
@@ -528,22 +528,42 @@ export default class Query extends React.Component<any, any> {
           className="flex-grow-1 flex-shrink-1 d-flex flex-column overflow-auto p-2"
           style={{ minWidth: "500px" }}
         >
-          <div>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => {
-                this.sqlElement.current.value = "";
-                this.sqlElement.current.focus();
-              }}
-            >
-              clear
-            </button>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => this.onSql()}
-            >
-              run
-            </button>
+          <div className="row g-1">
+            <div className="col-auto input-group">
+              <span className="input-group-text">offset</span>
+              <input type="number"
+                className="form-control"
+                min={0}
+                value={this.state.queryOffset} onChange={(e) => {
+                  this.setState({
+                    queryOffset: e.target.value
+                  })
+                }} />
+              <span className="input-group-text">limit</span>
+              <input type="number"
+                className="form-control"
+                min={0}
+                value={this.state.queryLimit} onChange={(e) => {
+                  this.setState({
+                    queryLimit: e.target.value
+                  })
+                }} />
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  this.sqlElement.current.value = "";
+                  this.sqlElement.current.focus();
+                }}
+              >
+                clear
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={() => this.onSql()}
+              >
+                run
+              </button>
+            </div>
           </div>
           <div className="flex-grow-1 mt-1">
             <textarea
