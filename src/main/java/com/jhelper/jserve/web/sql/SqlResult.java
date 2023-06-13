@@ -6,4 +6,5 @@ import lombok.Data;
 public class SqlResult {
     private String[] columnNames;
     private Object[][] result;
+    private boolean hasNext = false;
 }
