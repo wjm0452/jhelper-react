@@ -76,18 +76,25 @@ public class SqlHelperService {
             List<Object[]> resultList = new ArrayList<>();
 
             int rowCount = -1;
+            boolean hasNext = false;
 
-            while (++rowCount < fetchSize && sqlRowSet.next()) {
+            while (++rowCount <= fetchSize && sqlRowSet.next()) {
 
-                Object[] columns = new Object[columnSize];
+                if (rowCount < fetchSize) {
 
-                for (int i = 0; i < columnSize; i++) {
-                    columns[i] = sqlRowSet.getString(i + 1);
+                    Object[] columns = new Object[columnSize];
+
+                    for (int i = 0; i < columnSize; i++) {
+                        columns[i] = sqlRowSet.getString(i + 1);
+                    }
+
+                    resultList.add(columns);
+                } else {
+                    hasNext = true;
                 }
-
-                resultList.add(columns);
             }
 
+            sqlResult.setHasNext(hasNext);
             sqlResult.setColumnNames(columnNames);
             sqlResult.setResult(resultList.toArray(new Object[0][]));
         }
