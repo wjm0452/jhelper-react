@@ -28,25 +28,17 @@ public class SqlHelperService {
 
     public SqlResult select(QueryVO queryVo) {
 
-        SqlResultHandler sqlResultHandler = new SqlResultHandler();
+        SqlResultHandler sqlResultHandler = new SqlResultHandler(queryVo.getFetchSize());
 
         select(queryVo, sqlResultHandler);
         return sqlResultHandler.getResult();
     }
 
-    public SqlResult select(String dbName, String query, Object[] params) {
-
-        SqlResultHandler sqlResultHandler = new SqlResultHandler();
-
-        select(dbName, query, params, sqlResultHandler);
-        return sqlResultHandler.getResult();
-    }
-
     public void select(QueryVO queryVo, ResultSetHandler resultHandler) {
-        select(queryVo.getName(), queryVo.getQuery(), queryVo.getParams(), resultHandler);
-    }
 
-    public void select(String dbName, String query, Object[] params, ResultSetHandler resultHandler) {
+        String dbName = queryVo.getName();
+        String query = queryVo.getQuery();
+        Object[] params = queryVo.getParams();
 
         JdbcTemplate jdbcTemplate = jdbcManager.getJdbcTemplateById(dbName);
 
@@ -67,6 +59,11 @@ public class SqlHelperService {
     class SqlResultHandler implements ResultSetHandler {
 
         SqlResult sqlResult = new SqlResult();
+        int fetchSize = 0;
+
+        public SqlResultHandler(int fetchSize) {
+            this.fetchSize = fetchSize;
+        }
 
         @Override
         public void process(ResultSet rs) throws SQLException {
@@ -78,7 +75,9 @@ public class SqlHelperService {
 
             List<Object[]> resultList = new ArrayList<>();
 
-            while (sqlRowSet.next()) {
+            int rowCount = -1;
+
+            while (++rowCount < fetchSize && sqlRowSet.next()) {
 
                 Object[] columns = new Object[columnSize];
 

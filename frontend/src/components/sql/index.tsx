@@ -38,8 +38,8 @@ export default class Query extends React.Component<any, any> {
       owner: "",
       tableName: "",
 
-      queryOffset: 0,
-      queryLimit: 100,
+      fetchSize: 100,
+
       executeQuery: "",
       realExecuteQuery: "",
 
@@ -179,7 +179,6 @@ export default class Query extends React.Component<any, any> {
   }
 
   runSql(query: string) {
-
     query = query.trim();
     if (query.endsWith(";")) {
       query = query.substring(0, query.lastIndexOf(";"));
@@ -188,20 +187,19 @@ export default class Query extends React.Component<any, any> {
     console.log("runSql %s", query);
 
     const name = this.state.name;
-    const offset = this.state.queryOffset;
-    const limit = this.state.queryLimit;
+    const fetchSize = this.state.fetchSize;
     const executeQuery = query;
 
-    if (limit > 0) {
-      query = `select * from (${query}) offset ${offset} rows fetch next ${limit} rows only`;
-    }
+    // if (limit > 0) {
+    //   query = `${query} offset ${offset} rows fetch next ${limit} rows only`;
+    // }
 
     this.setState({
       executeQuery: executeQuery,
-      realExecuteQuery: query
+      realExecuteQuery: query,
     });
 
-    runSql(query, { name }).then((data: any) => {
+    runSql(query, { name, fetchSize }).then((data: any) => {
       this.setState({ sqlResults: data });
     });
   }
@@ -530,24 +528,18 @@ export default class Query extends React.Component<any, any> {
         >
           <div className="row g-1">
             <div className="col-auto input-group">
-              <span className="input-group-text">offset</span>
-              <input type="number"
+              <span className="input-group-text">Fetch Size</span>
+              <input
+                type="number"
                 className="form-control"
-                min={0}
-                value={this.state.queryOffset} onChange={(e) => {
+                min={-1}
+                value={this.state.fetchSize}
+                onChange={(e) => {
                   this.setState({
-                    queryOffset: e.target.value
-                  })
-                }} />
-              <span className="input-group-text">limit</span>
-              <input type="number"
-                className="form-control"
-                min={0}
-                value={this.state.queryLimit} onChange={(e) => {
-                  this.setState({
-                    queryLimit: e.target.value
-                  })
-                }} />
+                    fetchSize: e.target.value,
+                  });
+                }}
+              />
               <button
                 className="btn btn-secondary"
                 onClick={() => {
@@ -557,10 +549,7 @@ export default class Query extends React.Component<any, any> {
               >
                 clear
               </button>
-              <button
-                className="btn btn-primary"
-                onClick={() => this.onSql()}
-              >
+              <button className="btn btn-primary" onClick={() => this.onSql()}>
                 run
               </button>
             </div>
