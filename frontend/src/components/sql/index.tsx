@@ -123,12 +123,27 @@ export default class Query extends React.Component<any, any> {
 
     var name = this.state.name;
 
-    this.jsql.findTableInfo(data, { name }).then((data: any) => {
-      this.setState({
-        selectedOwner: this.state.owner,
-        tables: data,
+    this.jsql
+      .findTableInfo(data, { name })
+      .then((data: any) => {
+        this.setState({
+          selectedOwner: this.state.owner,
+          tables: data,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        const response = e.response;
+
+        if (response && response.data) {
+          const data = response.data;
+          alert(`[${data.sqlState}] ${data.errorMessage}`);
+        } else {
+          alert("오류가 발생하였습니다.");
+        }
+
+        return e;
       });
-    });
   }
 
   fetchColumns() {
@@ -140,11 +155,26 @@ export default class Query extends React.Component<any, any> {
 
     var name = this.state.name;
 
-    this.jsql.findColumnInfo(data, { name }).then((data: any) => {
-      this.setState({
-        columns: data,
+    this.jsql
+      .findColumnInfo(data, { name })
+      .then((data: any) => {
+        this.setState({
+          columns: data,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        const response = e.response;
+
+        if (response && response.data) {
+          const data = response.data;
+          alert(`[${data.sqlState}] ${data.errorMessage}`);
+        } else {
+          alert("오류가 발생하였습니다.");
+        }
+
+        return e;
       });
-    });
   }
 
   onSql() {

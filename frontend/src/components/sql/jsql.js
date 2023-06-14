@@ -25,10 +25,6 @@ export default function Jsql(options) {
       })
       .then(function (res) {
         return res.data;
-      })
-      .catch(function (response) {
-        alert("오류가 발생하였습니다.");
-        return response;
       });
   };
 

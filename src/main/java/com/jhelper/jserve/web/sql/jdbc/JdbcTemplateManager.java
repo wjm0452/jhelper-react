@@ -47,6 +47,11 @@ public class JdbcTemplateManager {
 
         if (jdbcTemplate == null) {
             ConnInfo connInfo = connInfoService.findById(id);
+
+            if (connInfo == null) {
+                return null;
+            }
+
             addJdbcTemplate(connInfo);
 
             jdbcTemplate = jdbcTemplates.get(id);

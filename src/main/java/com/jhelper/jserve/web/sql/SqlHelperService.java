@@ -79,9 +79,9 @@ public class SqlHelperService {
             int rowCount = -1;
             boolean hasNext = false;
 
-            while (++rowCount <= fetchSize && sqlRowSet.next()) {
+            while ((fetchSize == -1 || ++rowCount <= fetchSize) && sqlRowSet.next()) {
 
-                if (rowCount < fetchSize) {
+                if (fetchSize == -1 || rowCount < fetchSize) {
 
                     Object[] columns = new Object[columnSize];
 
