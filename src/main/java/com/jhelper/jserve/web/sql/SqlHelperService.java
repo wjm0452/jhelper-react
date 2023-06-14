@@ -2,6 +2,7 @@ package com.jhelper.jserve.web.sql;
 
 import com.jhelper.jserve.web.sql.jdbc.JdbcTemplateManager;
 import com.jhelper.jserve.web.sql.model.QueryVO;
+import com.jhelper.jserve.web.sql.model.SqlResult;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
