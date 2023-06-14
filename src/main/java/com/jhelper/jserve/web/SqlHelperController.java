@@ -45,6 +45,20 @@ public class SqlHelperController {
                 .body(sqlError);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<SqlError> runtimeError(RuntimeException e) {
+
+        SqlError sqlError = new SqlError();
+
+        sqlError.setSqlState("RUN");
+        sqlError.setErrorMessage(e.getMessage());
+
+        return ResponseEntity
+                .badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(sqlError);
+    }
+
     @PostMapping
     public SqlResult query(@RequestBody QueryVO queryVo) throws SQLServerException {
         try {
