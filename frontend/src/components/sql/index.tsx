@@ -7,8 +7,12 @@ import ConnManager from "./connManager";
 import TableView from "./tableView";
 
 async function runSql(query: string, params: any) {
-  var res: any = await axios.post("/api/sql", { query, ...params });
-  return res.data;
+  try {
+    var res: any = await axios.post("/api/sql", { query, ...params });
+    return res.data;
+  } catch (e) {
+    throw e;
+  }
 }
 
 async function readConnections() {
@@ -61,6 +65,8 @@ export default class Query extends React.Component<any, any> {
         columnNames: [],
         result: [],
       },
+      sqlState: "",
+      errorMessage: "",
     };
 
     this.cacheContext = new CacheContext(this);
@@ -194,14 +200,52 @@ export default class Query extends React.Component<any, any> {
     //   query = `${query} offset ${offset} rows fetch next ${limit} rows only`;
     // }
 
-    this.setState({
-      executeQuery: executeQuery,
-      realExecuteQuery: query,
-    });
+    this.setState(
+      {
+        executeQuery: executeQuery,
+        realExecuteQuery: query,
+        sqlResults: {
+          columnNames: [],
+          result: [],
+        },
+        sqlState: "",
+        errorMessage: "",
+      },
+      () => {
+        runSql(query, { name, fetchSize })
+          .then((data: any) => {
+            this.setState({ sqlResults: data });
+          })
+          .catch((e) => {
+            console.error(e);
 
-    runSql(query, { name, fetchSize }).then((data: any) => {
-      this.setState({ sqlResults: data });
-    });
+            let sqlState = "";
+            let errorMessage = "";
+
+            const response = e.response;
+
+            if (response) {
+              const data = response.data;
+
+              if (data && data.sqlState) {
+                sqlState = data.sqlState;
+                errorMessage = data.errorMessage;
+              } else {
+                sqlState = "-1";
+                errorMessage = e.toString();
+              }
+            } else {
+              sqlState = "-1";
+              errorMessage = e.toString();
+            }
+
+            this.setState({
+              sqlState,
+              errorMessage,
+            });
+          });
+      }
+    );
   }
 
   writeQuery(query: string) {
@@ -573,6 +617,10 @@ export default class Query extends React.Component<any, any> {
               header={this.state.sqlResults.columnNames}
               data={this.state.sqlResults.result}
             ></TableView>
+            <div style={{ display: this.state.sqlState ? "" : "none" }}>
+              <div>{this.state.sqlState}</div>
+              <div>{this.state.errorMessage}</div>
+            </div>
           </div>
           <div>
             <div className="d-inline-block">

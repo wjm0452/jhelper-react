@@ -1,4 +1,4 @@
-package com.jhelper.jserve.web.sql;
+package com.jhelper.jserve.web.sql.model;
 
 import lombok.Data;
 
