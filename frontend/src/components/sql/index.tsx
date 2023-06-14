@@ -647,7 +647,15 @@ export default class Query extends React.Component<any, any> {
               header={this.state.sqlResults.columnNames}
               data={this.state.sqlResults.result}
             ></TableView>
-            <div style={{ display: this.state.sqlState ? "" : "none" }}>
+            <div
+              style={{
+                display: this.state.sqlState ? "" : "none",
+                height: "95%",
+                backgroundColor: "grey",
+                padding: "5px",
+                fontWeight: "bold",
+              }}
+            >
               <div>{this.state.sqlState}</div>
               <div>{this.state.errorMessage}</div>
             </div>
