@@ -289,7 +289,7 @@ export default class Query extends React.Component<any, any> {
     this.sqlElement.current.value = query + "\n" + oldQuery;
   }
 
-  exportExcel() {
+  exportTo(exportUrl: string, exportFileName: string) {
     let executeQuery = this.state.executeQuery;
 
     if (!executeQuery || !executeQuery.toLowerCase().startsWith("select")) {
@@ -302,32 +302,11 @@ export default class Query extends React.Component<any, any> {
 
     axios({
       method: "post",
-      url: "/api/sql-export",
+      url: `/api/sql-export/${exportUrl}`,
       responseType: "blob",
       data: { query: executeQuery, name },
     }).then((res) => {
-      this.downloadFile(res, "sql_result.xlsx");
-    });
-  }
-
-  exportText() {
-    let executeQuery = this.state.executeQuery;
-
-    if (!executeQuery || !executeQuery.toLowerCase().startsWith("select")) {
-      alert("조회 후 사용해 주세요.");
-      return;
-    }
-
-    var name = this.state.name;
-    console.log(executeQuery);
-
-    axios({
-      method: "post",
-      url: "/api/sql-export/text",
-      responseType: "blob",
-      data: { query: executeQuery, name },
-    }).then((res) => {
-      this.downloadFile(res, "sql_result.txt");
+      this.downloadFile(res, exportFileName);
     });
   }
 
@@ -668,7 +647,7 @@ export default class Query extends React.Component<any, any> {
               <button
                 className="btn btn-primary btn-sm me-1"
                 onClick={(e) => {
-                  this.exportExcel();
+                  this.exportTo("excel", "sql_result.xlsx");
                 }}
               >
                 excel
@@ -676,10 +655,18 @@ export default class Query extends React.Component<any, any> {
               <button
                 className="btn btn-primary btn-sm me-1"
                 onClick={(e) => {
-                  this.exportText();
+                  this.exportTo("text", "sql_result.text");
                 }}
               >
                 text
+              </button>
+              <button
+                className="btn btn-primary btn-sm me-1"
+                onClick={(e) => {
+                  this.exportTo("json", "sql_result.json");
+                }}
+              >
+                json
               </button>
             </div>
           </div>
