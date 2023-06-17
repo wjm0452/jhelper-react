@@ -29,14 +29,36 @@ async function updateData(obj: { id: string; title: string; content: string }) {
 
 const RenderMemos = (props: any) => {
   const [items, setItems] = useState([]);
+  const [itemsFilter, setItemsFilter] = useState("");
+
   const updateHandler = props.updateHandler || function () {};
 
   useEffect(() => {
-    setItems(props.items);
-  }, [props.items]);
+    let items = props.items;
+
+    if (itemsFilter) {
+      items = items.filter(
+        (item: any) =>
+          item.title.indexOf(itemsFilter) > -1 ||
+          item.content.indexOf(itemsFilter) > -1
+      );
+    }
+
+    setItems(items);
+  }, [props.items, itemsFilter]);
 
   return (
     <div>
+      <div>
+        <input
+          type="text"
+          placeholder="Find..."
+          value={itemsFilter}
+          onChange={(e) => {
+            setItemsFilter(e.target.value);
+          }}
+        ></input>
+      </div>
       {items.map((item: any, i: number) => (
         <div key={item.id} className="p-3 border-bottom border-dark">
           <div className="row g-3">
@@ -112,7 +134,8 @@ const Memo = () => {
   });
 
   const [items, setItems] = useState([]);
-  const [itemsFilter, setItemsFilter] = useState("");
+
+  const [expand, setExpand] = useState(false);
 
   useEffect(() => {
     readAll().then((data) => {
@@ -125,19 +148,28 @@ const Memo = () => {
   return (
     <div className="v-100 h-100 overflow-auto">
       <div className="container">
-        <div>
-          <h5>Memo</h5>
-          <div>
-            <input
-              type="text"
-              placeholder="Find..."
-              value={itemsFilter}
-              onChange={(e) => setItemsFilter(e.target.value)}
-            ></input>
-          </div>
-        </div>
+        <h5>Memo</h5>
         <div className="p-3 border-bottom border-dark">
-          <div className="row g-3">
+          <div className="text-end">
+            <button
+              className="btn btn-sm me-1"
+              onClick={(e) => {
+                setExpand(!expand);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-plus-slash-minus"
+                viewBox="0 0 16 16"
+              >
+                <path d="m1.854 14.854 13-13a.5.5 0 0 0-.708-.708l-13 13a.5.5 0 0 0 .708.708ZM4 1a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 4 1Zm5 11a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 9 12Z" />
+              </svg>
+            </button>
+          </div>
+          <div className="row g-3" style={{ display: expand ? "" : "none" }}>
             <div className="">
               <label className="form-label">Title</label>
               <input
@@ -186,14 +218,10 @@ const Memo = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="mt-5">
           {
             <RenderMemos
-              items={items.filter(
-                (item: any) =>
-                  item.title.indexOf(itemsFilter) > -1 ||
-                  item.content.indexOf(itemsFilter) > -1
-              )}
+              items={items}
               updateHandler={() => {
                 console.log("updated!!");
               }}
