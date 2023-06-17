@@ -1,4 +1,5 @@
 import { HashRouter, Route, Link, Routes } from "react-router-dom";
+
 import Sql from "./components/sql";
 import Rest from "./components/rest";
 import Qna from "./components/qna";
@@ -7,9 +8,15 @@ import Memo from "./components/memo";
 import "./App.scss";
 import DataLoader from "./components/sql/loader/data";
 import ExcelLoader from "./components/sql/loader/excel";
+import Login from "./components/login";
+import { useSelector } from "react-redux";
 
 function App() {
-  return (
+  const login = useSelector((state: any) => state.login);
+
+  return !login.authenticated ? (
+    <Login />
+  ) : (
     <HashRouter>
       <div
         className="d-flex flex-column"
@@ -29,12 +36,12 @@ function App() {
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/loader">
-              Loader
+                Loader
               </Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/excelloader">
-              ExcelLoader
+                ExcelLoader
               </Link>
             </li>
             <li className="nav-item">
