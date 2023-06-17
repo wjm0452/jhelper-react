@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 async function readData(id: string) {
   const res = await axios.get(`/api/qna/${id}`);
@@ -22,200 +23,157 @@ async function updateData(obj: { id: string; title: string; content: string }) {
   return res.data;
 }
 
-export default class QnaDetails extends React.Component<any, any> {
-  private id: string;
-
-  private saveHandler: Function;
-
-  constructor(props: any) {
-    super(props);
-
-    this.saveHandler = props.onSave;
-
-    this.state = {
-      data: {
-        id: "",
-        title: "",
-        content: "",
-        registerId: "",
-        registerDate: "",
-      },
-      visible: false,
-    };
-
-    this.id = "";
+function saveData(data: any) {
+  const item = data;
+  if (!item.title.trim() || !item.content.trim()) {
+    return;
   }
 
-  show() {
-    this.setState({ visible: true });
-  }
-
-  hide() {
-    this.setState({ visible: false });
-  }
-
-  toggle() {
-    this.setState({ visible: !this.state.visible });
-  }
-
-  open(id: string) {
-    if (!id) {
-      this.clearData();
-      this.show();
-      return;
-    }
-
-    this.fetchData(id).then(() => {
-      this.show();
+  if (item.id) {
+    return updateData({
+      id: item.id,
+      title: item.title,
+      content: item.content,
+    });
+  } else {
+    item.registerDate = new Date();
+    return createData({
+      title: item.title,
+      content: item.content,
     });
   }
+}
 
-  fetchData(id: string) {
-    if (id == this.id) {
-      return Promise.resolve();
-    }
+function fetchData(id: string) {
+  return readData(id);
+}
 
-    return readData(id).then((data) => {
-      this.id = data.id;
-      this.setState({ data: data });
-    });
-  }
+function Details(props: any) {
+  const login = useSelector((state: any) => state.login);
+  const loginUser = login.data;
 
-  saveData() {
-    const item = this.state.data;
+  const [item, setItem] = useState({
+    id: "",
+    title: "",
+    content: "",
+    registerId: loginUser.email,
+    registerDate: new Date().toISOString().slice(0, 16),
+  });
 
-    if (!item.title.trim() || !item.content.trim()) {
-      return;
-    }
+  const onCloseHandler = props.onCloseHandler;
+  const onSaveHandler = props.onSaveHandler || function () {};
 
-    if (item.id) {
-      updateData({
-        id: item.id,
-        title: item.title,
-        content: item.content,
-      }).then(() => {
-        if (this.saveHandler) {
-          this.saveHandler();
-        }
+  useEffect(() => {
+    if (props.qnaId) {
+      fetchData(props.qnaId).then((data) => {
+        setItem(data);
       });
     } else {
-      item.registerDate = new Date();
-      createData({
-        title: item.title,
-        content: item.content,
-      }).then(() => {
-        if (this.saveHandler) {
-          this.saveHandler();
-        }
-      });
-    }
-  }
-
-  clearData() {
-    this.id = "";
-    this.setState({
-      data: {
+      setItem({
         id: "",
         title: "",
         content: "",
-        registerId: "",
-        registerDate: "",
-      },
-    });
-  }
+        registerId: loginUser.email,
+        registerDate: new Date().toISOString().slice(0, 16),
+      });
+    }
+    return () => {};
+  }, [props.qnaId]);
 
-  render() {
-    const data = this.state.data;
-
-    return (
-      <div
-        className="modal"
-        style={{
-          display: this.state.visible !== false ? "block" : "none",
-        }}
-        tabIndex={-1}
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Q & A</h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => this.setState({ visible: false })}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <label className="form-label">Register Id</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={data.registerId || ''}
-                    onChange={(e) => {
-                      data.registerId = e.target.value;
-                      this.setState({ data });
-                    }}
-                  ></input>
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label">Register Date</label>
-                  <input
-                    type="datetime-local"
-                    className="form-control"
-                    value={data.registerDate || ''}
-                    onChange={(e) => {
-                      data.registerDate = e.target.value;
-                      this.setState({ data });
-                    }}
-                  ></input>
-                </div>
-                <div className="col-12">
-                  <label className="form-label">title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={data.title || ''}
-                    onChange={(e) => {
-                      data.title = e.target.value;
-                      this.setState({ data });
-                    }}
-                  ></input>
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Content</label>
-                  <textarea
-                    className="form-control"
-                    style={{ height: "250px" }}
-                    value={data.content || ''}
-                    onChange={(e) => {
-                      data.content = e.target.value;
-                      this.setState({ data });
-                    }}
-                  ></textarea>
-                </div>
+  return (
+    <div
+      className="modal"
+      style={{
+        display: "block",
+      }}
+      tabIndex={-1}
+    >
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Q & A</h5>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => onCloseHandler(item)}
+            ></button>
+          </div>
+          <div className="modal-body">
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label className="form-label">Register Id</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={item.registerId}
+                  readOnly={true}
+                ></input>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Register Date</label>
+                <input
+                  type="datetime-local"
+                  className="form-control"
+                  value={item.registerDate}
+                  readOnly={true}
+                ></input>
+              </div>
+              <div className="col-12">
+                <label className="form-label">Title</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={item.title}
+                  onChange={(e) => {
+                    setItem({
+                      ...item,
+                      title: e.target.value,
+                    });
+                  }}
+                ></input>
+              </div>
+              <div className="col-12">
+                <label className="form-label">Content</label>
+                <textarea
+                  className="form-control"
+                  style={{ height: "250px" }}
+                  value={item.content}
+                  onChange={(e) => {
+                    setItem({
+                      ...item,
+                      content: e.target.value,
+                    });
+                  }}
+                ></textarea>
               </div>
             </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => this.setState({ visible: false })}
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => this.saveData()}
-              >
-                Save changes
-              </button>
-            </div>
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                onCloseHandler();
+              }}
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                saveData(item).then(() => {
+                  onSaveHandler(item);
+                });
+              }}
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
+
+export default Details;

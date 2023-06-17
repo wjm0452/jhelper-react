@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React, { RefObject, useEffect, useState } from "react";
 import axios from "axios";
 
 async function readAll() {
@@ -27,122 +27,112 @@ async function updateData(obj: { id: string; title: string; content: string }) {
   return res.data;
 }
 
-export default class Memo extends React.Component<any, any> {
-  constructor(props: any) {
-    super(props);
+const RenderMemos = (props: any) => {
+  const [items, setItems] = useState([]);
+  const updateHandler = props.updateHandler || function () {};
 
-    this.state = {
-      data: {
-        title: "",
-        content: "",
-      },
-      filter: "",
-      memos: [],
-    };
-  }
+  useEffect(() => {
+    setItems(props.items);
+  }, [props.items]);
 
-  componentDidMount() {
-    this.fetchData();
-  }
-
-  fetchData() {
-    readAll().then((data) => {
-      this.setState({ memos: data });
-    });
-  }
-
-  createData() {
-    var data = {
-      registerId: "wjm",
-      ...this.state.data,
-    };
-
-    if (!data.title.trim() || !data.content.trim()) {
-      return;
-    }
-
-    createData(data).then((data) => {
-      this.setState({
-        data: {
-          title: "",
-          content: "",
-        },
-        memos: [data, ...this.state.memos],
-      });
-    });
-  }
-
-  updateData(data: any) {
-    updateData(data);
-  }
-
-  renderMemos() {
-    let filter: string = this.state.filter;
-    let memos: any[] = this.state.memos;
-
-    if (filter) {
-      memos = memos.filter(
-        (item: any) =>
-          item.title.indexOf(filter) > -1 || item.content.indexOf(filter) > -1
-      );
-    }
-
-    return memos.map((item: any) => (
-      <div key={item.id} className="p-3 border-bottom border-dark">
-        <div className="row g-3">
-          <div className="">
-            <label className="form-label">Title</label>
-            <input
-              type="text"
-              className="form-control"
-              value={item.title}
-              onChange={(e) => {
-                item.title = e.target.value;
-                this.setState({ item });
-              }}
-            ></input>
-          </div>
-          <div className="">
-            <label className="form-label">Content</label>
-            <textarea
-              className="form-control"
-              style={{ height: "250px" }}
-              value={item.content}
-              onChange={(e) => {
-                item.content = e.target.value;
-                this.setState({ item });
-              }}
-            ></textarea>
-          </div>
-          <div className="d-flex flex-row justify-content-end">
-            <button
-              className="btn btn-secondary"
-              onClick={() => this.updateData(item)}
-            >
-              Update
-            </button>
+  return (
+    <div>
+      {items.map((item: any, i: number) => (
+        <div key={item.id} className="p-3 border-bottom border-dark">
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label">Register Id</label>
+              <input
+                type="text"
+                className="form-control"
+                value={item.registerId}
+                readOnly={true}
+              ></input>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Register Date</label>
+              <input
+                type="datetime-local"
+                className="form-control"
+                value={
+                  item.registerDate ? item.registerDate.substring(0, 16) : ""
+                }
+                readOnly={true}
+              ></input>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Title</label>
+              <input
+                type="text"
+                className="form-control"
+                value={item.title}
+                onChange={(e) => {
+                  items[i].title = e.target.value;
+                  setItems([...items]);
+                }}
+              ></input>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Content</label>
+              <textarea
+                className="form-control"
+                style={{ height: "250px" }}
+                value={item.content}
+                onChange={(e) => {
+                  items[i].content = e.target.value;
+                  setItems([...items]);
+                }}
+              ></textarea>
+            </div>
+            <div className="d-flex flex-row justify-content-end">
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  updateData(item).then((data) => {
+                    updateHandler({
+                      item: data,
+                    });
+                  });
+                }}
+              >
+                Update
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    ));
-  }
+      ))}
+    </div>
+  );
+};
 
-  filter(text: string) {
-    this.setState({ filter: text });
-  }
+const Memo = () => {
+  const [item, setItem] = useState({
+    title: "",
+    content: "",
+  });
 
-  render() {
-    var data = this.state.data;
+  const [items, setItems] = useState([]);
+  const [itemsFilter, setItemsFilter] = useState("");
 
-    return (
-      <div className="container h-100 overflow-auto">
+  useEffect(() => {
+    readAll().then((data) => {
+      setItems(data);
+    });
+
+    return () => {};
+  }, []);
+
+  return (
+    <div className="v-100 h-100 overflow-auto">
+      <div className="container">
         <div>
           <h5>Memo</h5>
           <div>
             <input
               type="text"
               placeholder="Find..."
-              onChange={(e) => this.filter(e.target.value)}
+              value={itemsFilter}
+              onChange={(e) => setItemsFilter(e.target.value)}
             ></input>
           </div>
         </div>
@@ -153,10 +143,12 @@ export default class Memo extends React.Component<any, any> {
               <input
                 type="text"
                 className="form-control"
-                value={data.title}
+                value={item.title}
                 onChange={(e) => {
-                  data.title = e.target.value;
-                  this.setState({ data });
+                  setItem({
+                    ...item,
+                    title: e.target.value,
+                  });
                 }}
               ></input>
             </div>
@@ -165,25 +157,52 @@ export default class Memo extends React.Component<any, any> {
               <textarea
                 className="form-control"
                 style={{ height: "250px" }}
-                value={data.content}
+                value={item.content}
                 onChange={(e) => {
-                  data.content = e.target.value;
-                  this.setState({ data });
+                  setItem({
+                    ...item,
+                    content: e.target.value,
+                  });
                 }}
               ></textarea>
             </div>
             <div className="d-flex flex-row justify-content-end">
               <button
                 className="btn btn-primary"
-                onClick={() => this.createData()}
+                onClick={() => {
+                  createData(item).then(() => {
+                    readAll().then((data) => {
+                      setItems(data);
+                      setItem({
+                        title: "",
+                        content: "",
+                      });
+                    });
+                  });
+                }}
               >
                 Save changes
               </button>
             </div>
           </div>
         </div>
-        <div>{this.renderMemos()}</div>
+        <div>
+          {
+            <RenderMemos
+              items={items.filter(
+                (item: any) =>
+                  item.title.indexOf(itemsFilter) > -1 ||
+                  item.content.indexOf(itemsFilter) > -1
+              )}
+              updateHandler={() => {
+                console.log("updated!!");
+              }}
+            ></RenderMemos>
+          }
+        </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default Memo;
