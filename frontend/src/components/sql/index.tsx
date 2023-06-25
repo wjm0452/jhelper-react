@@ -75,17 +75,26 @@ export default class Query extends React.Component<any, any> {
 
   componentDidMount() {
     Promise.all([
-      this.fetchConnections(),
-      this.cacheContext.loadCache(["name", "owner"]),
-    ]).then(() => {
-      const name = this.state.name;
-      if (name) {
-        return this.loadTemplateByName(name).then(() => {
-          if (this.state.owner) {
-            this.fetchTables();
+      readConnections(),
+      this.cacheContext.getCaches(["name", "owner"]),
+    ]).then(([connections, caches]) => {
+      this.setState(
+        {
+          connections,
+          name: caches.name || "",
+          owner: caches.owner || "",
+        },
+        () => {
+          const name = caches.name;
+          if (name) {
+            return this.loadTemplateByName(name).then(() => {
+              if (caches.owner) {
+                this.fetchTables();
+              }
+            });
           }
-        });
-      }
+        }
+      );
     });
 
     this.cacheContext.getCache("query").then((value: any) => {
@@ -106,11 +115,7 @@ export default class Query extends React.Component<any, any> {
   }
 
   onChangeConnections() {
-    this.fetchConnections();
-  }
-
-  fetchConnections() {
-    return readConnections().then((connections) => {
+    readConnections().then((connections) => {
       this.setState({ connections });
     });
   }
@@ -370,9 +375,14 @@ export default class Query extends React.Component<any, any> {
                   className="form-select"
                   value={this.state.name}
                   onChange={(e) => {
-                    this.cacheContext.setState({
+                    this.cacheContext.setCaches({
                       name: e.currentTarget.value,
                     });
+
+                    this.setState({
+                      name: e.currentTarget.value,
+                    });
+
                     this.loadTemplateByName(e.currentTarget.value);
                   }}
                 >
@@ -394,7 +404,11 @@ export default class Query extends React.Component<any, any> {
                   value={this.state.owner}
                   placeholder="owner"
                   onChange={(e) => {
-                    this.cacheContext.setState({
+                    this.cacheContext.setCaches({
+                      owner: e.currentTarget.value,
+                    });
+
+                    this.setState({
                       owner: e.currentTarget.value,
                     });
                   }}
