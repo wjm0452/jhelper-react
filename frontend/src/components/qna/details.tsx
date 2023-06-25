@@ -56,7 +56,7 @@ function Details(props: any) {
     id: "",
     title: "",
     content: "",
-    registerId: loginUser.email,
+    registerId: loginUser.username,
     registerDate: new Date().toISOString().slice(0, 16),
   });
 
@@ -73,7 +73,7 @@ function Details(props: any) {
         id: "",
         title: "",
         content: "",
-        registerId: loginUser.email,
+        registerId: loginUser.username,
         registerDate: new Date().toISOString().slice(0, 16),
       });
     }

@@ -1,11 +1,21 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import httpClient from "../../common/httpClient";
 
-function doLogin(email: string, password: string) {
+function checkLogin() {
+  return httpClient
+    .get("/login/user")
+    .then((res) => res.data)
+    .catch((e) => {
+      console.log("error", e);
+      throw e.response.data;
+    });
+}
+
+function doLogin(username: string, password: string) {
   return httpClient
     .post("/login", {
-      email,
+      username,
       password,
     })
     .then((res) => res.data)
@@ -16,18 +26,31 @@ function doLogin(email: string, password: string) {
 }
 
 function Login() {
-  const [email, setEmail]: any = useState("");
+  const [username, setUsername]: any = useState("");
   const [password, setPassword]: any = useState("");
 
   const dispatch = useDispatch();
 
-  const loginHandler = (email: string, password: string) => {
-    doLogin(email, password)
+  useEffect(() => {
+    checkLogin().then((data) => {
+      if (data.authenticated) {
+        dispatch({
+          type: "login",
+          payload: {
+            username: data.username,
+          },
+        });
+      }
+    });
+  });
+
+  const loginHandler = (username: string, password: string) => {
+    doLogin(username, password)
       .then((data) => {
         dispatch({
           type: "login",
           payload: {
-            email: email,
+            username: username,
           },
         });
       })
@@ -48,12 +71,12 @@ function Login() {
           <div>
             <div className="form-floating mb-3">
               <input
-                type="email"
+                type="text"
                 className="form-control"
-                placeholder="email"
-                value={email}
+                placeholder="username"
+                value={username}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setEmail(e.target.value);
+                  setUsername(e.target.value);
                 }}
                 onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key == "Enter") {
@@ -61,7 +84,7 @@ function Login() {
                   }
                 }}
               />
-              <label>Email address</label>
+              <label>username</label>
             </div>
             <div className="form-floating mb-3">
               <input
@@ -74,7 +97,7 @@ function Login() {
                 }}
                 onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key == "Enter") {
-                    loginHandler(email, password);
+                    loginHandler(username, password);
                   }
                 }}
               />
@@ -85,7 +108,7 @@ function Login() {
                 type="button"
                 className="btn btn-primary"
                 onClick={() => {
-                  loginHandler(email, password);
+                  loginHandler(username, password);
                 }}
               >
                 Login
