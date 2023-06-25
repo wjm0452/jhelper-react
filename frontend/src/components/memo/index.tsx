@@ -1,8 +1,14 @@
 import React, { RefObject, useEffect, useState } from "react";
 import axios from "axios";
+import Pager from "../pager";
 
-async function readAll() {
-  const res = await axios.get("/api/memo");
+async function readAll(page: number, size: number) {
+  const res = await axios.get("/api/memo", {
+    params: {
+      page,
+      size,
+    },
+  });
   return res.data;
 }
 
@@ -130,7 +136,8 @@ const RenderMemos = (props: any) => {
                 className="btn btn-secondary btn-sm me-1"
                 onClick={() => {
                   deleteData(item.id).then((data) => {
-                    setItems(items.splice(i, 1));
+                    items.splice(i, 1);
+                    setItems([...items]);
                     updateHandler({
                       item: data,
                     });
@@ -153,13 +160,23 @@ const Memo = () => {
     content: "",
   });
 
-  const [items, setItems] = useState([]);
+  const PAGE_SIZE = 10;
+
+  const [pagingData, setPagingData] = useState({
+    page: 0,
+    totalPages: 0,
+    items: [],
+  });
 
   const [expand, setExpand] = useState(false);
 
   useEffect(() => {
-    readAll().then((data) => {
-      setItems(data);
+    readAll(0, PAGE_SIZE).then((data) => {
+      setPagingData({
+        page: data.number,
+        totalPages: data.totalPages,
+        items: data.items,
+      });
     });
 
     return () => {};
@@ -223,8 +240,12 @@ const Memo = () => {
                 className="btn btn-primary"
                 onClick={() => {
                   createData(item).then(() => {
-                    readAll().then((data) => {
-                      setItems(data);
+                    readAll(0, PAGE_SIZE).then((data) => {
+                      setPagingData({
+                        page: data.number,
+                        totalPages: data.totalPages,
+                        items: data.items,
+                      });
                       setItem({
                         title: "",
                         content: "",
@@ -241,12 +262,27 @@ const Memo = () => {
         <div className="mt-5">
           {
             <RenderMemos
-              items={items}
+              items={pagingData.items}
               updateHandler={() => {
                 console.log("updated!!");
               }}
             ></RenderMemos>
           }
+        </div>
+        <div className="mt-5">
+          <Pager
+            page={pagingData.page}
+            totalPages={pagingData.totalPages}
+            onChange={(page: number) => {
+              readAll(page, PAGE_SIZE).then((data) => {
+                setPagingData({
+                  page: data.number,
+                  totalPages: data.totalPages,
+                  items: data.items,
+                });
+              });
+            }}
+          />
         </div>
       </div>
     </div>

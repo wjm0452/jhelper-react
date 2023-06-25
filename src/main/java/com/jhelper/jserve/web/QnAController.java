@@ -2,12 +2,14 @@ package com.jhelper.jserve.web;
 
 import java.util.List;
 
+import com.jhelper.jserve.web.entity.PageDto;
 import com.jhelper.jserve.web.entity.Qna;
 import com.jhelper.jserve.web.qna.QnaService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,8 +30,10 @@ public class QnAController {
     QnaService qnaService;
 
     @GetMapping
-    public List<Qna> allQna() {
-        return qnaService.findAll();
+    public PageDto<Qna> allQna(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size) {
+        return qnaService.findAll(page, size);
     }
 
     @GetMapping("/{id}")

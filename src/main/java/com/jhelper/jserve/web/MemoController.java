@@ -3,6 +3,8 @@ package com.jhelper.jserve.web;
 import java.util.List;
 
 import com.jhelper.jserve.web.entity.Memo;
+import com.jhelper.jserve.web.entity.PageDto;
+import com.jhelper.jserve.web.entity.Qna;
 import com.jhelper.jserve.web.memo.MemoService;
 
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,8 +30,10 @@ public class MemoController {
     MemoService memoService;
 
     @GetMapping
-    public List<Memo> allQna() {
-        return memoService.findAll();
+    public PageDto<Memo> allMemo(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size) {
+        return memoService.findAll(page, size);
     }
 
     @GetMapping("/{id}")

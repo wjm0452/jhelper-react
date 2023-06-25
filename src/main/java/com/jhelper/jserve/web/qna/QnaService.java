@@ -1,11 +1,13 @@
 package com.jhelper.jserve.web.qna;
 
 import java.util.Date;
-import java.util.List;
 
+import com.jhelper.jserve.web.entity.PageDto;
 import com.jhelper.jserve.web.entity.Qna;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,8 +16,19 @@ public class QnaService {
     @Autowired
     QnaRepository qnaRepository;
 
-    public List<Qna> findAll() {
-        return qnaRepository.findAll();
+    public PageDto<Qna> findAll(int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Qna> pageEntity = qnaRepository.findAll(pageRequest);
+
+        return PageDto.<Qna>builder()
+                .totalPages(pageEntity.getTotalPages())
+                .totalElements(pageEntity.getTotalElements())
+                .size(pageEntity.getSize())
+                .number(pageEntity.getNumber())
+                .numberOfElements(pageEntity.getNumberOfElements())
+                .items(pageEntity.getContent())
+                .build();
     }
 
     public Qna findById(Integer id) {
