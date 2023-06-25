@@ -28,7 +28,12 @@ export default class Rest extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    this.cacheContext.loadCache(['url', 'method']);
+    this.cacheContext.getCaches(["url", "method"]).then((caches) => {
+      this.setState({
+        url: caches.url,
+        method: caches.method,
+      });
+    });
   }
 
   send() {
@@ -48,8 +53,11 @@ export default class Rest extends React.Component<any, any> {
           <div className="input-group-text">
             <select
               className="form-select"
-              value={this.state.method || 'GET'}
-              onChange={(e) => this.cacheContext.setState({ method: e.target.value })}
+              value={this.state.method || "GET"}
+              onChange={(e) => {
+                this.cacheContext.setCache("method", e.target.value);
+                this.setState({ method: e.target.value });
+              }}
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
@@ -65,9 +73,16 @@ export default class Rest extends React.Component<any, any> {
             className="form-control"
             placeholder="url..."
             value={this.state.url}
-            onChange={(e) => this.cacheContext.setState({ url: e.target.value })}
+            onChange={(e) => {
+              this.cacheContext.setCache("url", e.target.value);
+              this.setState({ url: e.target.value });
+            }}
           />
-          <button type="button" className="btn btn-primary" onClick={() => this.send()}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => this.send()}
+          >
             send
           </button>
         </div>

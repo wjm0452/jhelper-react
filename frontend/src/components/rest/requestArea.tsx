@@ -23,12 +23,6 @@ export default class RequestArea extends React.Component<any, any> {
       params: [{ key: "", value: "" }],
       bodyValue: "",
     };
-
-    this.cacheContext = new CacheContext(this);
-  }
-
-  componentDidMount() {
-    this.cacheContext.loadCache(["headers", "params", "bodyValue"]);
   }
 
   setData(data: any) {
@@ -44,30 +38,23 @@ export default class RequestArea extends React.Component<any, any> {
   }
 
   getData() {
-
     var headers = this.headersRef.current?.getData();
     var params = this.paramsRef.current?.getData();
     var bodyValue = this.bodyValueRef.current?.getValue();
 
-    this.cacheContext.setCache("headers", headers);
-    this.cacheContext.setCache("params", params);
-    this.cacheContext.setCache("bodyValue", bodyValue);
+    headers = headers.reduce((p: any, item: any) => {
+      if (item.key && item.value) {
+        p[item.key] = item.value;
+      }
+      return p;
+    }, {});
 
-    headers = headers
-      .reduce((p: any, item: any) => {
-        if (item.key && item.value) {
-          p[item.key] = item.value;
-        }
-        return p;
-      }, {});
-
-    params = params
-      .reduce((p: any, item: any) => {
-        if (item.key && item.value) {
-          p[item.key] = item.value;
-        }
-        return p;
-      }, {});
+    params = params.reduce((p: any, item: any) => {
+      if (item.key && item.value) {
+        p[item.key] = item.value;
+      }
+      return p;
+    }, {});
 
     return {
       headers,

@@ -45,6 +45,9 @@ export default class Editor extends React.Component<any, any> {
 
     this.cacheTimerId = window.setTimeout(() => {
       this.cacheContext.setCache("query", this.textarea.current.innerHTML);
+      this.setState({
+        query: this.textarea.current.innerHTML
+      });
       this.cacheTimerId = null;
     }, 500);
   }
