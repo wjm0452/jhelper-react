@@ -63,4 +63,8 @@
            and b.name = '{{tableName}}'
          order by e.column_id asc
     </sql>
+    <sql id="schema">
+      select name AS NAME
+        from sys.schemas
+    </sql>
 </root>

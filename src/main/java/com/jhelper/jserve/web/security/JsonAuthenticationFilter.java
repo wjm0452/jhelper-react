@@ -30,11 +30,11 @@ public class JsonAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
         AuthenticationManager authenticationManager = getAuthenticationManager();
         Map body = objectMapper.readValue(request.getInputStream(), Map.class);
-        String email = (String) body.get("email");
+        String username = (String) body.get("username");
         String password = (String) body.get("password");
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                email,
+                username,
                 password,
                 AuthorityUtils.createAuthorityList("USER"));
 
