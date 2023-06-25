@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import httpClient from "../../common/httpClient";
 import Details from "./details";
+import Pager from "../pager";
 
-async function readAll() {
-  const res = await httpClient.get("/api/qna");
+async function readAll(page: number, size: number) {
+  const res = await httpClient.get("/api/qna", {
+    params: {
+      page,
+      size,
+    },
+  });
+
   return res.data;
 }
 
@@ -39,13 +46,23 @@ function renderQuestions(items: any, clickHandler: Function) {
 }
 
 const QnA = () => {
-  const [items, setItems] = useState([]);
+  const PAGE_SIZE = 10;
+
+  const [pagingData, setPagingData] = useState({
+    page: 0,
+    totalPages: 0,
+    items: [],
+  });
   const [qnaId, setQnaId] = useState("");
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    readAll().then((data) => {
-      setItems(data);
+    readAll(0, PAGE_SIZE).then((data) => {
+      setPagingData({
+        page: data.number,
+        totalPages: data.totalPages,
+        items: data.items,
+      });
     });
 
     return () => {};
@@ -64,8 +81,12 @@ const QnA = () => {
               console.log("saved", item);
               setShowDetails(false);
 
-              readAll().then((data) => {
-                setItems(data);
+              readAll(0, PAGE_SIZE).then((data) => {
+                setPagingData({
+                  page: data.number,
+                  totalPages: data.totalPages,
+                  items: data.items,
+                });
               });
             }}
           ></Details>
@@ -83,10 +104,25 @@ const QnA = () => {
           </button>
         </div>
         <div>
-          {renderQuestions(items, (id: any) => {
+          {renderQuestions(pagingData.items, (id: any) => {
             setShowDetails(true);
             setQnaId(id);
           })}
+        </div>
+        <div>
+          <Pager
+            page={pagingData.page}
+            totalPages={pagingData.totalPages}
+            onChange={(page: number) => {
+              readAll(page, PAGE_SIZE).then((data) => {
+                setPagingData({
+                  page: data.number,
+                  totalPages: data.totalPages,
+                  items: data.items,
+                });
+              });
+            }}
+          />
         </div>
       </div>
     </div>

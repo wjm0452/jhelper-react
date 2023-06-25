@@ -4,8 +4,12 @@ import java.util.Date;
 import java.util.List;
 
 import com.jhelper.jserve.web.entity.Memo;
+import com.jhelper.jserve.web.entity.PageDto;
+import com.jhelper.jserve.web.entity.Qna;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,8 +18,19 @@ public class MemoService {
     @Autowired
     MemoRepository memoRepository;
 
-    public List<Memo> findAll() {
-        return memoRepository.findAll();
+    public PageDto<Memo> findAll(int page, int size) {
+        
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Memo> pageEntity = memoRepository.findAll(pageRequest);
+
+        return PageDto.<Memo>builder()
+                .totalPages(pageEntity.getTotalPages())
+                .totalElements(pageEntity.getTotalElements())
+                .size(pageEntity.getSize())
+                .number(pageEntity.getNumber())
+                .numberOfElements(pageEntity.getNumberOfElements())
+                .items(pageEntity.getContent())
+                .build();
     }
 
     public Memo findById(Integer id) {
