@@ -2,7 +2,7 @@ import React, { RefObject } from "react";
 import Jsql from "../../jsql";
 import DBTableList from "../dbTableList";
 import ColumnMapper from "../columnMapper";
-import axios from "axios";
+import httpClient from "../../../../common/httpClient";
 import TableView from "../../tableView";
 
 export default class ExcelLoader extends React.Component<any, any> {
@@ -42,7 +42,7 @@ export default class ExcelLoader extends React.Component<any, any> {
       targetColumns: targetInfo.mappingColumns,
     };
 
-    axios.post("/api/dataloader/excel", jsondata);
+    httpClient.post("/api/dataloader/excel", jsondata);
   }
 
   handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -64,7 +64,7 @@ export default class ExcelLoader extends React.Component<any, any> {
     let formData = new FormData(); // formData 객체를 생성한다.
     formData.append("file", file);
 
-    axios({
+    httpClient.request({
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -85,7 +85,7 @@ export default class ExcelLoader extends React.Component<any, any> {
   }
 
   readExcel(offset: number, limit: number) {
-    axios
+    httpClient
       .get("/api/dataloader/excel-file", {
         params: {
           path: this.state.uploadedPath,

@@ -1,5 +1,5 @@
 import React, { RefObject } from "react";
-import axios from "axios";
+import httpClient from "../../common/httpClient";
 import Jsql from "./jsql";
 import TextTokenizer from "../../common/textTokenizer";
 import CacheContext from "../../common/cacheContext";
@@ -8,7 +8,7 @@ import TableView from "./tableView";
 
 async function runSql(query: string, params: any) {
   try {
-    var res: any = await axios.post("/api/sql", { query, ...params });
+    var res: any = await httpClient.post("/api/sql", { query, ...params });
     return res.data;
   } catch (e) {
     throw e;
@@ -16,7 +16,7 @@ async function runSql(query: string, params: any) {
 }
 
 async function readConnections() {
-  const res = await axios.get(`/api/conn-info`);
+  const res = await httpClient.get(`/api/conn-info`);
   const data = res.data;
 
   return data;
@@ -84,7 +84,7 @@ export default class Query extends React.Component<any, any> {
       }
     });
 
-    this.cacheContext.getCache("query").then((value) => {
+    this.cacheContext.getCache("query").then((value: any) => {
       this.sqlElement.current.value = value;
     });
   }
@@ -300,14 +300,16 @@ export default class Query extends React.Component<any, any> {
     var name = this.state.name;
     console.log(executeQuery);
 
-    axios({
-      method: "post",
-      url: `/api/sql-export/${exportUrl}`,
-      responseType: "blob",
-      data: { query: executeQuery, name },
-    }).then((res) => {
-      this.downloadFile(res, exportFileName);
-    });
+    httpClient
+      .request({
+        method: "post",
+        url: `/api/sql-export/${exportUrl}`,
+        responseType: "blob",
+        data: { query: executeQuery, name },
+      })
+      .then((res) => {
+        this.downloadFile(res, exportFileName);
+      });
   }
 
   downloadFile(res: any, downloadName: any) {

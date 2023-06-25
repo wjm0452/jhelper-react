@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import httpClient from "../../common/httpClient";
 import Details from "./details";
 
 async function readAll() {
-  const res = await axios.get("/api/qna");
+  const res = await httpClient.get("/api/qna");
   return res.data;
 }
 

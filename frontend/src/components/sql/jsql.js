@@ -1,4 +1,4 @@
-import axios from "axios";
+import httpClient from "../../common/httpClient";
 import Mustache from "mustache";
 
 export default function Jsql(options) {
@@ -18,7 +18,7 @@ export default function Jsql(options) {
 
     //sql = window.encodeURIComponent(sql);
 
-    return axios
+    return httpClient
       .post(_url, {
         ...params,
         query,
@@ -31,7 +31,7 @@ export default function Jsql(options) {
   this.loadTemplate = function (vendor) {
     var that = this;
 
-    return axios.get("vendor/" + vendor + ".xml").then(function (res) {
+    return httpClient.get("vendor/" + vendor + ".xml").then(function (res) {
       var sqlNode = document.createElement("div");
       sqlNode.innerHTML = res.data;
 
@@ -276,7 +276,7 @@ DELETE /* comments */
   }
 
   function setData(key, value) {
-    return axios
+    return httpClient
       .post(_cacheUrl, {
         key: key,
         value: value,
@@ -287,7 +287,7 @@ DELETE /* comments */
   }
 
   function getData(key) {
-    return axios.get(_cacheUrl + "/" + key).then(function (res) {
+    return httpClient.get(_cacheUrl + "/" + key).then(function (res) {
       var data = res.data;
       return data && data.value != null ? res.data.value : null;
     });

@@ -1,11 +1,11 @@
 import React, { RefObject } from "react";
-import axios from "axios";
+import httpClient from "../../common/httpClient";
 import RequestArea from "./requestArea";
 import ResponseArea from "./responseArea";
 import CacheContext from "../../common/cacheContext";
 
 async function readRestProxy(requestData: any) {
-  const res = await axios.post("/api/rest-proxy/", requestData);
+  const res = await httpClient.post("/api/rest-proxy/", requestData);
   return res.data;
 }
 

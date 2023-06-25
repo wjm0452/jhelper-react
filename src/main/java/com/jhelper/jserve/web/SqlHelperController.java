@@ -1,19 +1,15 @@
 package com.jhelper.jserve.web;
 
-import com.ibm.db2.jcc.am.SqlException;
 import com.jhelper.jserve.web.sql.SqlHelperService;
 import com.jhelper.jserve.web.sql.model.QueryVO;
 import com.jhelper.jserve.web.sql.model.SqlError;
 import com.jhelper.jserve.web.sql.model.SqlResult;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
-import java.sql.SQLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

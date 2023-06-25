@@ -15,7 +15,9 @@ function App() {
   const login = useSelector((state: any) => state.login);
 
   return !login.authenticated ? (
-    <Login />
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <Login />
+    </div>
   ) : (
     <HashRouter>
       <div

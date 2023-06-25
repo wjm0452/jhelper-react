@@ -33,7 +33,7 @@ export default class Editor extends React.Component<any, any> {
   }
 
   componentDidMount(): void {
-    this.cacheContext.getCache("query").then((value) => {
+    this.cacheContext.getCache("query").then((value: any) => {
       this.textarea.current.innerHTML = value;
     });
   }

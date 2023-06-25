@@ -27,6 +27,13 @@ async function updateData(obj: { id: string; title: string; content: string }) {
   return res.data;
 }
 
+async function deleteData(id: string) {
+  const res = await axios.delete(`/api/memo/${id}`);
+  const data = res.data;
+
+  return data;
+}
+
 const RenderMemos = (props: any) => {
   const [items, setItems] = useState([]);
   const [itemsFilter, setItemsFilter] = useState("");
@@ -108,7 +115,7 @@ const RenderMemos = (props: any) => {
             </div>
             <div className="d-flex flex-row justify-content-end">
               <button
-                className="btn btn-secondary"
+                className="btn btn-primary btn-sm me-1"
                 onClick={() => {
                   updateData(item).then((data) => {
                     updateHandler({
@@ -117,7 +124,20 @@ const RenderMemos = (props: any) => {
                   });
                 }}
               >
-                Update
+                Save Changes
+              </button>
+              <button
+                className="btn btn-secondary btn-sm me-1"
+                onClick={() => {
+                  deleteData(item.id).then((data) => {
+                    setItems(items.splice(i, 1));
+                    updateHandler({
+                      item: data,
+                    });
+                  });
+                }}
+              >
+                Delete
               </button>
             </div>
           </div>

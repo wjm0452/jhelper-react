@@ -2,7 +2,7 @@ import React, { RefObject } from "react";
 import Jsql from "../../jsql";
 import DBTableList from "../dbTableList";
 import ColumnMapper from "../columnMapper";
-import axios from "axios";
+import httpClient from "../../../../common/httpClient";
 
 export default class DataLoader extends React.Component<any, any> {
   private jsql: Jsql;
@@ -73,7 +73,7 @@ export default class DataLoader extends React.Component<any, any> {
       targetColumns: state.targetColumns,
     };
 
-    axios.post("/api/dataloader", jsondata);
+    httpClient.post("/api/dataloader", jsondata);
   }
 
   render() {

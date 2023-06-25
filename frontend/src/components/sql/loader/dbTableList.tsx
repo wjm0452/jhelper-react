@@ -1,10 +1,10 @@
 import React from "react";
-import axios from "axios";
+import httpClient from "../../../common/httpClient";
 import Jsql from "../jsql";
 import TableView from "../tableView";
 
 async function readConnections() {
-  const res = await axios.get(`/api/conn-info`);
+  const res = await httpClient.get(`/api/conn-info`);
   const data = res.data;
 
   return data;

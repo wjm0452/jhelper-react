@@ -1,8 +1,8 @@
 import React from "react";
-import axios from "axios";
+import httpClient from "../../common/httpClient";
 
 async function readData() {
-  const res = await axios.get(`/api/conn-info`);
+  const res = await httpClient.get(`/api/conn-info`);
   const data = res.data;
 
   return data;
@@ -16,12 +16,12 @@ async function saveData(obj: {
   username: string;
   password: string;
 }) {
-  const res = await axios.put("/api/conn-info", obj);
+  const res = await httpClient.put("/api/conn-info", obj);
   return res.data;
 }
 
 async function deleteData(id: number) {
-  const res = await axios.delete(`/api/conn-info/${id}`);
+  const res = await httpClient.delete(`/api/conn-info/${id}`);
   return res.data;
 }
 
