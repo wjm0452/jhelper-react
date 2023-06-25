@@ -80,7 +80,11 @@ export default class Query extends React.Component<any, any> {
     ]).then(() => {
       const name = this.state.name;
       if (name) {
-        return this.loadTemplateByName(name);
+        return this.loadTemplateByName(name).then(() => {
+          if (this.state.owner) {
+            this.fetchTables();
+          }
+        });
       }
     });
 
@@ -90,11 +94,7 @@ export default class Query extends React.Component<any, any> {
   }
 
   loadTemplate(vendor: string) {
-    this.jsql.loadTemplate(vendor).then(() => {
-      if (this.state.owner) {
-        this.fetchTables();
-      }
-    });
+    return this.jsql.loadTemplate(vendor);
   }
 
   loadTemplateByName(name: string) {
