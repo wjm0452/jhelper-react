@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import httpClient from "../../../../common/httpClient";
 
 export default class MainObjectView extends React.Component<any, any> {
   constructor(props: any) {

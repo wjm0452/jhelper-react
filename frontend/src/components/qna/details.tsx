@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import httpClient from "../../common/httpClient";
 import { useSelector } from "react-redux";
 
 async function readData(id: string) {
-  const res = await axios.get(`/api/qna/${id}`);
+  const res = await httpClient.get(`/api/qna/${id}`);
   const data = res.data;
 
   if (data.registerDate) {
@@ -14,12 +14,12 @@ async function readData(id: string) {
 }
 
 async function createData(obj: { title: string; content: string }) {
-  const res = await axios.post("/api/qna", obj);
+  const res = await httpClient.post("/api/qna", obj);
   return res.data;
 }
 
 async function updateData(obj: { id: string; title: string; content: string }) {
-  const res = await axios.put("/api/qna", obj);
+  const res = await httpClient.put("/api/qna", obj);
   return res.data;
 }
 

@@ -1,11 +1,12 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const path = require("path");
+const { log } = require("console");
 
 const clientDir = path.join(__dirname, "");
 
 module.exports = {
-  mode: "production",
+  mode: "development",
   entry: path.join(clientDir, "src", "index.tsx"),
   output: {
     clean: true,
@@ -13,17 +14,20 @@ module.exports = {
     filename: "jhelper.js",
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: [".tsx", ".jsx", ".ts", ".js"],
   },
   module: {
-    rules: [{
-        test: /\.(ts|js)x?$/,
-        use: [{
-          loader: "ts-loader",
-          options: {
-            transpileOnly: true,
+    rules: [
+      {
+        test: /\.(tsx|jsx|ts|js)?$/,
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true,
+            },
           },
-        }, ],
+        ],
         exclude: /node_modules/,
       },
       {
@@ -50,10 +54,67 @@ module.exports = {
       logging: "log",
       progress: true,
     },
-    open: true,
+    open: false,
     proxy: {
-      "/api": "http://localhost:9080",
-      "/vendor": "http://localhost:9080"
+      "/login": {
+        target: "http://localhost:9080/",
+        changeOrigin: true,
+        // cookieDomainRewrite: "",
+        // cookiePathRewrite: "",
+        onProxyReq: (proxyReq) => {
+          console.log("====================");
+          console.log(proxyReq);
+          console.log("-------------------------");
+          // proxyReq.setHeader("Cookie", cookie);
+        },
+        onProxyRes: (proxyRes) => {
+          console.log("====================");
+          console.log(proxyRes.headers);
+          /*
+          Object.keys(proxyRes.headers).forEach((key) => {
+            if (key === "set-cookie" && proxyRes.headers[key]) {
+              const cookieTokens = split(proxyRes.headers[key], ",");
+              cookie = cookieTokens
+                .filter((element) => element.includes("JSESSIONID"))
+                .join("");
+            }
+          });*/
+          console.log("-------------------------");
+        },
+      },
+      "/api": {
+        target: "http://localhost:9080/",
+        changeOrigin: true,
+        // cookieDomainRewrite: "",
+        // cookiePathRewrite: "",
+        onProxyReq: (proxyReq) => {
+          console.log("====================");
+          console.log(proxyReq);
+          console.log("-------------------------");
+          //  proxyReq.setHeader("Cookie", cookie);
+        },
+        onProxyRes: (proxyRes) => {
+          console.log("====================");
+          console.log(proxyRes.headers);
+          /*
+          Object.keys(proxyRes.headers).forEach((key) => {
+            if (key === "set-cookie" && proxyRes.headers[key]) {
+              const cookieTokens = split(proxyRes.headers[key], ",");
+              cookie = cookieTokens
+                .filter((element) => element.includes("JSESSIONID"))
+                .join("");
+            }
+          });
+          */
+          console.log("-------------------------");
+        },
+      },
+      "/vendor": {
+        target: "http://localhost:9080/",
+        changeOrigin: true,
+        cookieDomainRewrite: "",
+        cookiePathRewrite: "",
+      },
     },
   },
 };
