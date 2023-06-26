@@ -42,7 +42,7 @@ function Login() {
         });
       }
     });
-  });
+  }, []);
 
   const loginHandler = (username: string, password: string) => {
     doLogin(username, password)
