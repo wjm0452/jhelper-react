@@ -7,8 +7,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.jhelper.jserve.web.sql.dataloader.model.DataLoaderVO;
@@ -29,10 +32,13 @@ public class DataLoaderService {
                 dataLoaderVO.getTargetTableName(),
                 dataLoaderVO.getTargetColumns());
 
-        sourceJdbc.query(query, new RowCallbackHandler() {
+        sourceJdbc.query(query, new ResultSetExtractor<Object>() {
+
             @Override
-            public void processRow(ResultSet rs) throws SQLException {
+            @Nullable
+            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
                 loader.load(rs);
+                return null;
             }
         });
     }
@@ -67,7 +73,7 @@ public class DataLoaderService {
                 Object[] params = new Object[columnsLength];
 
                 for (int i = 0; i < columnsLength; i++) {
-                    params[i] = rs.getObject(i);
+                    params[i] = rs.getObject(i + 1);
                 }
 
                 paramsTemp.add(params);
