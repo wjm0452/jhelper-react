@@ -27,6 +27,35 @@ public class SqlHelperService {
     @Autowired
     JdbcTemplateManager jdbcManager;
 
+    public SqlResult execute(QueryVO queryVo) {
+        if (queryVo.getQuery().trim().toLowerCase().startsWith("select")) {
+            return this.select(queryVo);
+        } else {
+            return this.update(queryVo);
+        }
+    }
+
+    public SqlResult update(QueryVO queryVo) {
+
+        String dbName = queryVo.getName();
+        String query = queryVo.getQuery();
+        Object[] params = queryVo.getParams();
+
+        JdbcTemplate jdbcTemplate = jdbcManager.getJdbcTemplateById(dbName);
+
+        if (jdbcTemplate == null) {
+            throw new RuntimeException("Jdbc not found");
+        }
+
+        logger.debug("query: {}", query);
+        int count = jdbcTemplate.update(query, params);
+
+        SqlResult sqlResult = new SqlResult();
+        sqlResult.setCount(count);
+
+        return sqlResult;
+    }
+
     public SqlResult select(QueryVO queryVo) {
 
         SqlResultHandler sqlResultHandler = new SqlResultHandler(queryVo.getFetchSize());
@@ -98,6 +127,7 @@ public class SqlHelperService {
             sqlResult.setHasNext(hasNext);
             sqlResult.setColumnNames(columnNames);
             sqlResult.setResult(resultList.toArray(new Object[0][]));
+            sqlResult.setCount(resultList.size());
         }
 
         public SqlResult getResult() {

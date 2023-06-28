@@ -58,7 +58,7 @@ public class SqlHelperController {
     @PostMapping
     public SqlResult query(@RequestBody QueryVO queryVo) throws SQLServerException {
         try {
-            return sqlHelperService.select(queryVo);
+            return sqlHelperService.execute(queryVo);
         } catch (DataAccessException e) {
             Throwable cause = e.getCause();
 
