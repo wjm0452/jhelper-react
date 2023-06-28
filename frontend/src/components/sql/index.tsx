@@ -657,7 +657,7 @@ export default class Query extends React.Component<any, any> {
           </div>
           <div>
             <div className="d-inline-block">
-              <span>{this.state.sqlResults.result.length}</span> fetched rows
+              <span>{this.state.sqlResults.count}</span> fetched rows
             </div>
             <div className="float-end">
               <button
