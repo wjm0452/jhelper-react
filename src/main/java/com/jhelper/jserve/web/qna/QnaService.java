@@ -8,6 +8,7 @@ import com.jhelper.jserve.web.entity.Qna;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +19,7 @@ public class QnaService {
 
     public PageDto<Qna> findAll(int page, int size) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("registerDate").descending());
         Page<Qna> pageEntity = qnaRepository.findAll(pageRequest);
 
         return PageDto.<Qna>builder()

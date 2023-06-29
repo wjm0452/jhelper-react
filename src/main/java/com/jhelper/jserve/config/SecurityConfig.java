@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .userDetailsService(users())
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/", "/login").permitAll()
+                                .requestMatchers("/", "/login", "/login/user").permitAll()
                                 .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exceptionHandling -> {
