@@ -143,8 +143,6 @@ export default class Query extends React.Component<any, any> {
         if (response && response.data) {
           const data = response.data;
           alert(`[${data.sqlState}] ${data.errorMessage}`);
-        } else {
-          alert("오류가 발생하였습니다.");
         }
 
         return e;
@@ -174,8 +172,6 @@ export default class Query extends React.Component<any, any> {
         if (response && response.data) {
           const data = response.data;
           alert(`[${data.sqlState}] ${data.errorMessage}`);
-        } else {
-          alert("오류가 발생하였습니다.");
         }
 
         return e;

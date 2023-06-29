@@ -5,7 +5,10 @@ import httpClient from "../../common/httpClient";
 function checkLogin() {
   return httpClient
     .get("/login/user")
-    .then((res) => res.data)
+    .then((res) => {
+      console.debug(res);
+      return res.data;
+    })
     .catch((e) => {
       console.log("error", e);
       throw e.response.data;

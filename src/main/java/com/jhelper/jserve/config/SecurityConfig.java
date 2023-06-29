@@ -27,6 +27,8 @@ import org.springframework.util.ResourceUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jhelper.jserve.web.security.JsonAccessDeniedHandler;
+import com.jhelper.jserve.web.security.JsonAuthenticationEntryPoint;
 import com.jhelper.jserve.web.security.JsonAuthenticationFailureHandler;
 import com.jhelper.jserve.web.security.JsonAuthenticationFilter;
 import com.jhelper.jserve.web.security.JsonAuthenticationSuccessHandler;
@@ -49,6 +51,10 @@ public class SecurityConfig {
                                 .requestMatchers("/", "/login").permitAll()
                                 .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(exceptionHandling -> {
+                    exceptionHandling.accessDeniedHandler(new JsonAccessDeniedHandler());
+                    exceptionHandling.authenticationEntryPoint(new JsonAuthenticationEntryPoint());
+                })
                 .build();
 
         return http.getObject();
