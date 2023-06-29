@@ -1,15 +1,17 @@
 package com.jhelper.jserve.web;
 
-import java.util.List;
+import java.util.Date;
 
 import com.jhelper.jserve.web.entity.Memo;
 import com.jhelper.jserve.web.entity.PageDto;
-import com.jhelper.jserve.web.entity.Qna;
 import com.jhelper.jserve.web.memo.MemoService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,27 +34,51 @@ public class MemoController {
     @GetMapping
     public PageDto<Memo> allMemo(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size) {
-        return memoService.findAll(page, size);
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return memoService.findAll(userDetails.getUsername(), page, size);
     }
 
     @GetMapping("/{id}")
-    public Memo qna(@PathVariable Integer id) {
-        return memoService.findById(id);
+    public Memo qna(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Memo savedMemo = memoService.findById(id);
+
+        if (!userDetails.getUsername().equals(savedMemo.getRegisterId())) {
+            throw new AccessDeniedException("접근할 수 없습니다.");
+        }
+
+        return savedMemo;
     }
 
     @PostMapping
-    public Memo createQna(@RequestBody Memo memoVO) {
+    public Memo createQna(@RequestBody Memo memoVO, @AuthenticationPrincipal UserDetails userDetails) {
+        memoVO.setRegisterId(userDetails.getUsername());
+        memoVO.setRegisterDate(new Date());
         return memoService.create(memoVO);
     }
 
     @PutMapping
-    public Memo updateQna(@RequestBody Memo memoVO) {
+    public Memo updateQna(@RequestBody Memo memoVO, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Memo savedMemo = memoService.findById(memoVO.getId());
+
+        if (!userDetails.getUsername().equals(savedMemo.getRegisterId())) {
+            throw new AccessDeniedException("변경할 수 없습니다.");
+        }
+
         return memoService.update(memoVO);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteQna(@PathVariable Integer id) {
+    public void deleteQna(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Memo savedMemo = memoService.findById(id);
+
+        if (!userDetails.getUsername().equals(savedMemo.getRegisterId())) {
+            throw new AccessDeniedException("삭제 수 없습니다.");
+        }
+
         memoService.delete(id);
     }
 }

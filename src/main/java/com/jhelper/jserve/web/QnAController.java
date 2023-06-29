@@ -1,6 +1,6 @@
 package com.jhelper.jserve.web;
 
-import java.util.List;
+import java.util.Date;
 
 import com.jhelper.jserve.web.entity.PageDto;
 import com.jhelper.jserve.web.entity.Qna;
@@ -9,7 +9,9 @@ import com.jhelper.jserve.web.qna.QnaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,17 +44,33 @@ public class QnAController {
     }
 
     @PostMapping
-    public Qna createQna(@RequestBody Qna qnaVO) {
+    public Qna createQna(@RequestBody Qna qnaVO, @AuthenticationPrincipal UserDetails userDetails) {
+        qnaVO.setRegisterId(userDetails.getUsername());
+        qnaVO.setRegisterDate(new Date());
         return qnaService.create(qnaVO);
     }
 
     @PutMapping
-    public Qna updateQna(@RequestBody Qna qnaVO) {
+    public Qna updateQna(@RequestBody Qna qnaVO, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Qna savedQna = qnaService.findById(qnaVO.getId());
+
+        if (!userDetails.getUsername().equals(savedQna.getRegisterId())) {
+            throw new AccessDeniedException("변경할 수 없습니다.");
+        }
+
         return qnaService.update(qnaVO);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteQna(@PathVariable Integer id) {
+    public void deleteQna(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Qna savedQna = qnaService.findById(id);
+
+        if (!userDetails.getUsername().equals(savedQna.getRegisterId())) {
+            throw new AccessDeniedException("삭제할 수 없습니다.");
+        }
+
         qnaService.delete(id);
     }
 }
