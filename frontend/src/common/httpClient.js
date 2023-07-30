@@ -2,82 +2,81 @@ import axios from "axios";
 
 class HttpClient {
   _url = "";
+  _token = "";
   constructor(url) {
     this._url = url;
   }
 
-  request(config) {
+  async request(config) {
     config.url = this.getApiUrl(config.url);
-    return axios({
-      ...config,
-    }).catch((e) => {
-      if (e.response.status == 403) {
-        const data = e.response.data;
-        alert(data.message);
-      }
 
-      throw e;
-    });
+    const headers = {};
+    if (this._token) {
+      headers["Authorization"] = this._token;
+    }
+
+    config = {
+      ...config,
+      headers,
+    };
+
+    return axios
+      .request({
+        ...config,
+        headers,
+      })
+      .then((res) => {
+        const resHeaders = res.headers;
+        const token = resHeaders["authorization"];
+
+        if (token) {
+          this._token = token;
+        }
+
+        return res;
+      })
+      .catch((e) => {
+        if (e.response.status == 403) {
+          const data = e.response.data;
+          alert(data.message);
+        }
+
+        throw e;
+      });
   }
 
   get(url, config = {}) {
-    return axios
-      .get(this.getApiUrl(url), {
-        ...config,
-      })
-      .catch((e) => {
-        if (e.response.status == 403) {
-          const data = e.response.data;
-          alert(data.message);
-        }
-
-        throw e;
-      });
+    return this.request({
+      method: "get",
+      url: url,
+      ...config,
+    });
   }
 
   delete(url, config = {}) {
-    return axios
-      .get(this.getApiUrl(url), {
-        ...config,
-      })
-      .catch((e) => {
-        if (e.response.status == 403) {
-          const data = e.response.data;
-          alert(data.message);
-        }
-
-        throw e;
-      });
+    return this.request({
+      method: "get",
+      url: url,
+      ...config,
+    });
   }
 
   post(url, data, config = {}) {
-    return axios
-      .post(this.getApiUrl(url), data, {
-        ...config,
-      })
-      .catch((e) => {
-        if (e.response.status == 403) {
-          const data = e.response.data;
-          alert(data.message);
-        }
-
-        throw e;
-      });
+    return this.request({
+      method: "post",
+      url: url,
+      data: data,
+      ...config,
+    });
   }
 
   put(url, data, config = {}) {
-    return axios
-      .put(this.getApiUrl(url), data, {
-        ...config,
-      })
-      .catch((e) => {
-        if (e.response.status == 403) {
-          const data = e.response.data;
-          alert(data.message);
-        }
-
-        throw e;
-      });
+    return this.request({
+      method: "put",
+      url: url,
+      data: data,
+      ...config,
+    });
   }
 
   getApiUrl(url) {
