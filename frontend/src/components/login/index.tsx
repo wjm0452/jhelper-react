@@ -4,11 +4,8 @@ import httpClient from "../../common/httpClient";
 
 function checkLogin() {
   return httpClient
-    .get("/login/user")
-    .then((res) => {
-      console.debug(res);
-      return res.data;
-    })
+    .get("/api/auth")
+    .then((res) => res.data)
     .catch((e) => {
       console.log("error", e);
       throw e.response.data;
@@ -17,7 +14,7 @@ function checkLogin() {
 
 function doLogin(username: string, password: string) {
   return httpClient
-    .post("/login", {
+    .post("/api/auth/signin", {
       username,
       password,
     })
@@ -66,7 +63,10 @@ function Login() {
 
   return (
     <div className="w-100 h-100 d-flex">
-      <div className="mx-auto" style={{ marginTop: "30%", width: "300px" }}>
+      <div
+        className="mx-auto"
+        style={{ marginTop: "auto", marginBottom: "auto", width: "300px" }}
+      >
         <div className="shadow-sm p-3 mb-5 bg-body rounded border">
           <div className="mb-5 text-center">
             <h2>Login</h2>
