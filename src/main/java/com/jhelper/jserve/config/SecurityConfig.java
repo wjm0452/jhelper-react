@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .userDetailsService(users())
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/", "/api/auth/signin", "/api/auth/refresh-token", "/api/auth")
+                                .requestMatchers("/", "/api/auth", "/api/auth/signin", "/api/auth/refresh-token")
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())

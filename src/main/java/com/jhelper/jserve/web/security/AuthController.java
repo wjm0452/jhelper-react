@@ -92,7 +92,7 @@ public class AuthController {
 
     @GetMapping
     public ResponseEntity<?> authUser(@AuthenticationPrincipal UserDetails userDetails,
-            @CookieValue("refreshToken") String refreshToken,
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletRequest request,
             HttpServletResponse response) {
 
