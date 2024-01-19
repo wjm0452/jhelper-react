@@ -18,18 +18,18 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 @Configuration
 public class DataSourceConfig {
 
-    @Primary
+    //@Primary
     @Bean("dataSource")
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean("sqlHelperDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.sql-helper")
-    public DataSource sqlHelperDataSource() {
-        return DataSourceBuilder.create().build();
-    }
+    // @Bean("sqlHelperDataSource")
+    // @ConfigurationProperties(prefix = "spring.datasource.sql-helper")
+    // public DataSource sqlHelperDataSource() {
+    //     return DataSourceBuilder.create().build();
+    // }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(@Qualifier("dataSource") DataSource dataSource) {
@@ -47,14 +47,14 @@ public class DataSourceConfig {
         return em;
     }
 
-    @Primary
-    @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
+    // @Primary
+    // @Bean
+    // public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+    //     return new JdbcTemplate(dataSource);
+    // }
 
-    @Bean(name = "sqlHelperJdbcTemplate")
-    public JdbcTemplate sqlHelperJdbcTemplate(@Qualifier("sqlHelperDataSource") DataSource sqlHelperDataSource) {
-        return new JdbcTemplate(sqlHelperDataSource);
-    }
+    // @Bean(name = "sqlHelperJdbcTemplate")
+    // public JdbcTemplate sqlHelperJdbcTemplate(@Qualifier("sqlHelperDataSource") DataSource sqlHelperDataSource) {
+    //     return new JdbcTemplate(sqlHelperDataSource);
+    // }
 }
