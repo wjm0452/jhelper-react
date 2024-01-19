@@ -89,7 +89,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService users() throws IOException {
 
-        File file = ResourceUtils.getFile("users.json");
+        File file = ResourceUtils.getFile("data/users.json");
         System.out.println(file.getAbsolutePath());
         ObjectMapper objectMapper = new ObjectMapper();
         List<Map<String, Object>> userList = objectMapper.readValue(file,
