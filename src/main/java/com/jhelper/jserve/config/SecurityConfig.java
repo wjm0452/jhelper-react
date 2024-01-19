@@ -2,6 +2,7 @@ package com.jhelper.jserve.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -90,23 +91,33 @@ public class SecurityConfig {
     public UserDetailsService users() throws IOException {
 
         File file = ResourceUtils.getFile("data/users.json");
-        System.out.println(file.getAbsolutePath());
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<Map<String, Object>> userList = objectMapper.readValue(file,
-                new TypeReference<List<Map<String, Object>>>() {
 
-                });
+        List<UserDetails> users = null;
 
-        List<UserDetails> users = userList.stream().map(user -> {
+        if (file.isFile()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> userList = objectMapper.readValue(file,
+                    new TypeReference<List<Map<String, Object>>>() {
 
-            String[] roles = ((List<Object>) user.get("roles")).toArray(new String[0]);
+                    });
 
-            return User.builder()
-                    .username((String) user.get("username"))
-                    .password((String) user.get("password"))
-                    .roles(roles)
-                    .build();
-        }).collect(Collectors.toList());
+            users = userList.stream().map(user -> {
+
+                String[] roles = ((List<Object>) user.get("roles")).toArray(new String[0]);
+
+                return User.builder()
+                        .username((String) user.get("username"))
+                        .password((String) user.get("password"))
+                        .roles(roles)
+                        .build();
+            }).collect(Collectors.toList());
+        } else {
+            users = Arrays.asList(User.builder()
+                    .username("admin")
+                    .password("admin")
+                    .roles("USER", "ADMIN")
+                    .build());
+        }
 
         return new InMemoryUserDetailsManager(users);
     }
