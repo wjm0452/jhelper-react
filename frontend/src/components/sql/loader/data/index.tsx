@@ -83,14 +83,14 @@ export default class DataLoader extends React.Component<any, any> {
           className="d-flex flex-row"
           style={{ height: "200px", minHeight: "200px" }}
         >
-          <div className="flex-grow-1 p-2">
+          <div className="w-50 p-2 overflow-auto">
             <DBTableList
               onClick={(source: any) => {
                 this.sourceColumnRef.current?.setData(source);
               }}
             />
           </div>
-          <div className="flex-grow-1 p-2">
+          <div className="w-50 p-2 overflow-auto">
             <DBTableList
               onClick={(source: any) => {
                 this.targetColumnRef.current?.setData(source);
@@ -99,10 +99,7 @@ export default class DataLoader extends React.Component<any, any> {
           </div>
         </div>
         <div className="flex-grow-1 d-flex flex-row overflow-hidden">
-          <div
-            className="flex-grow-1 p-2 overflow-hidden"
-            style={{ width: "50%" }}
-          >
+          <div className="w-50 p-2 overflow-hidden" style={{ width: "50%" }}>
             <div className="h-100 d-flex flex-column">
               <div className="flex-grow-1 overflow-auto">
                 <ColumnMapper
@@ -135,10 +132,7 @@ export default class DataLoader extends React.Component<any, any> {
               </div>
             </div>
           </div>
-          <div
-            className="flex-grow-1 p-2 overflow-hidden"
-            style={{ width: "50%" }}
-          >
+          <div className="w-50 p-2 overflow-hidden" style={{ width: "50%" }}>
             <div className="h-100 overflow-auto">
               <ColumnMapper ref={this.targetColumnRef}></ColumnMapper>
             </div>
