@@ -64,24 +64,26 @@ export default class ExcelLoader extends React.Component<any, any> {
     let formData = new FormData(); // formData 객체를 생성한다.
     formData.append("file", file);
 
-    httpClient.request({
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      url: "/api/dataloader/excel-file",
-      method: "POST",
-      data: formData,
-    }).then((res: any) => {
-      let data = res.data;
+    httpClient
+      .request({
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        url: "/api/dataloader/excel-file",
+        method: "POST",
+        data: formData,
+      })
+      .then((res: any) => {
+        let data = res.data;
 
-      this.setState({
-        uploadedPath: data.path,
-      });
+        this.setState({
+          uploadedPath: data.path,
+        });
 
-      this.forceUpdate(() => {
-        this.readExcel(0, 100);
+        this.forceUpdate(() => {
+          this.readExcel(0, 100);
+        });
       });
-    });
   }
 
   readExcel(offset: number, limit: number) {
@@ -94,16 +96,18 @@ export default class ExcelLoader extends React.Component<any, any> {
       .then((res) => {
         let data = res.data;
 
-        this.setState({
-          excelData: data.result,
-        }, () => {
-          this.bindQueryParams();
-        });
+        this.setState(
+          {
+            excelData: data.result,
+          },
+          () => {
+            this.bindQueryParams();
+          }
+        );
       });
   }
 
   bindQueryParams() {
-
     const startRow = this.state.startRow;
     const startCol = this.state.startCol;
 
@@ -114,12 +118,12 @@ export default class ExcelLoader extends React.Component<any, any> {
       const paramLength = excelData[startRow].length - startCol;
       if (paramLength > 0) {
         queryParams = new Array(paramLength);
-        queryParams.fill('?');
+        queryParams.fill("?");
       }
     }
 
     this.setState({
-      queryParams: queryParams.join(',\r\n')
+      queryParams: queryParams.join(",\r\n"),
     });
   }
 
@@ -130,7 +134,7 @@ export default class ExcelLoader extends React.Component<any, any> {
           className="d-flex flex-row"
           style={{ height: "200px", minHeight: "200px" }}
         >
-          <div className="flex-grow-1 p-2">
+          <div className="w-50 p-2 overflow-auto">
             <input
               type="file"
               multiple={false}
@@ -144,7 +148,7 @@ export default class ExcelLoader extends React.Component<any, any> {
               업로드
             </button>
           </div>
-          <div className="flex-grow-1 p-2">
+          <div className="w-50 p-2 overflow-auto">
             <DBTableList
               onClick={(source: any) => {
                 this.targetColumnRef.current?.setData(source);
@@ -153,10 +157,7 @@ export default class ExcelLoader extends React.Component<any, any> {
           </div>
         </div>
         <div className="flex-grow-1 d-flex flex-row overflow-hidden">
-          <div
-            className="flex-grow-1 p-2 overflow-hidden"
-            style={{ width: "50%" }}
-          >
+          <div className="w-50 p-2 overflow-hidden" style={{ width: "50%" }}>
             <div className="h-100 d-flex flex-column">
               <div className="flex-shrink-0 input-group col-auto">
                 <span className="input-group-text">Row</span>
@@ -167,11 +168,14 @@ export default class ExcelLoader extends React.Component<any, any> {
                   min={0}
                   placeholder="row"
                   onChange={(e) => {
-                    this.setState({
-                      startRow: e.target.value
-                    }, () => {
-                      this.bindQueryParams()
-                    });
+                    this.setState(
+                      {
+                        startRow: e.target.value,
+                      },
+                      () => {
+                        this.bindQueryParams();
+                      }
+                    );
                   }}
                 />
                 <span className="input-group-text">Col</span>
@@ -182,11 +186,14 @@ export default class ExcelLoader extends React.Component<any, any> {
                   min={0}
                   placeholder="col"
                   onChange={(e) => {
-                    this.setState({
-                      startCol: e.target.value
-                    }, () => {
-                      this.bindQueryParams()
-                    });
+                    this.setState(
+                      {
+                        startCol: e.target.value,
+                      },
+                      () => {
+                        this.bindQueryParams();
+                      }
+                    );
                   }}
                 />
               </div>
@@ -208,10 +215,7 @@ export default class ExcelLoader extends React.Component<any, any> {
               </div>
             </div>
           </div>
-          <div
-            className="flex-grow-1 p-2 overflow-hidden"
-            style={{ width: "50%" }}
-          >
+          <div className="w-50 p-2 overflow-hidden" style={{ width: "50%" }}>
             <div className="h-100 overflow-auto">
               <ColumnMapper ref={this.targetColumnRef}></ColumnMapper>
             </div>
