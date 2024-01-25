@@ -72,7 +72,7 @@ public class SqlExportController {
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.txt\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.json\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
