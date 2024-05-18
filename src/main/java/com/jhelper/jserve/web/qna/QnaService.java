@@ -37,13 +37,20 @@ public class QnaService {
     }
 
     public Qna create(Qna qna) {
-        qna.setRegisterId("wjm");
         qna.setRegisterDate(new Date());
         return qnaRepository.save(qna);
     }
 
     public Qna update(Qna qna) {
-        return qnaRepository.save(qna);
+        Qna oldQna = findById(qna.getId());
+
+        if (oldQna == null) {
+            return null;
+        }
+
+        oldQna.setTitle(qna.getTitle());
+        oldQna.setContent(qna.getContent());
+        return qnaRepository.save(oldQna);
     }
 
     public void delete(Integer id) {

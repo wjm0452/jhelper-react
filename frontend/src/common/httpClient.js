@@ -55,7 +55,7 @@ class HttpClient {
 
   delete(url, config = {}) {
     return this.request({
-      method: "get",
+      method: "delete",
       url: url,
       ...config,
     });
