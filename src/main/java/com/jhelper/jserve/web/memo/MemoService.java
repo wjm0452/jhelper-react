@@ -42,7 +42,16 @@ public class MemoService {
     }
 
     public Memo update(Memo memo) {
-        return memoRepository.save(memo);
+
+        Memo oldMemo = findById(memo.getId());
+
+        if (oldMemo == null) {
+            return null;
+        }
+
+        oldMemo.setTitle(memo.getTitle());
+        oldMemo.setContent(memo.getContent());
+        return memoRepository.save(oldMemo);
     }
 
     public void delete(Integer id) {

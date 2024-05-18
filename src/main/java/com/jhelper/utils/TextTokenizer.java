@@ -2,12 +2,17 @@ package com.jhelper.utils;
 
 import java.util.Map;
 
+/**
+ * TextTokenizer
+ */
 public class TextTokenizer {
 
     private final String _text;
     private final char[] _buff;
     private int pos;
     private Map<String, String> customToken;
+
+    private Thread thr = new Thread();
 
     public TextTokenizer(String text) {
         _text = text;
@@ -20,6 +25,12 @@ public class TextTokenizer {
         this.customToken = customToken;
     }
 
+    /**
+     * alphabet or numeric
+     * 
+     * @param c
+     * @return
+     */
     public boolean isAlphaNumeric(char c) {
 
         if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
