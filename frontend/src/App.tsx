@@ -4,6 +4,7 @@ import Sql from "./components/sql";
 import Rest from "./components/rest";
 import Qna from "./components/qna";
 import Memo from "./components/memo";
+import Calendar from "./components/calendar";
 
 import "./App.scss";
 import DataLoader from "./components/sql/loader/data";
@@ -61,6 +62,11 @@ function App() {
                 Memo
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/Calendar">
+                Calendar
+              </Link>
+            </li>
           </ul>
         </header>
         <main className="flex-grow-1 overflow-hidden">
@@ -72,6 +78,7 @@ function App() {
             <Route path="/rest" element={<Rest />}></Route>
             <Route path="/qna" element={<Qna />}></Route>
             <Route path="/memo" element={<Memo />}></Route>
+            <Route path="/calendar" element={<Calendar />}></Route>
           </Routes>
         </main>
       </div>
