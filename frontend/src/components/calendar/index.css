@@ -1,0 +1,92 @@
+.day-head {
+  border-bottom-width: 3px;
+  border-bottom-style: double;
+  border-bottom-color: black;
+}
+
+.day-title,
+.day-select {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: black;
+  user-select: none;
+}
+
+.day-title:hover {
+  text-decoration: underline;
+}
+
+.day-select:hover,
+.day-select.selected {
+  background-color: gray;
+}
+
+.day-select:hover.blue,
+.day-select.selected.blue {
+  background-color: blue;
+
+  background-color: blue;
+}
+
+.day-select:hover.indigo,
+.day-select.selected.indigo {
+  background-color: indigo;
+
+  background-color: indigo;
+}
+
+.day-select:hover.purple,
+.day-select.selected.purple {
+  background-color: purple;
+
+  background-color: purple;
+}
+
+.day-select:hover.pink,
+.day-select.selected.pink {
+  background-color: pink;
+
+  background-color: pink;
+}
+
+.day-select:hover.orange,
+.day-select.selected.orange {
+  background-color: orange;
+
+  background-color: orange;
+}
+
+.day-select:hover.yellow,
+.day-select.selected.yellow {
+  background-color: yellow;
+
+  background-color: yellow;
+}
+
+.day-select:hover.green,
+.day-select.selected.green {
+  background-color: green;
+
+  background-color: green;
+}
+
+.day-select:hover.teal,
+.day-select.selected.teal {
+  background-color: teal;
+
+  background-color: teal;
+}
+
+.day-select:hover.cyan,
+.day-select.selected.cyan {
+  background-color: cyan;
+
+  background-color: cyan;
+}
+
+.day-select:hover.gray,
+.day-select.selected.gray {
+  background-color: gray;
+
+  background-color: gray;
+}
