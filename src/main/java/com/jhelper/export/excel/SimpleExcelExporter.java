@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.time.DateUtils;
 
 import com.jhelper.export.ExcelWriter;
 
@@ -257,18 +257,19 @@ public class SimpleExcelExporter implements Closeable {
 			return;
 		}
 
-		try {
-			Date date = null;
-
-			if (value instanceof Date) {
-				date = (Date) value;
-			} else if (value instanceof String) {
-				date = DateUtils.parseDate(((String) value).substring(0, 8), "yyyyMMdd");
-			}
-
+		if (value instanceof Date) {
+			Date date = (Date) value;
 			cell.dataFormat("yyyy-MM-dd").cellValue(date);
-		} catch (ParseException e) {
-			cell.cellValue(Objects.toString(value));
+		} else if (value instanceof LocalDate) {
+			LocalDate date = (LocalDate) value;
+			cell.dataFormat("yyyy-MM-dd").cellValue(date);
+		} else if (value instanceof LocalDateTime) {
+			LocalDateTime date = (LocalDateTime) value;
+			cell.dataFormat("yyyy-MM-dd").cellValue(date);
+		} else if (value instanceof String) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMmdd");
+			LocalDateTime date = LocalDateTime.parse((String) value, formatter);
+			cell.dataFormat("yyyy-MM-dd").cellValue(date);
 		}
 	}
 
@@ -277,18 +278,19 @@ public class SimpleExcelExporter implements Closeable {
 			return;
 		}
 
-		try {
-			Date date = null;
-
-			if (value instanceof Date) {
-				date = (Date) value;
-			} else if (value instanceof String) {
-				date = DateUtils.parseDate((String) value, "yyyyMMddHHmmss");
-			}
-
-			cell.dataFormat("yyyy-MM=dd HH:mm:ss").cellValue(date);
-		} catch (ParseException e) {
-			cell.cellValue(Objects.toString(value));
+		if (value instanceof Date) {
+			Date date = (Date) value;
+			cell.dataFormat("yyyy-MM-dd HH:mm:ss").cellValue(date);
+		} else if (value instanceof LocalDate) {
+			LocalDate date = (LocalDate) value;
+			cell.dataFormat("yyyy-MM-dd HH:mm:ss").cellValue(date);
+		} else if (value instanceof LocalDateTime) {
+			LocalDateTime date = (LocalDateTime) value;
+			cell.dataFormat("yyyy-MM-dd HH:mm:ss").cellValue(date);
+		} else if (value instanceof String) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMmddHHmmss");
+			LocalDateTime date = LocalDateTime.parse((String) value, formatter);
+			cell.dataFormat("yyyy-MM-dd HH:mm:ss").cellValue(date);
 		}
 	}
 
