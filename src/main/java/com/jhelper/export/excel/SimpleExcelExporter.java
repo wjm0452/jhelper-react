@@ -220,9 +220,11 @@ public class SimpleExcelExporter implements Closeable {
 			i = (Integer) value;
 		} else if (value instanceof String) {
 			i = Integer.parseInt(Objects.toString(value));
+		} else {
+			return;
 		}
 
-		cell.cellValue(i);
+		cell.cellValue(i.intValue());
 	}
 
 	private void setDoubleValue(CellSupport cell, Object value) {
@@ -237,6 +239,8 @@ public class SimpleExcelExporter implements Closeable {
 			d = (Double) value;
 		} else if (value instanceof String) {
 			d = Double.parseDouble(Objects.toString(value));
+		} else {
+			return;
 		}
 
 		cell.cellValue(d);

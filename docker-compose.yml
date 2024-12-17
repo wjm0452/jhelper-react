@@ -1,0 +1,35 @@
+version: "3.8"
+
+volumes:
+  jhelper:
+    driver: local
+
+networks:
+  default:
+    name: jhelper
+  postgres:
+    external:
+      name: postgres
+  elastic:
+    external:
+      name: elastic
+
+services:
+  webapp:
+    build:
+      context: .
+    networks:
+      - default
+      - postgres
+      - elastic
+    volumes:
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro"
+      - "/proc:/hostfs/proc:ro"
+      - "/:/hostfs:ro"
+      - "./elastic-apm-agent-1.52.1.jar:/app/jhelper/elastic-apm-agent-1.52.1.jar:ro"
+    ports:
+      - 9080:9080
+    environment:
+      - JAVA_OPTS=-javaagent:/app/jhelper/elastic-apm-agent-1.52.1.jar -Delastic.apm.service_name=jhelper -Delastic.apm.application_packages=com.jhelper -Delastic.apm.server_urls=http://fleet-server:8200 -Delastic.apm.secret_token=supersecrettoken -Delastic.apm.environment=development

@@ -79,7 +79,7 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/index.html", "/static/**");
+        return (web) -> web.ignoring().requestMatchers("/index.html", "/vendor/**");
     }
 
     @Bean

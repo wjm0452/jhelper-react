@@ -1,18 +1,7 @@
 import { useEffect, useState } from "react";
-import httpClient from "../../common/httpClient";
-import Details from "./details";
+import { useNavigate } from "react-router-dom";
 import Pager from "../pager";
-
-async function readAll(page: number, size: number) {
-  const res = await httpClient.get("/api/qna", {
-    params: {
-      page,
-      size,
-    },
-  });
-
-  return res.data;
-}
+import { getQnaList } from "./qna.ts";
 
 function renderQuestions(items: any, clickHandler: Function) {
   return (
@@ -53,11 +42,9 @@ const QnA = () => {
     totalPages: 0,
     items: [],
   });
-  const [qnaId, setQnaId] = useState("");
-  const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    readAll(0, PAGE_SIZE).then((data) => {
+    getQnaList(0, PAGE_SIZE).then((data) => {
       setPagingData({
         page: data.number,
         totalPages: data.totalPages,
@@ -68,36 +55,22 @@ const QnA = () => {
     return () => {};
   }, []);
 
+  const navigate = useNavigate();
+  const goToDetails = (qnaId: any = "") => {
+    navigate(`/qna/details/${qnaId}`);
+  };
+
   return (
     <div className="v-100 h-100 overflow-auto">
       <div className="p-5">
-        <div style={{ display: showDetails ? "block" : "none" }}>
-          <Details
-            qnaId={qnaId}
-            onCloseHandler={() => {
-              setShowDetails(false);
-            }}
-            onSaveHandler={(item: any) => {
-              console.log("saved", item);
-              setShowDetails(false);
-
-              readAll(0, PAGE_SIZE).then((data) => {
-                setPagingData({
-                  page: data.number,
-                  totalPages: data.totalPages,
-                  items: data.items,
-                });
-              });
-            }}
-          ></Details>
-        </div>
         <div>
           <button
             type="button"
             className="btn btn-primary"
             onClick={() => {
-              setShowDetails(true);
-              setQnaId("");
+              // setShowDetails(true);
+              // setQnaId("");
+              goToDetails("");
             }}
           >
             등록
@@ -105,8 +78,7 @@ const QnA = () => {
         </div>
         <div>
           {renderQuestions(pagingData.items, (id: any) => {
-            setShowDetails(true);
-            setQnaId(id);
+            goToDetails(id);
           })}
         </div>
         <div>
@@ -114,7 +86,7 @@ const QnA = () => {
             page={pagingData.page}
             totalPages={pagingData.totalPages}
             onChange={(page: number) => {
-              readAll(page, PAGE_SIZE).then((data) => {
+              getQnaList(page, PAGE_SIZE).then((data) => {
                 setPagingData({
                   page: data.number,
                   totalPages: data.totalPages,

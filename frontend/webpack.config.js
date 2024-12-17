@@ -112,8 +112,8 @@ module.exports = {
       "/vendor": {
         target: "http://localhost:9080/",
         changeOrigin: true,
-        cookieDomainRewrite: "",
-        cookiePathRewrite: "",
+        //cookieDomainRewrite: "",
+        //cookiePathRewrite: "",
       },
     },
   },

@@ -39,14 +39,14 @@ public class RestProxyController {
         HttpEntity<String> requestEntity = new HttpEntity<>(restProxyVO.getBodyValue(), headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(restProxyVO.getUrl(),
-                HttpMethod.resolve(restProxyVO.getMethod()), requestEntity,
+                HttpMethod.valueOf(restProxyVO.getMethod()), requestEntity,
                 String.class, restProxyVO.getParams());
 
         RestProxy result = new RestProxy();
 
         result.setHeaders(responseEntity.getHeaders().toSingleValueMap());
         result.setBodyValue(responseEntity.getBody());
-        result.setStatusCode(responseEntity.getStatusCodeValue());
+        result.setStatusCode(responseEntity.getStatusCode().value());
 
         return result;
     }

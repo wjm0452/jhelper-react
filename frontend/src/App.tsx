@@ -3,6 +3,7 @@ import { HashRouter, Route, Link, Routes } from "react-router-dom";
 import Sql from "./components/sql";
 import Rest from "./components/rest";
 import Qna from "./components/qna";
+import QnaDetails from "./components/qna/details";
 import Memo from "./components/memo";
 import Calendar from "./components/calendar";
 
@@ -76,7 +77,11 @@ function App() {
             <Route path="/loader" element={<DataLoader />}></Route>
             <Route path="/excelLoader" element={<ExcelLoader />}></Route>
             <Route path="/rest" element={<Rest />}></Route>
-            <Route path="/qna" element={<Qna />}></Route>
+            <Route path="/qna">
+              <Route index element={<Qna />}></Route>
+              <Route path="details" element={<QnaDetails />}></Route>
+              <Route path="details/:qnaId" element={<QnaDetails />}></Route>
+            </Route>
             <Route path="/memo" element={<Memo />}></Route>
             <Route path="/calendar" element={<Calendar />}></Route>
           </Routes>

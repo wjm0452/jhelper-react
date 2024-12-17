@@ -25,7 +25,7 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
         Map<String, Object> result = new HashMap<>();
         result.put("authenticated", false);
         result.put("message", "Access denied!");
-
+       
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getOutputStream(), result);

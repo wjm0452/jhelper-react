@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
@@ -40,11 +41,9 @@ public class SqlExcelExportService implements SqlExportService {
 
                     while (sqlRowSet.next()) {
 
-                        Object[] columns = new Object[columnSize];
-
-                        for (int i = 0; i < columnSize; i++) {
-                            columns[i] = sqlRowSet.getObject(i + 1);
-                        }
+                        Object[] columns = Arrays.stream(columnNames).map(name -> {
+                            return sqlRowSet.getObject(name);
+                        }).toArray();
 
                         simpleExcelExporter.writeData(simpleExcelExporter.toSimpleCell(columns));
                     }

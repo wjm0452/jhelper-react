@@ -1,44 +1,14 @@
 import React, { RefObject, useEffect, useState } from "react";
 import httpClient from "../../common/httpClient";
 import Pager from "../pager";
-
-async function readAll(page: number, size: number) {
-  const res = await httpClient.get("/api/memo", {
-    params: {
-      page,
-      size,
-    },
-  });
-  return res.data;
-}
-
-async function readData(id: string) {
-  const res = await httpClient.get(`/api/memo/${id}`);
-  const data = res.data;
-
-  if (data.registerDate) {
-    data.registerDate = data.registerDate.slice(0, 16);
-  }
-
-  return data;
-}
-
-async function createData(obj: { title: string; content: string }) {
-  const res = await httpClient.post("/api/memo", obj);
-  return res.data;
-}
-
-async function updateData(obj: { id: string; title: string; content: string }) {
-  const res = await httpClient.put("/api/memo", obj);
-  return res.data;
-}
-
-async function deleteData(id: string) {
-  const res = await httpClient.delete(`/api/memo/${id}`);
-  const data = res.data;
-
-  return data;
-}
+import {
+  getMemo,
+  getMemoList,
+  createMemo,
+  updateMemo,
+  saveMemo,
+  deleteMemo,
+} from "./memo.ts";
 
 const RenderList = (props: any) => {
   const items = props.items;
@@ -145,7 +115,7 @@ const RenderMemos = (props: any) => {
                 <button
                   className="btn btn-primary btn-sm me-1"
                   onClick={() => {
-                    updateData(item).then((data) => {
+                    updateMemo(item).then((data) => {
                       updateHandler({
                         item: data,
                       });
@@ -157,7 +127,7 @@ const RenderMemos = (props: any) => {
                 <button
                   className="btn btn-secondary btn-sm me-1"
                   onClick={() => {
-                    deleteData(item.id).then((data) => {
+                    deleteMemo(item.id).then((data) => {
                       items.splice(i, 1);
                       setItems([...items]);
                       updateHandler({
@@ -194,7 +164,7 @@ const Memo = () => {
   const [expand, setExpand] = useState(false);
 
   useEffect(() => {
-    readAll(0, pageSize).then((data) => {
+    getMemoList(0, pageSize).then((data) => {
       setPagingData({
         page: data.number,
         totalPages: data.totalPages,
@@ -278,8 +248,8 @@ const Memo = () => {
                     <button
                       className="btn btn-primary"
                       onClick={() => {
-                        createData(item).then(() => {
-                          readAll(0, pageSize).then((data) => {
+                        createMemo(item).then(() => {
+                          getMemoList(0, pageSize).then((data) => {
                             setPagingData({
                               page: data.number,
                               totalPages: data.totalPages,
@@ -314,7 +284,7 @@ const Memo = () => {
                 page={pagingData.page}
                 totalPages={pagingData.totalPages}
                 onChange={(page: number) => {
-                  readAll(page, pageSize).then((data) => {
+                  getMemoList(page, pageSize).then((data) => {
                     setPagingData({
                       page: data.number,
                       totalPages: data.totalPages,
