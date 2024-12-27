@@ -1,22 +1,21 @@
-import React, { RefObject, useEffect, useState } from "react";
-import httpClient from "../../common/httpClient";
+import { useEffect, useState } from "react";
 import Pager from "../pager";
-import {
-  getMemo,
-  getMemoList,
-  createMemo,
-  updateMemo,
-  saveMemo,
-  deleteMemo,
-} from "./memo.ts";
+import { getMemoList, createMemo, updateMemo, deleteMemo } from "./memo.ts";
 
-const RenderList = (props: any) => {
+const RenderSideList = (props: any) => {
   const items = props.items;
   const clickHandler = props.clickHandler || function () {};
 
   return (
-    <div>
+    <div className="shadow p-3 mb-5 bg-body rounded">
       <ul>
+        <li
+          className="text-primary"
+          style={{ textOverflow: "ellipsis" }}
+          onClick={() => clickHandler(null)}
+        >
+          <b>상위로</b>
+        </li>
         {items.map((item: any, i: number) => (
           <li
             style={{ textOverflow: "ellipsis" }}
@@ -64,20 +63,14 @@ const RenderMemos = (props: any) => {
         ></input>
       </div>
       {items.map((item: any, i: number) => (
-        <div key={item.id} className="p-3 border-bottom border-dark">
-          <div className="shadow p-3 mb-5 bg-white rounded">
+        <div
+          id={"memo_" + item.id}
+          key={item.id}
+          className="p-3 border-bottom border-dark"
+        >
+          <div className="shadow p-3 bg-white rounded">
             <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label">Register Id</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={item.registerId}
-                  readOnly={true}
-                ></input>
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Register Date</label>
+              <div className="col-12">
                 <input
                   type="datetime-local"
                   className="form-control"
@@ -88,19 +81,6 @@ const RenderMemos = (props: any) => {
                 ></input>
               </div>
               <div className="col-12">
-                <label className="form-label">Title</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={item.title}
-                  onChange={(e) => {
-                    items[i].title = e.target.value;
-                    setItems([...items]);
-                  }}
-                ></input>
-              </div>
-              <div className="col-12">
-                <label className="form-label">Content</label>
                 <textarea
                   className="form-control"
                   style={{ height: "120px" }}
@@ -149,11 +129,10 @@ const RenderMemos = (props: any) => {
 
 const Memo = () => {
   const [item, setItem] = useState({
-    title: "",
     content: "",
   });
 
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(3);
 
   const [pagingData, setPagingData] = useState({
     page: 0,
@@ -176,125 +155,116 @@ const Memo = () => {
   }, []);
 
   return (
-    <div className="v-100 h-100 overflow-auto">
-      <div className="container">
-        <h5>Memo</h5>
-        <div className="d-flex flex-columns">
-          <div className="pt-5" style={{ width: "300px" }}>
-            <div className="m-5" style={{ overflow: "hidden" }}>
-              <RenderList
-                items={pagingData.items}
-                clickHandler={(item: any) => {
-                  console.log(item);
-                }}
-              />
-            </div>
+    <div className="grid">
+      <div className="g-col" style={{ width: "300px" }}>
+        <div
+          className="position-sticky"
+          style={{ top: "3rem", height: "calc(100vh - 5rem)" }}
+        >
+          <div className="p-5">
+            <RenderSideList
+              items={pagingData.items}
+              clickHandler={(item: any) => {
+                if (item) {
+                  var elem: any = document.querySelector(`#memo_${item.id}`);
+                  document.querySelectorAll("html")[0].scrollTop =
+                    elem.offsetTop;
+                } else {
+                  document.querySelectorAll("html")[0].scrollTop = 0;
+                }
+              }}
+            />
           </div>
-          <div className="flex-grow-1">
-            <div className="p-3 border-bottom border-dark">
-              <div className="text-end mb-1">
+        </div>
+      </div>
+      <div className="g-col-6">
+        <div className="p-3 border-bottom border-dark">
+          <div className="text-end mb-1">
+            <button
+              className="btn btn-sm me-1"
+              onClick={(e) => {
+                setExpand(!expand);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-plus-slash-minus"
+                viewBox="0 0 16 16"
+              >
+                <path d="m1.854 14.854 13-13a.5.5 0 0 0-.708-.708l-13 13a.5.5 0 0 0 .708.708ZM4 1a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 4 1Zm5 11a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 9 12Z" />
+              </svg>
+            </button>
+          </div>
+          <div
+            className="shadow p-3 mb-5 bg-white rounded"
+            style={{ display: expand ? "" : "none" }}
+          >
+            <div className="row g-3">
+              <div className="col-12">
+                <label className="form-label">Content</label>
+                <textarea
+                  className="form-control"
+                  style={{ height: "120px" }}
+                  value={item.content}
+                  onChange={(e) => {
+                    setItem({
+                      ...item,
+                      content: e.target.value,
+                    });
+                  }}
+                ></textarea>
+              </div>
+              <div className="d-flex flex-row justify-content-end">
                 <button
-                  className="btn btn-sm me-1"
-                  onClick={(e) => {
-                    setExpand(!expand);
+                  className="btn btn-primary"
+                  onClick={() => {
+                    createMemo(item).then(() => {
+                      getMemoList(0, pageSize).then((data) => {
+                        setPagingData({
+                          page: data.number,
+                          totalPages: data.totalPages,
+                          items: data.items,
+                        });
+                        setItem({
+                          content: "",
+                        });
+                      });
+                    });
                   }}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-plus-slash-minus"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="m1.854 14.854 13-13a.5.5 0 0 0-.708-.708l-13 13a.5.5 0 0 0 .708.708ZM4 1a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 4 1Zm5 11a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 9 12Z" />
-                  </svg>
+                  Save changes
                 </button>
               </div>
-              <div
-                className="shadow p-3 mb-5 bg-white rounded"
-                style={{ display: expand ? "" : "none" }}
-              >
-                <div className="row g-3">
-                  <div className="col-12">
-                    <label className="form-label">Title</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={item.title}
-                      onChange={(e) => {
-                        setItem({
-                          ...item,
-                          title: e.target.value,
-                        });
-                      }}
-                    ></input>
-                  </div>
-                  <div className="col-12">
-                    <label className="form-label">Content</label>
-                    <textarea
-                      className="form-control"
-                      style={{ height: "120px" }}
-                      value={item.content}
-                      onChange={(e) => {
-                        setItem({
-                          ...item,
-                          content: e.target.value,
-                        });
-                      }}
-                    ></textarea>
-                  </div>
-                  <div className="d-flex flex-row justify-content-end">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        createMemo(item).then(() => {
-                          getMemoList(0, pageSize).then((data) => {
-                            setPagingData({
-                              page: data.number,
-                              totalPages: data.totalPages,
-                              items: data.items,
-                            });
-                            setItem({
-                              title: "",
-                              content: "",
-                            });
-                          });
-                        });
-                      }}
-                    >
-                      Save changes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-5">
-              {
-                <RenderMemos
-                  items={pagingData.items}
-                  updateHandler={() => {
-                    console.log("updated!!");
-                  }}
-                ></RenderMemos>
-              }
-            </div>
-            <div className="mt-5">
-              <Pager
-                page={pagingData.page}
-                totalPages={pagingData.totalPages}
-                onChange={(page: number) => {
-                  getMemoList(page, pageSize).then((data) => {
-                    setPagingData({
-                      page: data.number,
-                      totalPages: data.totalPages,
-                      items: data.items,
-                    });
-                  });
-                }}
-              />
             </div>
           </div>
+        </div>
+        <div className="mt-5">
+          {
+            <RenderMemos
+              items={pagingData.items}
+              updateHandler={() => {
+                console.log("updated!!");
+              }}
+            ></RenderMemos>
+          }
+        </div>
+        <div className="mt-5">
+          <Pager
+            page={pagingData.page}
+            totalPages={pagingData.totalPages}
+            onChange={(page: number) => {
+              getMemoList(page, pageSize).then((data) => {
+                setPagingData({
+                  page: data.number,
+                  totalPages: data.totalPages,
+                  items: data.items,
+                });
+              });
+            }}
+          />
         </div>
       </div>
     </div>

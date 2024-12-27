@@ -48,6 +48,8 @@ export default function Jsql(options) {
       that.indexesTmpl = function () {
         return indexesQuery;
       };
+
+      return res.data;
     });
   };
 
@@ -218,18 +220,17 @@ export default function Jsql(options) {
   };
 
   this.selectQueryTmpl = function () {
-    var result = `
-SELECT /* comment */
+    var result = `SELECT /* comment */
        {{&columns}}
   FROM {{tableName}}
 {{&indexes}}
+;
 `;
     return result;
   };
 
   this.insertQueryTmpl = function () {
-    var result = `
-INSERT /* comment */
+    var result = `INSERT /* comment */
   INTO {{tableName}}
 (
     {{&columns}}
@@ -238,25 +239,26 @@ VALUES
 (
     {{&values}}
 )
+;
 `;
     return result;
   };
 
   this.updateQueryTmpl = function () {
-    var result = `
-/* comment */
+    var result = `/* comment */
 UPDATE {{tableName}}
    SET {{&columns}}
 {{&indexes}}
+;
 `;
     return result;
   };
 
   this.deleteQueryTmpl = function () {
-    var result = `
-DELETE /* comments */
+    var result = `DELETE /* comments */
   FROM {{tableName}}
 {{&indexes}}
+;
 `;
     return result;
   };

@@ -13,8 +13,8 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity(name = "memo")
-public class Memo {
+@Entity(name = "board")
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,6 +29,10 @@ public class Memo {
     @Column(name = "register_date")
     @Comment(value = "등록일시")
     private Date registerDate;
+
+    @Column(name = "title")
+    @Comment(value = "제목")
+    private String title;
 
     @Column(name = "content", columnDefinition = "TEXT")
     @Comment(value = "내용")

@@ -46,7 +46,7 @@ export default class Editor extends React.Component<any, any> {
     this.cacheTimerId = window.setTimeout(() => {
       this.cacheContext.setCache("query", this.textarea.current.innerHTML);
       this.setState({
-        query: this.textarea.current.innerHTML
+        query: this.textarea.current.innerHTML,
       });
       this.cacheTimerId = null;
     }, 500);
@@ -235,10 +235,7 @@ export default class Editor extends React.Component<any, any> {
   public getOffset() {
     let textarea = this.textarea.current;
     let range = rangeUtils.getRange();
-    const walker = new NodeWalker(
-      textarea.firstChild,
-      this.lastChild(textarea)
-    );
+    const walker = new NodeWalker(textarea.firstChild, this.lastChild(textarea));
 
     let startContainer = range.startContainer;
     let endContainer = range.endContainer;
@@ -415,10 +412,7 @@ export default class Editor extends React.Component<any, any> {
     }
 
     const cloneNodes = rangeUtils.getRange().cloneContents();
-    const walker = new NodeWalker(
-      cloneNodes.firstChild,
-      this.lastChild(cloneNodes)
-    );
+    const walker = new NodeWalker(cloneNodes.firstChild, this.lastChild(cloneNodes));
 
     let sql = "";
     while (walker.hasNext()) {

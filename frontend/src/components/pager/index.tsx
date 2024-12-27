@@ -57,7 +57,10 @@ function Pager(props: any) {
 
   return (
     <div>
-      <nav aria-label="Page navigation example">
+      <nav aria-label="Page navigation">
+        <span className="float-end">
+          {page + 1} / {totalPages}
+        </span>
         <ul className="pagination justify-content-center">{renderPages()}</ul>
       </nav>
     </div>

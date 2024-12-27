@@ -1,0 +1,31 @@
+import guid from "../../../common/guid";
+import "./style.scss";
+
+const TableView = (props: any) => {
+  const header = props.header || [];
+  const data = props.data || [];
+  const clickHandler = props.onClick || function () {};
+
+  return (
+    <table className="table table-hover table-bordered table-sm">
+      <thead className="table-light">
+        <tr>
+          {header.map((columnName: string) => (
+            <th key={guid()}>{columnName}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((row: string[], i: number) => (
+          <tr key={guid()} onClick={() => clickHandler(row)}>
+            {row.map((cell: string, j) => (
+              <td key={guid()}>{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+export default TableView;
