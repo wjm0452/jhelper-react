@@ -1,20 +1,22 @@
 import { useEffect } from "react";
 import { useGetConnInfoList } from "../connManager/query";
-import { useConnectionStore } from "../store";
 import { useLoadTemplate } from "../query";
 import { useConnManagerStore } from "../connManager/store";
+import { useConnectionStoreInContext } from "../context";
 
 const ConnectionForm = () => {
   const connManagerStore = useConnManagerStore();
-  const connectionStore = useConnectionStore();
+  const connectionStore = useConnectionStoreInContext();
   const { data: connInfoList } = useGetConnInfoList();
   const { refetch: refetchLoadTemplate } = useLoadTemplate(connectionStore.vendor);
 
   useEffect(() => {
     if (connectionStore.vendor) {
       refetchLoadTemplate();
+    } else if (connInfoList?.length) {
+      connectionStore.setConnInfo(connInfoList[0]);
     }
-  }, [connectionStore.vendor]);
+  }, [connectionStore.vendor, connInfoList?.length]);
 
   return (
     <div className="row g-1">
@@ -23,13 +25,9 @@ const ConnectionForm = () => {
           className="form-select"
           value={connectionStore.name}
           onChange={(e) => {
-            //   this.cacheContext.setCaches({
-            //     name: e.currentTarget.value,
-            //   });
             const value: string = e.currentTarget.value;
             if (value) {
-              const connInfo = connInfoList.find(({ name }) => name == value);
-              connectionStore.setConnInfo(connInfo);
+              connectionStore.setConnInfo(connInfoList.find(({ name }) => name == value));
             }
           }}
         >

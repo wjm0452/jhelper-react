@@ -1,6 +1,6 @@
 import { useConnInfoStore } from "./store";
 
-const ConnInfoForm = () => {
+const ConnInfoForm = (props: any) => {
   const connInfoStore = useConnInfoStore();
 
   return (

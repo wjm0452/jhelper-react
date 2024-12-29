@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Pager from "../pager/index.tsx";
 import { useGetBoardList } from "./query.ts";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchBoardsStore } from "./store.ts";
 
 const RenderQuestions = (items: any, clickHandler: Function) => {

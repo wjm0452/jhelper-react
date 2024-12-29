@@ -2,6 +2,7 @@ import { useConnManagerStore, useConnInfoStore } from "./store";
 import ConnInfoList from "./connInfoList";
 import ConnInfoForm from "./connInfoForm";
 import { useSaveConnInfo } from "./query";
+import Modal from "../../common/dialog";
 
 const ConnManager = (props: any) => {
   const connManagerStore = useConnManagerStore();
@@ -9,34 +10,24 @@ const ConnManager = (props: any) => {
   const { mutateAsync: saveConnInfo } = useSaveConnInfo();
 
   return (
-    <div
-      className="modal"
-      style={{
-        display: connManagerStore.visible !== false ? "block" : "none",
-      }}
-      tabIndex={-1}
+    <Modal
+      title={"Connections"}
+      visible={connManagerStore.visible}
+      onClose={() => connManagerStore.hide()}
     >
-      <div className="modal-dialog modal-xl">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Connections</h5>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={() => connManagerStore.hide()}
-            ></button>
-          </div>
-          <div className="modal-body">
-            <div className="d-flex flex-row">
-              <div className="flex-grow-1 p-1">
-                <ConnInfoList></ConnInfoList>
-              </div>
-              <div className="flex-grow-0 p-1" style={{ flexBasis: "300px" }}>
-                <ConnInfoForm></ConnInfoForm>
-              </div>
+      {{
+        body: (
+          <div className="d-flex flex-row">
+            <div className="flex-grow-1 p-1">
+              <ConnInfoList></ConnInfoList>
+            </div>
+            <div className="flex-grow-0 p-1" style={{ flexBasis: "300px" }}>
+              <ConnInfoForm></ConnInfoForm>
             </div>
           </div>
-          <div className="modal-footer">
+        ),
+        footer: (
+          <>
             <button
               type="button"
               className="btn btn-secondary"
@@ -51,10 +42,10 @@ const ConnManager = (props: any) => {
             >
               Save changes
             </button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </>
+        ),
+      }}
+    </Modal>
   );
 };
 

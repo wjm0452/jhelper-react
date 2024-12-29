@@ -2,6 +2,7 @@ import React from "react";
 import httpClient from "../../common/httpClient";
 import Jsql from "../sql/jsql";
 import TableView from "../common/tableViewer";
+import ConnectionForm from "../sql/objectView/connectionForm";
 
 async function readConnections() {
   const res = await httpClient.get(`/api/conn-info`);

@@ -1,11 +1,23 @@
-import { useEffect } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import TableView from "../../common/tableViewer";
 import { useGetTables } from "../query";
-import { useConnectionStore, useSearchTablesStore } from "../store";
 
-const SearchTableForm = () => {
-  const searchTablesStore = useSearchTablesStore();
-  const { refetch: refetchGetTables } = useGetTables(searchTablesStore);
+type TableFilterFormProps = {
+  filter: TableFilter;
+  setFilter: (data: any) => void;
+};
+
+const TableFilterForm = ({ filter, setFilter }: TableFilterFormProps) => {
+  const [owner, setOwner] = useState("");
+  const [tableName, setTableName] = useState("");
+
+  useEffect(() => {
+    setOwner(filter.owner);
+  }, [filter.owner]);
+
+  useEffect(() => {
+    setTableName(filter.tableName);
+  }, [filter.tableName]);
 
   return (
     <>
@@ -15,17 +27,12 @@ const SearchTableForm = () => {
             type="text"
             className="form-control"
             style={{ width: "10rem" }}
-            value={searchTablesStore.owner}
+            value={owner}
             placeholder="owner"
-            onChange={(e) => {
-              //   this.cacheContext.setCaches({
-              //     owner: e.currentTarget.value,
-              //   });
-              searchTablesStore.put("owner", e.currentTarget.value);
-            }}
+            onChange={(e) => setOwner(e.currentTarget.value)}
             onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === "Enter") {
-                refetchGetTables();
+                setFilter({ ...filter, owner, tableName });
               }
             }}
           />
@@ -35,14 +42,12 @@ const SearchTableForm = () => {
             type="text"
             className="form-control"
             style={{ width: "10rem" }}
-            value={searchTablesStore.tableName}
+            value={tableName}
             placeholder="table"
-            onChange={(e) => {
-              searchTablesStore.put("tableName", e.currentTarget.value);
-            }}
+            onChange={(e) => setTableName(e.currentTarget.value)}
             onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === "Enter") {
-                refetchGetTables();
+                setFilter({ ...filter, owner, tableName });
               }
             }}
           />
@@ -50,9 +55,7 @@ const SearchTableForm = () => {
         <div className="col-auto">
           <button
             className="btn btn-primary btn-sm me-1"
-            onClick={(e) => {
-              refetchGetTables();
-            }}
+            onClick={(e) => setFilter({ ...filter, owner, tableName })}
           >
             find
           </button>
@@ -62,31 +65,47 @@ const SearchTableForm = () => {
   );
 };
 
-const DbTables = (props: any) => {
-  const searchTablesStore = useSearchTablesStore();
-  const { data: tables, refetch: refetchGetTables } = useGetTables(searchTablesStore);
+const DbTables = forwardRef((props: any, ref) => {
+  const [filter, setFilter] = useState<TableFilter>({
+    owner: "",
+    tableName: "",
+  });
+  const [enabledFetch, setEnabledFetch] = useState(false);
+  const { data } = useGetTables(filter, { enabled: enabledFetch });
   const clickHandler = props.onClick || function () {};
 
-  useEffect(() => {
-    if (searchTablesStore.owner) {
-      refetchGetTables();
-    }
-  }, []);
+  useImperativeHandle(
+    ref,
+    () => ({
+      getFilter: () => ({ ...filter }),
+      setFilter: onApply,
+    }),
+    [filter],
+  );
+
+  const onApply = (filter: TableFilter) => {
+    setFilter({ ...filter });
+    setEnabledFetch(true);
+  };
 
   return (
     <>
-      <SearchTableForm></SearchTableForm>
+      <TableFilterForm filter={filter} setFilter={onApply} />
       <div className="mt-1 overflow-auto">
         <TableView
-          header={tables?.columnNames}
-          data={tables?.result}
+          header={data?.columnNames}
+          data={data?.result}
           onClick={(item: string[]) => {
-            clickHandler(item);
+            clickHandler({
+              ...filter,
+              tableName: item[0],
+              comments: item[1],
+            });
           }}
         ></TableView>
       </div>
     </>
   );
-};
+});
 
 export default DbTables;

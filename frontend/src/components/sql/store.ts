@@ -1,59 +1,27 @@
-import { create } from "zustand";
-
-type ConnectionState = ConnInfo & {
-  setConnInfo: (connInfo: ConnInfo) => void;
-};
-
-export const useConnectionStore = create<ConnectionState>((set) => ({
-  name: "",
-  vendor: "",
-  jdbcUrl: "",
-  driverClassName: "",
-  username: "",
-  password: "",
-  setConnInfo: (connInfo: ConnInfo) => set({ ...connInfo }),
-}));
+import { createContext, PropsWithChildren, useRef } from "react";
+import { create, StoreApi } from "zustand";
 
 type PutAction = {
+  putAll: (values: any) => void;
   put: (key: string, value: any) => void;
   reset: () => void;
 };
 
-const initialSearchTablesState: SearchTables = {
-  owner: "",
-  tableName: "",
-};
-
-export const useSearchTablesStore = create<SearchTables & PutAction>((set) => ({
-  ...initialSearchTablesState,
-  put: (key: string, value: any) => set({ [key]: value }),
-  reset: () => set(initialSearchTablesState),
-}));
-
-const initialSearchColumnsState: SearchColumns = {
-  owner: "",
-  tableName: "",
-  columnName: "",
-};
-
-export const useSearchColumnsStore = create<SearchColumns & PutAction>((set) => ({
-  ...initialSearchColumnsState,
-  put: (key: string, value: any) => set({ [key]: value }),
-  reset: () => set(initialSearchColumnsState),
-}));
-
-type SearchQueryState = SearchQuery & {
+type CommandQueryState = FetchQuery & {
   sqlState: string;
   errorMessage: string;
 };
 
-type SearchQueryAction = {
-  put: (key: string, value: any) => void;
-  reset: () => void;
+type CommandQueryAction = PutAction & {
+  setQuery: (query: string) => void;
+  setFetchSize: (fetchSize: number) => void;
+  setSqlResult: (sqlResult: SqlResult) => void;
+  setSqlState: (sqlState: string) => void;
+  setErrorMessage: (errorMessage: string) => void;
   resetQuery: () => void;
 };
 
-const initialSearchQueryState: SearchQueryState = {
+const initialCommandQueryState: CommandQueryState = {
   query: "",
   fetchSize: 100,
   sqlResult: {
@@ -65,10 +33,16 @@ const initialSearchQueryState: SearchQueryState = {
   errorMessage: "",
 };
 
-export const useSearchQueryStore = create<SearchQueryState & SearchQueryAction>((set) => ({
-  ...initialSearchQueryState,
+export const useCommandQueryStore = create<CommandQueryState & CommandQueryAction>((set) => ({
+  ...initialCommandQueryState,
+  setQuery: (query: string) => set({ query: query }),
+  setFetchSize: (fetchSize: number) => set({ fetchSize: fetchSize }),
+  setSqlResult: (sqlResult: SqlResult) => set({ sqlResult: sqlResult }),
+  setSqlState: (sqlState: string) => set({ sqlState: sqlState }),
+  setErrorMessage: (errorMessage: string) => set({ errorMessage: errorMessage }),
+  putAll: (values: any) => set((state) => ({ ...state, ...values })),
   put: (key: string, value: any) => set({ [key]: value }),
-  reset: () => set(initialSearchQueryState),
+  reset: () => set(initialCommandQueryState),
   resetQuery: () => {
     set({
       query: "",

@@ -1,18 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { jsqlInstance } from "./api";
-import { useGetConnInfoList } from "./connManager/query";
-import { useConnectionStore } from "./store";
-
-export const useGetTables = (searchTables: SearchTables) => {
-  const connectionStore = useConnectionStore();
-  const name = connectionStore.name;
-
-  return useQuery({
-    queryKey: ["tables", name],
-    queryFn: (): Promise<SqlResult> => jsqlInstance.findTableInfo(searchTables, { name: name }),
-    enabled: false,
-  });
-};
+import { useConnectionStoreInContext } from "./context";
 
 export const useLoadTemplate = (vendor: string) => {
   return useQuery({
@@ -22,13 +10,24 @@ export const useLoadTemplate = (vendor: string) => {
   });
 };
 
-export const useGetColumns = (searchColumns: SearchColumns) => {
-  const connectionStore = useConnectionStore();
+export const useGetTables = (tablelFilter: TableFilter, options?: { enabled: boolean }) => {
+  const connectionStore = useConnectionStoreInContext();
   const name = connectionStore.name;
 
   return useQuery({
-    queryKey: ["columns", name],
-    queryFn: (): Promise<SqlResult> => jsqlInstance.findColumnInfo(searchColumns, { name: name }),
-    enabled: false,
+    queryKey: ["tables", name, tablelFilter.owner, tablelFilter.tableName],
+    queryFn: (): Promise<SqlResult> => jsqlInstance.findTableInfo(tablelFilter, { name: name }),
+    enabled: options?.enabled || false,
+  });
+};
+
+export const useGetColumns = (columnFilter: ColumnFilter, options?: { enabled: boolean }) => {
+  const connectionStore = useConnectionStoreInContext();
+  const name = connectionStore.name;
+
+  return useQuery({
+    queryKey: ["columns", name, columnFilter.owner, columnFilter.tableName],
+    queryFn: (): Promise<SqlResult> => jsqlInstance.findColumnInfo(columnFilter, { name: name }),
+    enabled: options?.enabled || false,
   });
 };

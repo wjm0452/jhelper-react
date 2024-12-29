@@ -1,107 +1,114 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useState } from "react";
 import TableView from "../../common/tableViewer";
 import { useGetColumns } from "../query";
-import { useSearchColumnsStore, useSearchTablesStore } from "../store";
 
-const CommandButtons = (props: any) => {
+type ColumnFilterFormProps = {
+  filter: ColumnFilter;
+  setFilter: (data: any) => void;
+};
+
+const ColumnFilterForm = ({ filter, setFilter }: ColumnFilterFormProps) => {
+  const [tableName, setTableName] = useState("");
+  const [columnName, setColumnName] = useState("");
+
+  useEffect(() => {
+    setTableName(filter.tableName);
+  }, [filter.tableName]);
+
+  useEffect(() => {
+    setColumnName(filter.columnName);
+  }, [filter.columnName]);
+
   return (
     <>
-      <button
-        type="button"
-        className="btn btn-secondary btn-sm me-1"
-        onClick={() => props.onClick({ name: "addSelectQuery" })}
-      >
-        select
-      </button>
-      <button
-        type="button"
-        className="btn btn-secondary btn-sm me-1"
-        onClick={() => props.onClick({ name: "addInsertQuery" })}
-      >
-        insert
-      </button>
-      <button
-        type="button"
-        className="btn btn-secondary btn-sm me-1"
-        onClick={() => props.onClick({ name: "addUpdateQuery" })}
-      >
-        update
-      </button>
-      <button
-        type="button"
-        className="btn btn-secondary btn-sm me-1"
-        onClick={(e) => props.onClick({ name: "addDeleteQuery" })}
-      >
-        delete
-      </button>
+      <div className="col-auto">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="table"
+          value={tableName}
+          onChange={(e) => {
+            setTableName(e.currentTarget.value);
+          }}
+          onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") {
+              setFilter({ ...filter, tableName, columnName });
+            }
+          }}
+        />
+      </div>
+      <div className="col-auto">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="column"
+          value={columnName}
+          onChange={(e) => {
+            setColumnName(e.currentTarget.value);
+          }}
+          onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") {
+              setFilter({ ...filter, tableName, columnName });
+            }
+          }}
+        />
+      </div>
+      <div className="col-auto">
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={(e) => setFilter({ ...filter, tableName, columnName })}
+        >
+          find
+        </button>
+      </div>
     </>
   );
 };
 
-const DbColumns = (props: any) => {
-  const searchColumnsStore = useSearchColumnsStore();
-  const { data: columns, refetch: refetchGetColumns } = useGetColumns(searchColumnsStore);
+const DbColumns = forwardRef((props: any, ref) => {
+  const [filter, setFilter] = useState<ColumnFilter>({
+    owner: "",
+    tableName: "",
+    columnName: "",
+  });
+  const [enabledFetch, setEnabledFetch] = useState(false);
+  const { data } = useGetColumns(filter, { enabled: enabledFetch });
+  const clickHandler = props.onClick || function () {};
 
-  useEffect(() => {
-    if (searchColumnsStore.owner && searchColumnsStore.tableName) {
-      refetchGetColumns();
-    }
-  }, [searchColumnsStore.owner]);
+  useImperativeHandle(
+    ref,
+    () => ({
+      getFilter: () => ({ ...filter }),
+      setFilter: onApply,
+    }),
+    [filter],
+  );
+
+  const onApply = (filter: ColumnFilter) => {
+    setFilter({ ...filter });
+    setEnabledFetch(true);
+  };
 
   return (
     <>
       <div className="row g-1">
-        <div className="col-auto">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="table"
-            value={searchColumnsStore.tableName}
-            onChange={(e) => {
-              searchColumnsStore.put("tableName", e.currentTarget.value);
-            }}
-            onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === "Enter") {
-                refetchGetColumns();
-              }
-            }}
-          />
-        </div>
-        <div className="col-auto">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="column"
-            value={searchColumnsStore.columnName}
-            onChange={(e) => {
-              searchColumnsStore.put("columnName", e.currentTarget.value);
-            }}
-            onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === "Enter") {
-                refetchGetColumns();
-              }
-            }}
-          />
-        </div>
-        <div className="col-auto">
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={(e) => {
-              refetchGetColumns();
-            }}
-          >
-            find
-          </button>
-        </div>
-        <div>
-          <CommandButtons {...props}></CommandButtons>
-        </div>
+        <ColumnFilterForm filter={filter} setFilter={onApply}></ColumnFilterForm>
       </div>
       <div className="mt-1 overflow-auto" style={{ height: "300px" }}>
-        <TableView header={columns?.columnNames} data={columns?.result}></TableView>
+        <TableView
+          header={data?.columnNames}
+          data={data?.result}
+          onClick={(item: string[]) => {
+            clickHandler({
+              ...filter,
+              tableName: item[0],
+              columName: item[1],
+            });
+          }}
+        ></TableView>
       </div>
     </>
   );
-};
+});
 
 export default DbColumns;

@@ -76,6 +76,10 @@ export default class Editor extends React.Component<any, any> {
     this.sqlElement.current.focus();
   }
 
+  getValue() {
+    return this.sqlElement.current.value;
+  }
+
   render(): ReactNode {
     return (
       <textarea

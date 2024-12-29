@@ -7,25 +7,29 @@ type ConnInfo = {
   password: string;
 };
 
-type SearchTables = {
-  owner: string;
-  tableName: string;
-};
-
-type SearchColumns = {
-  owner: string;
-  tableName: string;
-  columnName: string;
-};
-
 type SqlResult = {
   columnNames: string[];
   result: string[][];
   count: number;
 };
 
-type SearchQuery = {
+type FetchQuery = {
   query: string;
   fetchSize: number;
   sqlResult: SqlResult;
+};
+
+type ConnectionState = ConnInfo & {
+  setConnInfo: (connInfo: ConnInfo) => void;
+};
+
+type TableFilter = {
+  owner: string;
+  tableName: string;
+};
+
+type ColumnFilter = {
+  owner: string;
+  tableName: string;
+  columnName: string;
 };
