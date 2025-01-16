@@ -1,19 +1,22 @@
 package com.jhelper.jserve.web.entity;
 
-import java.util.Date;
+import java.sql.Types;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.persistence.Lob;
 import lombok.Data;
 
 @Data
 @Entity(name = "board")
+@Comment(value = "게시판")
 public class Board {
 
     @Id
@@ -28,13 +31,15 @@ public class Board {
 
     @Column(name = "register_date")
     @Comment(value = "등록일시")
-    private Date registerDate;
+    private LocalDateTime registerDate;
 
     @Column(name = "title")
     @Comment(value = "제목")
     private String title;
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
+    @Column(name = "content")
     @Comment(value = "내용")
     private String content;
 }

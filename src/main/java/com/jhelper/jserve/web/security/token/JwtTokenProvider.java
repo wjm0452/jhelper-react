@@ -16,7 +16,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtTokenProvider {
 
-        private final String secretKey = "secret";
+        private final String secretKey = "secretsecretsecretsecretsecretsecretsecretsecretsecretsecret";
 
         public String createToken(UserDetails user, long timeMillis) {
 

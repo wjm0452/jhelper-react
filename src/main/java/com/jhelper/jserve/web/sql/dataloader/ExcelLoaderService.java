@@ -82,7 +82,7 @@ public class ExcelLoaderService {
             final JdbcTemplate jdbcTemplate = jdbcManager.getJdbcTemplateById(this.name);
             final String statement = getStatement();
 
-            int columnsLength = this.columns.length;
+            int columnsLength = Math.min(this.columns.length, values.length);
             List<Object[]> paramsTemp = new ArrayList<>();
 
             Object[] params = new Object[columnsLength];

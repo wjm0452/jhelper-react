@@ -34,7 +34,8 @@
                 c.ordinal_position ASC
   </sql>
   <sql id="indexes">
-    SELECT d.attname
+    SELECT d.attName as COLUMN_NAME,
+           e.relname as INDEX_NAME
       FROM information_schema.tables a
       JOIN pg_catalog.pg_class b
     	ON a.table_name = b.relname
@@ -42,6 +43,8 @@
         ON b.oid = c.indrelid
       JOIN pg_catalog.pg_attribute d
         ON c.indexrelid = d.attrelid
+      JOIN pg_catalog.pg_class e
+        ON e.oid = d.attrelid
      WHERE a.table_schema = '{{owner}}'
        AND b.relname = '{{tableName}}'
   </sql>

@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -129,8 +130,12 @@ public class SimpleExcelExporter implements Closeable {
 	}
 
 	public void writeHead(String[] values) {
+		writeHead(Arrays.asList(values));
+	}
+
+	public void writeHead(Iterable<String> values) {
 		excelWriter.setStyleSupport(headerStyle); // header style
-		Arrays.stream(values).forEach(value -> {
+		values.forEach(value -> {
 			excelWriter.cell().cellValue(value);
 			excelWriter.nextCell();
 		});

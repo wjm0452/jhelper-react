@@ -7,9 +7,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity(name = "connInfo")
+@Comment(value = "연결 정보")
+@NoArgsConstructor
 public class ConnInfo {
 
     @Id

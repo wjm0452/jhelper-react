@@ -47,4 +47,19 @@
      ORDER BY C.COLNO
        FOR READ ONLY WITH UR
   </sql>
+  <sql id="indexeColumns">
+    SELECT B.COLNAME AS INDEX_COLUMN,
+           C.COLNAME AS COLUMN_NAME
+      FROM SYSCAT.INDEXES A
+      JOIN SYSCAT.INDEXCOLUSE B
+        ON A.INDNAME = B.INDNAME
+      JOIN SYSCAT.COLUMNS C
+        ON A.TABNAME = C.TABNAME
+       AND B.COLNAME = C.COLNAME
+     WHERE A.OWNER = '{{owner}}'
+       AND A.INDSCHEMA = '{{owner}}'
+       AND A.TABNAME = '{{tableName}}'
+     ORDER BY C.COLNO
+       FOR READ ONLY WITH UR
+  </sql>
 </root>

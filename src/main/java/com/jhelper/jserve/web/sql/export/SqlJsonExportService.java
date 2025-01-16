@@ -9,10 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
@@ -39,7 +37,7 @@ public class SqlJsonExportService implements SqlExportService {
         Path tmpFile = Files.createTempFile(Paths.get(tmpDir), "", "");
 
         try (final BufferedWriter bw = Files.newBufferedWriter(tmpFile, Charset.forName("utf-8"))) {
-
+            bw.write("[");
             sqlHelperService.select(queryVO, new ResultSetHandler() {
 
                 @Override
@@ -77,8 +75,8 @@ public class SqlJsonExportService implements SqlExportService {
                         throw new RuntimeException(e);
                     }
                 }
-
             });
+            bw.write("]");
         }
 
         return tmpFile.toFile();

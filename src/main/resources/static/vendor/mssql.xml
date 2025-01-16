@@ -46,22 +46,23 @@
          order by a.column_id asc
     </sql>
     <sql id="indexes">
-        select e.name as INDEX_COLUMN
-          from sys.schemas a
-          join sys.tables b
-            on a.schema_id = b.schema_id
-          join sys.indexes c
-            on b.object_id = c.object_id
-           and c.is_primary_key = 1
-          join sys.index_columns d
-            on b.object_id = d.object_id
-           and c.index_id = d.index_id
-          join sys.columns e
-            on b.object_id = e.object_id
-           and d.column_id = e.column_id
-         where a.name = '{{owner}}'
-           and b.name = '{{tableName}}'
-         order by e.column_id asc
+      select e.name AS COLUMN_NAME,
+             c.name AS INDEX_NAME
+        from sys.schemas a
+        join sys.tables b
+          on a.schema_id = b.schema_id
+        join sys.indexes c
+          on b.object_id = c.object_id
+        join sys.index_columns d
+          on b.object_id = d.object_id
+         and c.index_id = d.index_id
+        join sys.columns e
+          on b.object_id = e.object_id
+         and d.column_id = e.column_id
+       where a.name = '{{owner}}'
+         and b.name = '{{tableName}}'
+       order by c.name,
+                d.key_ordinal
     </sql>
     <sql id="schema">
       select name AS NAME

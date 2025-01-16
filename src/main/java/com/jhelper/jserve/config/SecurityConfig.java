@@ -50,14 +50,18 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter();
         jwtFilter.setTokenProvider(tokenProvider());
 
-        http
+        http.headers((headers) -> headers
+                .frameOptions(frameOptionsConfig -> {
+                    frameOptionsConfig.disable();
+                }))
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
                 .userDetailsService(users())
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/", "/api/auth", "/api/auth/signin", "/api/auth/refresh-token")
+                                .requestMatchers("/", "/api/auth", "/api/auth/signin", "/api/auth/refresh-token",
+                                        "/api/file-viewer/*")
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())

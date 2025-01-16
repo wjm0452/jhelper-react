@@ -5,6 +5,7 @@ module.exports = (app) => {
     createProxyMiddleware(["/api", "/vendor"], {
       target: "http://localhost:9080",
       changeOrigin: true,
-    })
+      logLevel: "debug",
+    }),
   );
 };

@@ -1,10 +1,6 @@
 package com.jhelper.jserve.web;
 
-import java.util.Date;
-
-import com.jhelper.jserve.web.entity.Memo;
-import com.jhelper.jserve.web.entity.PageDto;
-import com.jhelper.jserve.web.memo.MemoService;
+import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.jhelper.jserve.web.entity.Memo;
+import com.jhelper.jserve.web.entity.PageDto;
+import com.jhelper.jserve.web.memo.MemoService;
 
 @RestController
 @RequestMapping("/api/memo")
@@ -54,7 +54,7 @@ public class MemoController {
     @PostMapping
     public Memo createQna(@RequestBody Memo memoVO, @AuthenticationPrincipal UserDetails userDetails) {
         memoVO.setRegisterId(userDetails.getUsername());
-        memoVO.setRegisterDate(new Date());
+        memoVO.setRegisterDate(LocalDateTime.now());
         return memoService.create(memoVO);
     }
 

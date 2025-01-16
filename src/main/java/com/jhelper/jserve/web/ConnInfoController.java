@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.jhelper.jserve.web.entity.ConnInfo;
 import com.jhelper.jserve.web.sql.ConnInfoService;
+import com.jhelper.jserve.web.sql.jdbc.JdbcTemplateManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,11 @@ public class ConnInfoController {
     @Autowired
     ConnInfoService connInfoService;
 
+    @Autowired
+    JdbcTemplateManager jdbcTemplateManager;
+
     @GetMapping
-    public List<ConnInfo> allCache() {
+    public List<ConnInfo> getAll() {
         return connInfoService.findAll();
     }
 
@@ -37,11 +41,13 @@ public class ConnInfoController {
 
     @PutMapping
     public ConnInfo save(@RequestBody ConnInfo connInfo) {
+        jdbcTemplateManager.removeJdbcTemplate(connInfo.getName());
         return connInfoService.save(connInfo);
     }
 
     @DeleteMapping("/{id}")
     public void deleteCache(@PathVariable String id) {
+        jdbcTemplateManager.removeJdbcTemplate(id);
         connInfoService.delete(id);
     }
 }

@@ -1,4 +1,4 @@
-import { useConnInfoStore } from "./store";
+import { useConnInfoStore } from "./connManager.store";
 
 const ConnInfoForm = (props: any) => {
   const connInfoStore = useConnInfoStore();
@@ -23,6 +23,16 @@ const ConnInfoForm = (props: any) => {
           value={connInfoStore.vendor}
           onChange={(e) => {
             connInfoStore.put("vendor", e.target.value);
+
+            if (e.target.value == "oracle") {
+              connInfoStore.put("driverClassName", "oracle.jdbc.driver.OracleDriver");
+            } else if (e.target.value == "postgres") {
+              connInfoStore.put("driverClassName", "org.postgresql.Driver");
+            } else if (e.target.value == "mssql") {
+              connInfoStore.put("driverClassName", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            } else {
+              connInfoStore.put("driverClassName", "");
+            }
           }}
         >
           <option value="">Select</option>

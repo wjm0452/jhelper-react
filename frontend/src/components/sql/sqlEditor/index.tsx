@@ -1,12 +1,12 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import TableView from "../../common/tableViewer";
-import { runSql } from "../api";
-import Editor from "./editor";
-import editorUtils from "./editorUtils";
-import { useConnectionStoreInContext } from "../context";
-import CommandTool from "./commandTool";
-import { useCommandQueryStore } from "../store";
+import { useConnectionStoreInContext } from "../sql.context";
+import { useCommandQueryStore } from "../sql.store";
 import Command from "./command";
+import CommandToolbar from "./command.toolbar";
+import Editor from "./editor";
+import { useSqlEditorState } from "./sqlEditor.store";
+import { Splitter, SplitterPanel } from "primereact/splitter";
 
 type SqlResultViewProps = {
   sqlState: string;
@@ -15,8 +15,6 @@ type SqlResultViewProps = {
 };
 
 const SqlResultView = ({ sqlState, errorMessage, sqlResult }: SqlResultViewProps) => {
-  const commandQueryStore = useCommandQueryStore();
-
   if (sqlState) {
     return (
       <div
@@ -28,8 +26,8 @@ const SqlResultView = ({ sqlState, errorMessage, sqlResult }: SqlResultViewProps
           fontWeight: "bold",
         }}
       >
-        <div>{commandQueryStore.sqlState}</div>
-        <div>{commandQueryStore.errorMessage}</div>
+        <div>{sqlState}</div>
+        <div>{errorMessage}</div>
       </div>
     );
   }
@@ -39,6 +37,7 @@ const SqlResultView = ({ sqlState, errorMessage, sqlResult }: SqlResultViewProps
 
 const SqlEditor = forwardRef((props, ref) => {
   const editorRef = useRef<Editor>();
+  const sqlEditorStore = useSqlEditorState();
   const connectionStore = useConnectionStoreInContext();
   const commandQueryStore = useCommandQueryStore();
 
@@ -56,28 +55,39 @@ const SqlEditor = forwardRef((props, ref) => {
     [connectionStore],
   );
 
+  useEffect(() => {
+    editorRef.current.setValue(sqlEditorStore.value);
+  }, []);
+
   return (
-    <div className="d-flex flex-column h-100 p-2">
-      <CommandTool onCommand={execCommand} />
-      <div className="flex-grow-1 mt-1">
-        <Editor ref={editorRef} onEnter={() => commandExecutor.executeSql()}></Editor>
-      </div>
-      <div className="mt-1 overflow-auto" style={{ height: "350px" }}>
-        <SqlResultView
-          sqlState={commandQueryStore.sqlState}
-          errorMessage={commandQueryStore.errorMessage}
-          sqlResult={commandQueryStore.sqlResult}
-        />
-      </div>
-      <div>
-        <div className="d-inline-block">
-          <span>{commandQueryStore.sqlResult?.count}</span> fetched rows
-        </div>
-        {/* <div className="float-end">
-          <ExportButtons query={query} />
-        </div> */}
-      </div>
-    </div>
+    <>
+      <Splitter layout="vertical">
+        <SplitterPanel className="flex flex-column" size={70}>
+          <CommandToolbar onCommand={execCommand} />
+          <div className="flex-grow-1 mt-1">
+            <Editor
+              ref={editorRef}
+              onEnter={() => {
+                sqlEditorStore.setValue(editorRef.current.getValue()); // cache
+                commandExecutor.executeSql();
+              }}
+            ></Editor>
+          </div>
+        </SplitterPanel>
+        <SplitterPanel className="overflow-hidden flex flex-column" size={30}>
+          <div className="overflow-auto">
+            <SqlResultView
+              sqlState={commandQueryStore.sqlState}
+              errorMessage={commandQueryStore.errorMessage}
+              sqlResult={commandQueryStore.sqlResult}
+            />
+          </div>{" "}
+          <div>
+            <span>{commandQueryStore.sqlResult?.count}</span> fetched rows
+          </div>
+        </SplitterPanel>
+      </Splitter>
+    </>
   );
 });
 

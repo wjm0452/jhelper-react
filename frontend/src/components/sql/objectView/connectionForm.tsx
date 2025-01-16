@@ -1,57 +1,51 @@
 import { useEffect } from "react";
-import { useGetConnInfoList } from "../connManager/query";
-import { useLoadTemplate } from "../query";
-import { useConnManagerStore } from "../connManager/store";
-import { useConnectionStoreInContext } from "../context";
+import { useGetConnInfoList } from "../connManager/connManager.query";
+import { useConnManagerStore } from "../connManager/connManager.store";
+import { useConnectionStoreInContext } from "../sql.context";
+import ConnManager from "../connManager";
+import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
 
-const ConnectionForm = () => {
+const ConnectionForm = ({ onChange }: { onChange?: (connInfo: ConnInfo) => void }) => {
   const connManagerStore = useConnManagerStore();
   const connectionStore = useConnectionStoreInContext();
   const { data: connInfoList } = useGetConnInfoList();
-  const { refetch: refetchLoadTemplate } = useLoadTemplate(connectionStore.vendor);
 
-  useEffect(() => {
-    if (connectionStore.vendor) {
-      refetchLoadTemplate();
-    } else if (connInfoList?.length) {
-      connectionStore.setConnInfo(connInfoList[0]);
-    }
-  }, [connectionStore.vendor, connInfoList?.length]);
+  const triggerOnChangeHandler = (connInfo: ConnInfo) => {
+    onChange && onChange(connInfo);
+  };
 
   return (
-    <div className="row g-1">
-      <div className="col-auto">
-        <select
-          className="form-select"
+    <>
+      <ConnManager />
+      <div className="p-inputgroup flex-1">
+        <Dropdown
           value={connectionStore.name}
           onChange={(e) => {
-            const value: string = e.currentTarget.value;
+            const value: string = e.value;
             if (value) {
-              connectionStore.setConnInfo(connInfoList.find(({ name }) => name == value));
+              const connInfo = connInfoList.find(({ name }) => name == value);
+              connectionStore.setConnInfo(connInfo);
+              triggerOnChangeHandler(connInfo);
+            } else {
+              triggerOnChangeHandler(null);
             }
           }}
-        >
-          <option></option>
-          {connInfoList?.map((conn: ConnInfo) => {
-            return (
-              <option key={conn.name} value={conn.name}>
-                {conn.name}
-              </option>
-            );
+          options={connInfoList?.map((conn: ConnInfo) => {
+            return { code: conn.name, name: conn.name };
           })}
-        </select>
-      </div>
-      <div className="col-auto">
-        <button
-          className="btn btn-secondary btn-sm me-1"
+          optionLabel="name"
+          optionValue="name"
+          className="w-full text-base"
+        />
+        <Button
+          icon="pi pi-cog"
           onClick={(e) => {
             connManagerStore.show();
           }}
-        >
-          settings
-        </button>
+        />
       </div>
-    </div>
+    </>
   );
 };
 

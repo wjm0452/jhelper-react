@@ -80,6 +80,10 @@ export default class Editor extends React.Component<any, any> {
     return this.sqlElement.current.value;
   }
 
+  setValue(value: string) {
+    this.sqlElement.current.value = value;
+  }
+
   render(): ReactNode {
     return (
       <textarea

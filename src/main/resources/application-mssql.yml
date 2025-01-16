@@ -1,0 +1,39 @@
+server:
+  port: "9080"
+
+# mssql
+spring:
+  jpa:
+    generate-ddl: "true"
+    database: sql-server
+    properties:
+      hibernate:
+        format_sql: "true"
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: "true"
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost:1533;database=jhelper;trustServerCertificate=true
+    username: JHELPEROWN
+    password: 
+    hikari:
+      connection-timeout: "30000"
+      idle-timeout: "300000"
+      maximum-pool-size: "10"
+      max-lifetime: "1800000"
+      minimum-idle: "5"
+  servlet:
+    multipart:
+      enabled: "true"
+
+logging:
+  file:
+    path: c:/work/logs/
+    name: c:/work/logs/app.log
+  level:
+    web: debug
+    org:
+      docx4j: error
+    root: DEBUG

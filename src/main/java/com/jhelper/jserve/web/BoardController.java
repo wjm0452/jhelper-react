@@ -1,10 +1,6 @@
 package com.jhelper.jserve.web;
 
-import java.util.Date;
-
-import com.jhelper.jserve.web.entity.PageDto;
-import com.jhelper.jserve.web.entity.Board;
-import com.jhelper.jserve.web.board.BoardService;
+import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jhelper.jserve.web.board.BoardService;
+import com.jhelper.jserve.web.entity.Board;
+import com.jhelper.jserve.web.entity.PageDto;
+
 @RestController
 @RequestMapping("/api/board")
 public class BoardController {
@@ -32,21 +32,27 @@ public class BoardController {
     BoardService boardService;
 
     @GetMapping
-    public PageDto<Board> allBoard(
+    public PageDto<Board> getBoards(
+            @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size) {
-        return boardService.findAll(page, size);
+
+        Board board = new Board();
+        board.setTitle(filter);
+        board.setContent(filter);
+
+        return boardService.findAll(board, page, size);
     }
 
     @GetMapping("/{id}")
-    public Board board(@PathVariable Integer id) {
+    public Board getBoard(@PathVariable Integer id) {
         return boardService.findById(id);
     }
 
     @PostMapping
     public Board createBoard(@RequestBody Board boardVO, @AuthenticationPrincipal UserDetails userDetails) {
         boardVO.setRegisterId(userDetails.getUsername());
-        boardVO.setRegisterDate(new Date());
+        boardVO.setRegisterDate(LocalDateTime.now());
         return boardService.create(boardVO);
     }
 

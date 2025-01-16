@@ -1,7 +1,35 @@
-import { runSql } from "../api";
-import { useConnectionStoreInContext } from "../context";
-import { useCommandQueryStore } from "../store";
-import editorUtils from "./editorUtils";
+import httpClient from "../../../common/httpClient";
+import { useConnectionStoreInContext } from "../sql.context";
+import { useCommandQueryStore } from "../sql.store";
+import sqlApi from "../sql.api";
+
+const exportTo = (
+  {
+    type,
+    query,
+    fileName,
+  }: {
+    type: string;
+    query: string;
+    fileName: string;
+  },
+  { name }: { name: string },
+) => {
+  if (!query || !query.toLowerCase().startsWith("select")) {
+    alert("조회 후 사용해 주세요.");
+    return;
+  }
+
+  httpClient.downloadFile(
+    {
+      method: "post",
+      url: `/api/sql-export/${type}`,
+      responseType: "blob",
+      data: { query: query, name: name },
+    },
+    { fileName },
+  );
+};
 
 const Command = (editorRef: any) => {
   const connectionStore = useConnectionStoreInContext();
@@ -16,7 +44,7 @@ const Command = (editorRef: any) => {
       commandQueryStore.resetQuery();
       commandQueryStore.setQuery(query);
       try {
-        const sqlResult = await runSql(query, {
+        const sqlResult = await sqlApi.runSql(query, {
           name: connectionStore.name,
           fetchSize: commandQueryStore.fetchSize,
         });
@@ -38,31 +66,66 @@ const Command = (editorRef: any) => {
         commandQueryStore.setFetchSize(data);
       } else if ("addSelectQuery" == command) {
         editorRef.current.addTextToFirstLine(
-          await editorUtils.makeSelectQuery({
-            ...data,
-            name: connectionStore.name,
-          }),
+          await sqlApi.makeSelectQuery(
+            {
+              ...data,
+            },
+            connectionStore,
+          ),
         );
       } else if ("addInsertQuery" == command) {
         editorRef.current.addTextToFirstLine(
-          await editorUtils.makeInsertQuery({
-            ...data,
-            name: connectionStore.name,
-          }),
+          await sqlApi.makeInsertQuery(
+            {
+              ...data,
+            },
+            connectionStore,
+          ),
         );
       } else if ("addUpdateQuery" == command) {
         editorRef.current.addTextToFirstLine(
-          await editorUtils.makeUpdateQuery({
-            ...data,
-            name: connectionStore.name,
-          }),
+          await sqlApi.makeUpdateQuery(
+            {
+              ...data,
+            },
+            connectionStore,
+          ),
         );
       } else if ("addDeleteQuery" == command) {
         editorRef.current.addTextToFirstLine(
-          await editorUtils.makeDeleteQuery({
-            ...data,
-            name: connectionStore.name,
-          }),
+          await sqlApi.makeDeleteQuery(
+            {
+              ...data,
+            },
+            connectionStore,
+          ),
+        );
+      } else if ("exportExcel" == command) {
+        exportTo(
+          {
+            type: "excel",
+            query: commandQueryStore.query,
+            fileName: "sql_result.xlsx",
+          },
+          connectionStore,
+        );
+      } else if ("exportText" == command) {
+        exportTo(
+          {
+            type: "text",
+            query: commandQueryStore.query,
+            fileName: "sql_result.txt",
+          },
+          connectionStore,
+        );
+      } else if ("exportJson" == command) {
+        exportTo(
+          {
+            type: "json",
+            query: commandQueryStore.query,
+            fileName: "sql_result.json",
+          },
+          connectionStore,
         );
       }
     },

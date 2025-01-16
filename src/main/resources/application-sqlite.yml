@@ -1,0 +1,23 @@
+server:
+  port: "9080"
+
+# sqlite
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    jdbc-url: jdbc:sqlite:data/jhelper.db
+    username: ""
+    password: ""
+  servlet:
+    multipart:
+      enabled: "true"
+
+logging:
+  file:
+    path: c:/work/logs/
+    name: c:/work/logs/app.log
+  level:
+    web: debug
+    org:
+      docx4j: error
+    root: DEBUG

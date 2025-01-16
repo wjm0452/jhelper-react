@@ -1,51 +1,64 @@
-import { useConnManagerStore, useConnInfoStore } from "./store";
-import ConnInfoList from "./connInfoList";
+import { Button } from "primereact/button";
+import { ButtonGroup } from "primereact/buttongroup";
+import { Dialog } from "primereact/dialog";
 import ConnInfoForm from "./connInfoForm";
-import { useSaveConnInfo } from "./query";
-import Modal from "../../common/dialog";
+import ConnInfoList from "./connInfoList";
+import { useSaveConnInfo } from "./connManager.query";
+import { useConnInfoStore, useConnManagerStore } from "./connManager.store";
 
 const ConnManager = (props: any) => {
   const connManagerStore = useConnManagerStore();
   const connInfoStore = useConnInfoStore();
   const { mutateAsync: saveConnInfo } = useSaveConnInfo();
 
+  const footerContent = (
+    <>
+      <ButtonGroup>
+        <Button
+          label="초기화"
+          icon="pi pi-refresh"
+          size="small"
+          text
+          onClick={() => connInfoStore.reset()}
+        />
+        <Button
+          label="저장"
+          icon="pi pi-check"
+          size="small"
+          text
+          onClick={() => saveConnInfo(connInfoStore)}
+        />
+        <Button
+          label="닫기"
+          icon="pi pi-times"
+          size="small"
+          text
+          severity="secondary"
+          onClick={() => connManagerStore.hide()}
+        />
+      </ButtonGroup>
+    </>
+  );
+
   return (
-    <Modal
-      title={"Connections"}
+    <Dialog
       visible={connManagerStore.visible}
-      onClose={() => connManagerStore.hide()}
-    >
-      {{
-        body: (
-          <div className="d-flex flex-row">
-            <div className="flex-grow-1 p-1">
-              <ConnInfoList></ConnInfoList>
-            </div>
-            <div className="flex-grow-0 p-1" style={{ flexBasis: "300px" }}>
-              <ConnInfoForm></ConnInfoForm>
-            </div>
-          </div>
-        ),
-        footer: (
-          <>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => connManagerStore.hide()}
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => saveConnInfo(connInfoStore)}
-            >
-              Save changes
-            </button>
-          </>
-        ),
+      header="Connections"
+      onHide={() => {
+        connManagerStore.hide();
       }}
-    </Modal>
+      position="center"
+      footer={footerContent}
+    >
+      <div className="d-flex flex-row">
+        <div className="flex-grow-1 p-1">
+          <ConnInfoList />
+        </div>
+        <div className="flex-grow-0 p-1" style={{ flexBasis: "300px" }}>
+          <ConnInfoForm />
+        </div>
+      </div>
+    </Dialog>
   );
 };
 

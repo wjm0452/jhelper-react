@@ -29,11 +29,12 @@
        {{#columnName}}
        AND (C.COLUMN_NAME = '{{columnName}}' OR C.COMMENTS LIKE '%' || '{{columnName}}' || '%')
        {{/columnName}}
-       ORDER BY A.TABLE_NAME,
+       ORDER BY A.TABLE_NAME ASC,
                 A.COLUMN_ID ASC
   </sql>
   <sql id="indexes">
-    SELECT A.COLUMN_NAME AS INDEX_COLUMN
+    SELECT D.COLUMN_NAME,
+           D.INDEX_NAME
       FROM ALL_TAB_COLUMNS A
       JOIN ALL_TAB_COMMENTS B
         ON A.OWNER = B.OWNER
@@ -48,7 +49,7 @@
        AND A.COLUMN_NAME = D.COLUMN_NAME
      WHERE A.OWNER = '{{owner}}'
        AND A.TABLE_NAME = '{{tableName}}'
-     GROUP BY A.COLUMN_NAME, A.COLUMN_ID
-     ORDER BY A.COLUMN_ID ASC
+     ORDER BY D.INDEX_NAME ASC,
+              A.COLUMN_ID ASC
   </sql>
 </root>

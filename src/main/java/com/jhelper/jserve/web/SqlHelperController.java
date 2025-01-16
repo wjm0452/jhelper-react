@@ -41,8 +41,8 @@ public class SqlHelperController {
                 .body(sqlError);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<SqlError> runtimeError(RuntimeException e) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<SqlError> runtimeError(Exception e) {
 
         SqlError sqlError = new SqlError();
 

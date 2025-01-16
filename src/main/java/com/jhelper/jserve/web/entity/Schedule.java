@@ -1,18 +1,22 @@
 package com.jhelper.jserve.web.entity;
 
+import java.sql.Types;
 import java.util.Date;
 
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import lombok.Data;
 
 @Data
 @Entity(name = "schedule")
+@Comment(value = "일정")
 public class Schedule {
 
     @Id
@@ -41,7 +45,9 @@ public class Schedule {
     @Comment(value = "제목")
     private String title;
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
+    @Column(name = "content")
     @Comment(value = "내용")
     private String content;
 }

@@ -1,5 +1,5 @@
-import { useDeleteConnInfo, useGetConnInfoList } from "./query";
-import { useConnInfoStore } from "./store";
+import { useDeleteConnInfo, useGetConnInfoList } from "./connManager.query";
+import { useConnInfoStore } from "./connManager.store";
 
 const ConnInfoList = () => {
   const connInfoStore = useConnInfoStore();

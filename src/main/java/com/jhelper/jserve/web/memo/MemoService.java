@@ -1,15 +1,15 @@
 package com.jhelper.jserve.web.memo;
 
-import java.util.Date;
-
-import com.jhelper.jserve.web.entity.Memo;
-import com.jhelper.jserve.web.entity.PageDto;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import com.jhelper.jserve.web.entity.Memo;
+import com.jhelper.jserve.web.entity.PageDto;
 
 @Service
 public class MemoService {
@@ -37,7 +37,7 @@ public class MemoService {
     }
 
     public Memo create(Memo memo) {
-        memo.setRegisterDate(new Date());
+        memo.setRegisterDate(LocalDateTime.now());
         return memoRepository.save(memo);
     }
 
@@ -49,7 +49,6 @@ public class MemoService {
             return null;
         }
 
-        oldMemo.setTitle(memo.getTitle());
         oldMemo.setContent(memo.getContent());
         return memoRepository.save(oldMemo);
     }

@@ -1,6 +1,7 @@
 $font-size-root: 12px;
 $font-family-sans-serif: "D2Coding", "Consolas";
-$enable-cssgrid: true;
-$enable-grid-classes: true;
+$line-height-base: 1.2;
+// $enable-cssgrid: true;
+// $enable-grid-classes: true;
 
 @import "bootstrap/scss/bootstrap";

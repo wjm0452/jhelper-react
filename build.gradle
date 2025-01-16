@@ -34,8 +34,19 @@ dependencies {
 	implementation 'org.apache.poi:poi:5.2.3'
 	implementation 'org.apache.poi:poi-ooxml:5.2.3'
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'io.jsonwebtoken:jjwt-api:0.10.8'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.10.8'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.10.8'
+
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+	implementation 'com.sun.xml.bind:jaxb-core:3.0.2'
+	implementation 'com.sun.xml.bind:jaxb-impl:3.0.2'
+
+	implementation 'jakarta.activation:jakarta.activation-api:2.0.1'
+
+	implementation 'org.docx4j:docx4j-core:11.5.1'
+	implementation 'org.docx4j:docx4j-ImportXHTML:11.4.8'
+	implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.1'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -55,7 +66,7 @@ sourceSets {
 }
 
 processResources {
-	dependsOn "copyFrontEndBuildFiles"
+	//dependsOn "copyFrontEndBuildFiles" // 배포시에만 사용
 }
 
 task copyFrontEndBuildFiles(type: Copy) {

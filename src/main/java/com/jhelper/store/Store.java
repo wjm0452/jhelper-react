@@ -41,7 +41,7 @@ public class Store {
 
         path = path.chars().mapToObj(i -> (char) i)
                 .filter(c -> Character.isLetterOrDigit(c) || c == '-' || c == '_' || c == ':' || c == '\\' || c == '/'
-                        || c == '.')
+                        || c == '.' || c == '[' || c == ']' || c == '{' || c == '}')
                 .map(String::valueOf).collect(Collectors.joining());
 
         if (path.contains("..")) {
@@ -55,5 +55,10 @@ public class Store {
         }
 
         return result;
+    }
+
+    public String relativePath(Path path) {
+        Path rootPath = Paths.get(storagePath);
+        return rootPath.relativize(path).toString();
     }
 }
