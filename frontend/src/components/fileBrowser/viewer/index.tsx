@@ -9,6 +9,8 @@ import MarkdownFileViewer from "./fileViewer.markdown";
 import { Card } from "primereact/card";
 import PptxFileViewer from "./fileViewer.pptx";
 import DocxFileViewer from "./fileViewer.docx";
+import { Dialog } from "primereact/dialog";
+import { ButtonGroup } from "primereact/buttongroup";
 
 const getFileType = (path: string) => {
   path = path.toLowerCase();
@@ -41,7 +43,6 @@ const FileViewerWrap = ({
   onClose: () => void;
 }) => {
   const [filePath, setFilePath] = useState("");
-  const [inset, setInset] = useState(10);
 
   useEffect(() => {
     if (show) {
@@ -52,42 +53,18 @@ const FileViewerWrap = ({
   }, [show]);
 
   return (
-    <div
-      className="position-absolute justify-content-center align-items-center"
-      style={{
-        inset: `${inset}rem`,
-        zIndex: 999,
-        display: show ? "" : "none",
-        backgroundColor: "white",
+    <Dialog
+      visible={show}
+      onHide={() => {
+        onClose();
       }}
+      position="center"
+      header={`Viewer - ${path}`}
+      maximizable
+      style={{ width: "70vw", height: "70vh" }}
     >
-      <div className="d-flex flex-column h-100 modal-content">
-        <div className="flex modal-header">
-          <div>Viewer - {filePath}</div>
-          <div className="justify-content-end">
-            <Button
-              icon={`pi ${inset == 0 ? "pi-window-minimize" : "pi-window-maximize"}`}
-              rounded
-              text
-              onClick={() => {
-                setInset(inset == 10 ? 0 : 10);
-              }}
-            />
-            <Button
-              icon="pi pi-times"
-              rounded
-              text
-              onClick={() => {
-                onClose();
-              }}
-            />
-          </div>
-        </div>
-        <div className="flex-grow-1 modal-body overflow-hidden">
-          <FileViewer path={filePath}></FileViewer>
-        </div>
-      </div>
-    </div>
+      <FileViewer path={filePath}></FileViewer>
+    </Dialog>
   );
 };
 

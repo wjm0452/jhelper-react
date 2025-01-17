@@ -61,7 +61,12 @@ const SqlEditor = forwardRef((props, ref) => {
 
   return (
     <>
-      <Splitter layout="vertical">
+      <Splitter
+        layout="vertical"
+        className="w-100 h-100"
+        stateStorage="session"
+        stateKey="sqlEditor.splitter"
+      >
         <SplitterPanel className="flex flex-column" size={70}>
           <CommandToolbar onCommand={execCommand} />
           <div className="flex-grow-1 mt-1">
@@ -75,7 +80,7 @@ const SqlEditor = forwardRef((props, ref) => {
           </div>
         </SplitterPanel>
         <SplitterPanel className="overflow-hidden flex flex-column" size={30}>
-          <div className="overflow-auto">
+          <div className="h-100 overflow-auto">
             <SqlResultView
               sqlState={commandQueryStore.sqlState}
               errorMessage={commandQueryStore.errorMessage}

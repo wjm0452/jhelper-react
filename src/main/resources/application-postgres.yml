@@ -16,8 +16,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/jHelper
-    password: 
     username: root
+    password: 
     hikari:
       connection-timeout: "30000"
       idle-timeout: "300000"
@@ -27,12 +27,3 @@ spring:
   servlet:
     multipart:
       enabled: "true"
-logging:
-  file:
-    path: c:/work/logs/
-    name: c:/work/logs/app.log
-  level:
-    web: debug
-    org:
-      docx4j: error
-    root: DEBUG

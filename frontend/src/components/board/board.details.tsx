@@ -17,11 +17,11 @@ const InputForm = ({ item, setItem, readOnly }: InputFormProps) => {
   return (
     <>
       <div className="col-md-6 flex-grow-0">
-        <label className="form-label">Register Id</label>
+        <label className="form-label">작성자</label>
         <input type="text" className="form-control" value={item.registerId} readOnly={true}></input>
       </div>
       <div className="col-md-6 flex-grow-0">
-        <label className="form-label">Register Date</label>
+        <label className="form-label">작성일</label>
         <input
           type="datetime-local"
           className="form-control"
@@ -30,7 +30,7 @@ const InputForm = ({ item, setItem, readOnly }: InputFormProps) => {
         ></input>
       </div>
       <div className="col-12 flex-grow-0">
-        <label className="form-label">Title</label>
+        <label className="form-label">제목</label>
         <input
           type="text"
           className="form-control"
@@ -132,7 +132,7 @@ const BoardDetails = () => {
           </div>
           <div className="row g-3 flex-grow-1 overflow-hidden">
             <div className="col-12 h-100">
-              <label className="form-label">Content</label>
+              <label className="form-label">내용</label>
               {isWriter ? (
                 <MDEditor
                   value={item.content}

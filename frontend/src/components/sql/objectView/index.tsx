@@ -27,7 +27,7 @@ const ObjectView = (props: any) => {
   });
 
   return (
-    <div className="h-100 w-100 d-flex flex-column">
+    <div className="w-100 h-100 d-flex flex-column">
       <div className="flex-grow-1 overflow-hidden d-flex flex-column">
         <div className="mb-1">
           <ConnectionForm />

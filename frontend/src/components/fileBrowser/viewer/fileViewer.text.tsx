@@ -13,7 +13,13 @@ const TextFileViewer = ({ path }: { path: string }) => {
 
   return (
     <div className="h-100">
-      <textarea className="w-100 h-100 form-control" value={text}></textarea>
+      <textarea
+        className="w-100 h-100 form-control"
+        value={text}
+        onChange={(e) => {
+          setText(e.currentTarget.value);
+        }}
+      ></textarea>
     </div>
   );
 };

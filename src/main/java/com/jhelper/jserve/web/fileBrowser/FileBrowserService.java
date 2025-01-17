@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
@@ -24,10 +25,13 @@ import com.jhelper.export.excel.SimpleExcelExporter;
 @Service
 public class FileBrowserService {
 
+    @Value("${jhelper.fileBrowser.rootPath}")
+    private String rootPath;
+
     private AntPathMatcher pathMatcher = new AntPathMatcher();
 
     public Path getRootPath() {
-        return Paths.get("c:\\work");
+        return Paths.get(rootPath);
     }
 
     public Path getFile(String path) throws AccessDeniedException {

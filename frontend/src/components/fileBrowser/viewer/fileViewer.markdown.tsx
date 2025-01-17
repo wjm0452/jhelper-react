@@ -9,11 +9,17 @@ const MarkdownFileViewer = ({ path }: { path: string }) => {
       const data = await fileCommandApi.getFile(path, { responseType: "text/plain" });
       setText(data);
     })();
-  });
+  }, []);
 
   return (
     <div className="h-100">
-      <textarea className="w-100 h-100 form-control" value={text}></textarea>
+      <textarea
+        className="w-100 h-100 form-control"
+        value={text}
+        onChange={(e) => {
+          setText(e.currentTarget.value);
+        }}
+      ></textarea>
     </div>
   );
 };

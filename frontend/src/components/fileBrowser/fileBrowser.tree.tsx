@@ -47,15 +47,26 @@ const FileBrowserTree = ({ path }: { path: string }) => {
   const [selectedNodeKey, setSelectedNodeKey] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<any>({ "0": true });
 
+  const getNodeBy = (key: string) => {
+    const parentKeys = key.split("-");
+    const parentNode = parentKeys.reduce((previousValue: any, currentValue: any, currentIndex) => {
+      const value = previousValue[currentValue];
+
+      if (currentIndex == parentKeys.length - 1) {
+        return value;
+      }
+
+      return value.children ? value.children : value;
+    }, nodes);
+
+    return parentNode;
+  };
+
   const loadOnExpand = async (e: any) => {
+    const parentNode = getNodeBy(e.node.key);
+
     if (!e.node.children && e.node.data.type == "DIR") {
       setLoading(true);
-
-      const parentKeys = e.node.key.split("-");
-      const parentNode = parentKeys.reduce((accumulator: any, currentValue: any) => {
-        const value = accumulator[currentValue];
-        return value.children ? value.children : value;
-      }, nodes);
 
       // name, path, owner, lastModifiedTime
       const list = await getFileList({ path: parentNode.data.path, filter: { type: "DIR" } });
@@ -69,6 +80,15 @@ const FileBrowserTree = ({ path }: { path: string }) => {
 
       setLoading(false);
     }
+
+    if (parentNode.children) {
+      parentNode.icon = "pi pi-fw pi-folder-open";
+    }
+  };
+
+  const onCollapse = (e: any) => {
+    const parentNode = getNodeBy(e.node.key);
+    parentNode.icon = "pi pi-fw pi-folder";
   };
 
   useEffect(() => {
@@ -90,6 +110,7 @@ const FileBrowserTree = ({ path }: { path: string }) => {
         className="w-100 h-100"
         value={nodes}
         onExpand={loadOnExpand}
+        onCollapse={onCollapse}
         loading={loading}
         selectionMode="single"
         selectionKeys={selectedNodeKey}
@@ -105,7 +126,9 @@ const FileBrowserTree = ({ path }: { path: string }) => {
           setExpandedKeys({ ...expandedKeys });
         }}
         expandedKeys={expandedKeys}
-        onToggle={(e) => setExpandedKeys(e.value)}
+        onToggle={(e) => {
+          setExpandedKeys(e.value);
+        }}
       />
     </div>
   );

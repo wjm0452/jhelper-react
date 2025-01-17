@@ -7,11 +7,11 @@ const FileBrowser = () => {
   const { data: rootFile } = useGetFileRoot();
 
   return (
-    <Splitter className="h-100">
-      <SplitterPanel size={30} className="p-1">
+    <Splitter className="w-100 h-100" stateStorage="session" stateKey="fileBrowser.splitter">
+      <SplitterPanel size={30} className="overflow-hidden p-1">
         <FileBrowserTree path={rootFile?.path} />
       </SplitterPanel>
-      <SplitterPanel size={70} className="p-1">
+      <SplitterPanel size={70} className="overflow-hidden p-1">
         <FileBrowserList />
       </SplitterPanel>
     </Splitter>

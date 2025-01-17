@@ -72,18 +72,18 @@ const BoardList = () => {
       onRowDoubleClick={(e: DataTableRowClickEvent) => navigate(`/board/details/${e.data.id}`)}
       header={renderHeader}
     >
-      <Column field="id" header="Id" style={{ width: "50px" }}></Column>
+      <Column field="id" header="#" style={{ width: "50px" }}></Column>
       <Column
         field="title"
-        header="Title"
+        header="제목"
         style={{ width: "" }}
         filter
         filterPlaceholder=""
       ></Column>
-      <Column field="registerId" header="Register Id" style={{ width: "200px" }}></Column>
+      <Column field="registerId" header="작성자" style={{ width: "200px" }}></Column>
       <Column
         field="registerDate"
-        header="Register Date"
+        header="작성일"
         style={{ width: "200px" }}
         body={({ registerDate }) => dateUtils.toString(dateUtils.toDate(registerDate))}
       ></Column>

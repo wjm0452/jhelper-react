@@ -29,7 +29,7 @@ function App() {
     <HashRouter>
       <header
         className="position-sticky top-0"
-        style={{ backgroundColor: "rgba(255,255,255,0.8)", zIndex: 9999 }}
+        style={{ backgroundColor: "rgba(255,255,255,0.8)", zIndex: 9 }}
       >
         <ul className="nav justify-content-end">
           <li className="nav-item">
