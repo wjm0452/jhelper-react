@@ -47,7 +47,7 @@
      ORDER BY C.COLNO
        FOR READ ONLY WITH UR
   </sql>
-  <sql id="indexeColumns">
+  <sql id="indexes">
     SELECT B.COLNAME AS INDEX_COLUMN,
            C.COLNAME AS COLUMN_NAME
       FROM SYSCAT.INDEXES A
