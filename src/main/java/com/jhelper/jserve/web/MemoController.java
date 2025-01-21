@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jhelper.jserve.web.entity.Memo;
-import com.jhelper.jserve.web.entity.PageDto;
-import com.jhelper.jserve.web.memo.MemoService;
+import com.jhelper.jserve.common.PageDto;
+import com.jhelper.jserve.memo.MemoService;
+import com.jhelper.jserve.memo.entity.Memo;
 
 @RestController
 @RequestMapping("/api/memo")

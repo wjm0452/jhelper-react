@@ -1,11 +1,5 @@
 package com.jhelper.jserve.web;
 
-import com.jhelper.jserve.web.sql.SqlHelperService;
-import com.jhelper.jserve.web.sql.export.SqlExcelExportService;
-import com.jhelper.jserve.web.sql.export.SqlJsonExportService;
-import com.jhelper.jserve.web.sql.export.SqlTextExportService;
-import com.jhelper.jserve.web.sql.model.QueryVO;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +16,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.jhelper.jserve.sql.QueryDto;
+import com.jhelper.jserve.sql.SqlHelperService;
+import com.jhelper.jserve.sql.export.SqlExcelExportService;
+import com.jhelper.jserve.sql.export.SqlJsonExportService;
+import com.jhelper.jserve.sql.export.SqlTextExportService;
 
 @RestController
 @RequestMapping("/api/sql-export")
@@ -42,8 +42,8 @@ public class SqlExportController {
     SqlJsonExportService sqlJsonExportService;
 
     @PostMapping("/excel")
-    public ResponseEntity<Resource> exportExcel(@RequestBody QueryVO queryVo) throws IOException {
-        File file = sqlExcelExportService.export(queryVo);
+    public ResponseEntity<Resource> exportExcel(@RequestBody QueryDto queryDto) throws IOException {
+        File file = sqlExcelExportService.export(queryDto);
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
@@ -54,8 +54,8 @@ public class SqlExportController {
     }
 
     @PostMapping("/text")
-    public ResponseEntity<Resource> exportText(@RequestBody QueryVO queryVo) throws IOException {
-        File file = sqlTextExportService.export(queryVo);
+    public ResponseEntity<Resource> exportText(@RequestBody QueryDto queryDto) throws IOException {
+        File file = sqlTextExportService.export(queryDto);
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
@@ -66,8 +66,8 @@ public class SqlExportController {
     }
 
     @PostMapping("/json")
-    public ResponseEntity<Resource> exportJson(@RequestBody QueryVO queryVo) throws IOException {
-        File file = sqlJsonExportService.export(queryVo);
+    public ResponseEntity<Resource> exportJson(@RequestBody QueryDto queryDto) throws IOException {
+        File file = sqlJsonExportService.export(queryDto);
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 

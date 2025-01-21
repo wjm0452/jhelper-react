@@ -1,9 +1,9 @@
 package com.jhelper.jserve.web;
 
-import com.jhelper.jserve.web.sql.SqlHelperService;
-import com.jhelper.jserve.web.sql.model.QueryVO;
-import com.jhelper.jserve.web.sql.model.SqlError;
-import com.jhelper.jserve.web.sql.model.SqlResult;
+import com.jhelper.jserve.sql.QueryDto;
+import com.jhelper.jserve.sql.SqlErrorDto;
+import com.jhelper.jserve.sql.SqlHelperService;
+import com.jhelper.jserve.sql.SqlResultDto;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
 import org.slf4j.Logger;
@@ -28,9 +28,9 @@ public class SqlHelperController {
     SqlHelperService sqlHelperService;
 
     @ExceptionHandler(SQLServerException.class)
-    public ResponseEntity<SqlError> sqlServerError(SQLServerException e) {
+    public ResponseEntity<SqlErrorDto> sqlServerError(SQLServerException e) {
 
-        SqlError sqlError = new SqlError();
+        SqlErrorDto sqlError = new SqlErrorDto();
 
         sqlError.setSqlState(e.getSQLState());
         sqlError.setErrorMessage(e.getSQLServerError().getErrorMessage());
@@ -42,9 +42,9 @@ public class SqlHelperController {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<SqlError> runtimeError(Exception e) {
+    public ResponseEntity<SqlErrorDto> runtimeError(Exception e) {
 
-        SqlError sqlError = new SqlError();
+        SqlErrorDto sqlError = new SqlErrorDto();
 
         sqlError.setSqlState("RUN");
         sqlError.setErrorMessage(e.getMessage());
@@ -56,9 +56,9 @@ public class SqlHelperController {
     }
 
     @PostMapping
-    public SqlResult query(@RequestBody QueryVO queryVo) throws SQLServerException {
+    public SqlResultDto query(@RequestBody QueryDto queryDto) throws SQLServerException {
         try {
-            return sqlHelperService.execute(queryVo);
+            return sqlHelperService.execute(queryDto);
         } catch (DataAccessException e) {
             Throwable cause = e.getCause();
 

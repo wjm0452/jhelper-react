@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jhelper.jserve.web.entity.TableBookmark;
-import com.jhelper.jserve.web.sql.TableBookmarkService;
+import com.jhelper.jserve.sql.TableBookmarkService;
+import com.jhelper.jserve.sql.entity.TableBookmark;
 
 @RestController
 @RequestMapping("/api/table-bookmark")

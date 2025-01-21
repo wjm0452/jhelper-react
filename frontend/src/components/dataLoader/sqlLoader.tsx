@@ -41,11 +41,11 @@ const DataLoader = () => {
   return (
     <div className="h-100">
       <Splitter className="h-100">
-        <SplitterPanel size={50} className="p-1">
+        <SplitterPanel size={50} className="overflow-hidden p-1">
           <ConnectionStoreProvider name="sqlLoader.source">
-            <div className="w-100 h-100">
-              <div className="h-50 d-flex flex-column">
-                <div className="mb-1">
+            <Splitter layout="vertical">
+              <SplitterPanel className="overflow-hidden d-flex flex-column">
+                <div>
                   <ConnectionForm
                     onChange={(connInfo: ConnInfo) =>
                       setSourceData({ ...sourceData, name: connInfo.name })
@@ -60,8 +60,8 @@ const DataLoader = () => {
                     }
                   />
                 </div>
-              </div>
-              <div className="h-50 d-flex flex-column">
+              </SplitterPanel>
+              <SplitterPanel className="overflow-hidden d-flex flex-column">
                 <div className="flex-grow-1 overflow-hidden">
                   <EditableTableColumns
                     ref={sourceColumnRef}
@@ -88,15 +88,15 @@ const DataLoader = () => {
                     onChange={(e) => setQuery(e.target.value)}
                   ></textarea>
                 </div>
-              </div>
-            </div>
+              </SplitterPanel>
+            </Splitter>
           </ConnectionStoreProvider>
         </SplitterPanel>
-        <SplitterPanel size={50} className="p-1">
-          <div className="w-100 h-100">
-            <ConnectionStoreProvider name="sqlLoader.target">
-              <div className="h-50 d-flex flex-column">
-                <div className="mb-1">
+        <SplitterPanel size={50} className="overflow-hidden p-1">
+          <ConnectionStoreProvider name="sqlLoader.target">
+            <Splitter layout="vertical">
+              <SplitterPanel className="overflow-hidden d-flex flex-column">
+                <div>
                   <ConnectionForm
                     onChange={(connInfo: ConnInfo) =>
                       setTargetData({ ...targetData, name: connInfo.name })
@@ -107,20 +107,24 @@ const DataLoader = () => {
                   <TablesView
                     name="sqlLoader.target.tableView"
                     onClick={({ item }: any) =>
-                      setTargetData({ ...targetData, owner: item.owner, tableName: item.tableName })
+                      setTargetData({
+                        ...targetData,
+                        owner: item.owner,
+                        tableName: item.tableName,
+                      })
                     }
                   />
                 </div>
-              </div>
-              <div className="h-50 overflow-hidden">
+              </SplitterPanel>
+              <SplitterPanel className="overflow-hidden">
                 <EditableTableColumns
                   ref={targetColumnRef}
                   filter={{ owner: targetData.owner, tableName: targetData.tableName }}
                   editable={false}
                 />
-              </div>
-            </ConnectionStoreProvider>
-          </div>
+              </SplitterPanel>
+            </Splitter>
+          </ConnectionStoreProvider>
         </SplitterPanel>
       </Splitter>
     </div>

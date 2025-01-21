@@ -2,9 +2,9 @@ package com.jhelper.jserve.web;
 
 import java.util.List;
 
-import com.jhelper.jserve.web.entity.ConnInfo;
-import com.jhelper.jserve.web.sql.ConnInfoService;
-import com.jhelper.jserve.web.sql.jdbc.JdbcTemplateManager;
+import com.jhelper.jserve.sql.ConnInfoService;
+import com.jhelper.jserve.sql.entity.ConnInfo;
+import com.jhelper.jserve.sql.jdbc.JdbcTemplateManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

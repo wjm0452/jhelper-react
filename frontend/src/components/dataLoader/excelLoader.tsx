@@ -67,7 +67,7 @@ const ExcelLoader = () => {
     <div className="h-100 d-flex flex-column">
       <div className="flex-grow-1 overflow-hidden">
         <Splitter className="h-100">
-          <SplitterPanel size={50} className="p-1">
+          <SplitterPanel size={50} className="overflow-hidden p-1">
             <div className="w-100 h-100 d-flex flex-column">
               <div>
                 <div className="p-inputgroup flex-1">
@@ -123,11 +123,11 @@ const ExcelLoader = () => {
               </div>
             </div>
           </SplitterPanel>
-          <SplitterPanel size={50} className="p-1">
+          <SplitterPanel size={50} className="overflow-hidden p-1">
             <ConnectionStoreProvider name="sqlExcelLoader">
-              <div className="w-100 h-100 d-flex flex-column">
-                <div className="h-50 d-flex flex-column">
-                  <div className="mb-1">
+              <Splitter layout="vertical">
+                <SplitterPanel className="overflow-hidden d-flex flex-column">
+                  <div>
                     <ConnectionForm
                       onChange={(connInfo: ConnInfo) =>
                         setTargetData({ ...targetData, name: connInfo.name })
@@ -146,15 +146,15 @@ const ExcelLoader = () => {
                       }
                     />
                   </div>
-                </div>
-                <div className="flex-grow-1 overflow-hidden">
+                </SplitterPanel>
+                <SplitterPanel className="overflow-hidden">
                   <EditableTableColumns
                     ref={targetColumnRef}
                     filter={{ owner: targetData.owner, tableName: targetData.tableName }}
                     editable={false}
                   />
-                </div>
-              </div>
+                </SplitterPanel>
+              </Splitter>
             </ConnectionStoreProvider>
           </SplitterPanel>
         </Splitter>

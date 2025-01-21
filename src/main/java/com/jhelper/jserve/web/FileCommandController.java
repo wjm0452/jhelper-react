@@ -3,19 +3,15 @@ package com.jhelper.jserve.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRange;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,14 +24,14 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.jhelper.jserve.web.fileBrowser.FileBrowserService;
-import com.jhelper.jserve.web.fileBrowser.FileDto;
-import com.jhelper.jserve.web.fileBrowser.FileType;
-import com.jhelper.jserve.web.fileCommand.FileCommandDto;
-import com.jhelper.jserve.web.fileCommand.FileCommandService;
-import com.jhelper.jserve.web.fileCommand.FileDownloadDto;
-import com.jhelper.jserve.web.fileCommand.FileNewDto;
-import com.jhelper.jserve.web.fileCommand.FileRenameDto;
+import com.jhelper.jserve.fileBrowser.FileBrowserService;
+import com.jhelper.jserve.fileBrowser.FileDto;
+import com.jhelper.jserve.fileBrowser.FileType;
+import com.jhelper.jserve.fileBrowser.command.FileCommandDto;
+import com.jhelper.jserve.fileBrowser.command.FileCommandService;
+import com.jhelper.jserve.fileBrowser.command.FileDownloadDto;
+import com.jhelper.jserve.fileBrowser.command.FileNewDto;
+import com.jhelper.jserve.fileBrowser.command.FileRenameDto;
 
 @RestController
 @RequestMapping("/api/file-command")

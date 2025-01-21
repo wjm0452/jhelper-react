@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jhelper.jserve.web.board.BoardService;
-import com.jhelper.jserve.web.entity.Board;
-import com.jhelper.jserve.web.entity.PageDto;
+import com.jhelper.jserve.board.BoardSearchDto;
+import com.jhelper.jserve.board.BoardService;
+import com.jhelper.jserve.board.entity.Board;
+import com.jhelper.jserve.common.PageDto;
 
 @RestController
 @RequestMapping("/api/board")
@@ -32,16 +33,14 @@ public class BoardController {
     BoardService boardService;
 
     @GetMapping
-    public PageDto<Board> getBoards(
-            @RequestParam(name = "filter", required = false) String filter,
+    public PageDto<Board> getBoards(@RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size) {
 
-        Board board = new Board();
-        board.setTitle(filter);
-        board.setContent(filter);
+        BoardSearchDto boardSearchDto = new BoardSearchDto();
+        boardSearchDto.setFilter(filter);
 
-        return boardService.findAll(board, page, size);
+        return boardService.findAll(boardSearchDto, page, size);
     }
 
     @GetMapping("/{id}")

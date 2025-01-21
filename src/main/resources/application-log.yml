@@ -5,5 +5,9 @@ logging:
   level:
     web: debug
     org:
+      springframework:
+        data:
+          elasticsearch:
+            core: trace
       docx4j: error
-    root: DEBUG
+    root: debug

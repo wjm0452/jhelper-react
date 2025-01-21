@@ -1,3 +1,4 @@
 jhelper:
-  fileBrowser:
-    rootPath: "c:\\work"
+  file-browser:
+    rootPath: "/work"
+    trashPath: "/tmp/jhelper/trash"

@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jhelper.jserve.web.fileBrowser.FileBrowserService;
-import com.jhelper.jserve.web.fileBrowser.FileDto;
-import com.jhelper.jserve.web.fileBrowser.FileSearchDto;
+import com.jhelper.jserve.fileBrowser.FileBrowserService;
+import com.jhelper.jserve.fileBrowser.FileDto;
+import com.jhelper.jserve.fileBrowser.FileSearchDto;
 
 @RestController
 @RequestMapping("/api/file-browser")

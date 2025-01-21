@@ -2,8 +2,8 @@ package com.jhelper.jserve.web;
 
 import java.util.List;
 
-import com.jhelper.jserve.web.cache.CacheService;
-import com.jhelper.jserve.web.entity.Cache;
+import com.jhelper.jserve.cache.CacheService;
+import com.jhelper.jserve.cache.entity.Cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

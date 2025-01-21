@@ -50,27 +50,17 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter();
         jwtFilter.setTokenProvider(tokenProvider());
 
-        http.headers((headers) -> headers
-                .frameOptions(frameOptionsConfig -> {
-                    frameOptionsConfig.disable();
-                }))
-                .sessionManagement(session -> {
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                })
-                .userDetailsService(users())
-                .authorizeHttpRequests(
-                        request -> request
-                                .requestMatchers("/", "/api/auth", "/api/auth/signin", "/api/auth/refresh-token",
-                                        "/api/file-viewer/*")
-                                .permitAll()
-                                .anyRequest().authenticated())
-                .csrf(csrf -> csrf.disable())
+        http.headers((headers) -> headers.frameOptions(frameOptionsConfig -> {
+            frameOptionsConfig.disable();
+        })).sessionManagement(session -> {
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        }).userDetailsService(users()).authorizeHttpRequests(request -> request
+                .requestMatchers("/", "/api/auth", "/api/auth/signin", "/api/auth/refresh-token", "/api/file-viewer/*")
+                .permitAll().anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                 .exceptionHandling(exceptionHandling -> {
                     exceptionHandling.accessDeniedHandler(new JsonAccessDeniedHandler());
                     exceptionHandling.authenticationEntryPoint(new JsonAuthenticationEntryPoint());
-                })
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                }).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
 
         return http.getObject();
     }
@@ -83,7 +73,7 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/index.html", "/vendor/**");
+        return (web) -> web.ignoring().requestMatchers("/index.html", "/vendor/**", "/static/**", "*.ico");
     }
 
     @Bean
@@ -109,18 +99,11 @@ public class SecurityConfig {
 
                 String[] roles = ((List<Object>) user.get("roles")).toArray(new String[0]);
 
-                return User.builder()
-                        .username((String) user.get("username"))
-                        .password((String) user.get("password"))
-                        .roles(roles)
-                        .build();
+                return User.builder().username((String) user.get("username")).password((String) user.get("password"))
+                        .roles(roles).build();
             }).collect(Collectors.toList());
         } else {
-            users = Arrays.asList(User.builder()
-                    .username("admin")
-                    .password("admin")
-                    .roles("USER", "ADMIN")
-                    .build());
+            users = Arrays.asList(User.builder().username("admin").password("admin").roles("USER", "ADMIN").build());
         }
 
         return new InMemoryUserDetailsManager(users);

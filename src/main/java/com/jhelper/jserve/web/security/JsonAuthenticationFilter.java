@@ -29,13 +29,11 @@ public class JsonAuthenticationFilter extends AbstractAuthenticationProcessingFi
             throws AuthenticationException, IOException, ServletException {
 
         AuthenticationManager authenticationManager = getAuthenticationManager();
-        Map body = objectMapper.readValue(request.getInputStream(), Map.class);
+        Map<?, ?> body = objectMapper.readValue(request.getInputStream(), Map.class);
         String username = (String) body.get("username");
         String password = (String) body.get("password");
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                username,
-                password,
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password,
                 AuthorityUtils.createAuthorityList("USER"));
 
         return authenticationManager.authenticate(token);
