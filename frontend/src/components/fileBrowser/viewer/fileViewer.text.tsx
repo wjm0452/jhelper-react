@@ -9,7 +9,7 @@ const TextFileViewer = ({ path }: { path: string }) => {
       const data = await fileCommandApi.getFile(path, { responseType: "text" });
       setText(data);
     })();
-  });
+  }, [path]);
 
   return (
     <div className="h-100">
@@ -19,6 +19,7 @@ const TextFileViewer = ({ path }: { path: string }) => {
         onChange={(e) => {
           setText(e.currentTarget.value);
         }}
+        spellCheck={false}
       ></textarea>
     </div>
   );

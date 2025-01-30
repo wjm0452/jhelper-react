@@ -9,7 +9,7 @@ const VideoFileViewer = ({ path }: { path: string }) => {
     } else {
       setSrc("");
     }
-  }, []);
+  }, [path]);
 
   return (
     <div className="h-100">

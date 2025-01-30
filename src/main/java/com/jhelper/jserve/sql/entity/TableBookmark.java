@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity(name = "tableBookmark")
 @Comment(value = "테이블 북마크")
-@NoArgsConstructor
 @IdClass(TableBookmark.PK.class) // 필수
 public class TableBookmark {
     @Id

@@ -9,7 +9,7 @@ const MarkdownFileViewer = ({ path }: { path: string }) => {
       const data = await fileCommandApi.getFile(path, { responseType: "text/plain" });
       setText(data);
     })();
-  }, []);
+  }, [path]);
 
   return (
     <div className="h-100">
