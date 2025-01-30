@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jhelper.jserve.board.BoardDeleteDto;
 import com.jhelper.jserve.board.BoardSearchDto;
 import com.jhelper.jserve.board.BoardService;
 import com.jhelper.jserve.board.entity.Board;
@@ -33,11 +34,19 @@ public class BoardController {
     BoardService boardService;
 
     @GetMapping
-    public PageDto<Board> getBoards(@RequestParam(name = "filter", required = false) String filter,
+    public PageDto<Board> getBoards(@RequestParam(name = "category") String category,
+            @RequestParam(name = "registerId", required = false) String registerId,
+            @RequestParam(name = "from", required = false) LocalDateTime from,
+            @RequestParam(name = "to", required = false) LocalDateTime to,
+            @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size) {
 
         BoardSearchDto boardSearchDto = new BoardSearchDto();
+        boardSearchDto.setCategory(category);
+        boardSearchDto.setRegisterId(registerId);
+        boardSearchDto.setFrom(from);
+        boardSearchDto.setTo(to);
         boardSearchDto.setFilter(filter);
 
         return boardService.findAll(boardSearchDto, page, size);
@@ -49,22 +58,22 @@ public class BoardController {
     }
 
     @PostMapping
-    public Board createBoard(@RequestBody Board boardVO, @AuthenticationPrincipal UserDetails userDetails) {
-        boardVO.setRegisterId(userDetails.getUsername());
-        boardVO.setRegisterDate(LocalDateTime.now());
-        return boardService.create(boardVO);
+    public Board createBoard(@RequestBody Board board, @AuthenticationPrincipal UserDetails userDetails) {
+        board.setRegisterId(userDetails.getUsername());
+        board.setRegisterDate(LocalDateTime.now());
+        return boardService.create(board);
     }
 
     @PutMapping
-    public Board updateBoard(@RequestBody Board boardVO, @AuthenticationPrincipal UserDetails userDetails) {
+    public Board updateBoard(@RequestBody Board board, @AuthenticationPrincipal UserDetails userDetails) {
 
-        Board savedBoard = boardService.findById(boardVO.getId());
+        Board savedBoard = boardService.findById(board.getId());
 
         if (!userDetails.getUsername().equals(savedBoard.getRegisterId())) {
             throw new AccessDeniedException("변경할 수 없습니다.");
         }
 
-        return boardService.update(boardVO);
+        return boardService.update(board);
     }
 
     @DeleteMapping("/{id}")
@@ -77,5 +86,13 @@ public class BoardController {
         }
 
         boardService.delete(id);
+    }
+
+    @DeleteMapping
+    public void deleteBoard(@RequestBody BoardDeleteDto boardDeleteDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        boardDeleteDto.getIds().forEach(id -> {
+            boardService.delete(id);
+        });
     }
 }

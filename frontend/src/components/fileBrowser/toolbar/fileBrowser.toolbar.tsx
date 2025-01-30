@@ -8,19 +8,22 @@ import { Toolbar } from "primereact/toolbar";
 import { useEffect, useRef, useState } from "react";
 import MultiUploader from "../../common/uploader/multiUploader";
 import fileCommandApi from "../command/fileCommand.api";
+import useFileCommandQuery from "../command/fileCommand.query";
 import { useFileCommandStore } from "../command/fileCommand.store";
 import { useGetFileList } from "../fileBrowser.query";
 import { useFileBrowserStore } from "../fileBrowser.store";
 import FileBrowserToolbarDetailSearch from "./fileBrowser.detailsSearch";
-import FileBrowserRenameFile from "./fileBrowser.renameFile";
 import FileBrowserNewFile from "./fileBrowser.newFile";
-import useFileCommandQuery from "../command/fileCommand.query";
+import FileBrowserRenameFile from "./fileBrowser.renameFile";
+import FileBrowserFileIndexing from "./fileBrowser.indexLog";
+import { useMessageStoreInContext } from "../../common/message/message.context";
 
 type FileBrowserToolbarProps = {};
 
 const toPath = (files: FileType[]) => files.map((file) => file.path);
 
 const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
+  const messageStore = useMessageStoreInContext();
   const fileBrowserStore = useFileBrowserStore();
   const fileCommandStore = useFileCommandStore();
   const [pathForView, setPathForView] = useState<string>("");
@@ -30,6 +33,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
   const newFilePannel = useRef<OverlayPanel>(); // upload panel
   const renamePannel = useRef<OverlayPanel>(); // rename panel
   const uploadPannel = useRef<OverlayPanel>(); // upload panel
+  const indexingPannel = useRef<OverlayPanel>(); // upload panel
 
   const { refetch } = useGetFileList(fileBrowserStore, { enabled: false });
 
@@ -49,17 +53,34 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
 
   const newFile = async ({ path, type, name }: { path: string; type: string; name: string }) => {
     fileCommandStore.setCommand("new");
+    if (!path || !name) {
+      return;
+    }
+
     await fileCommandQuery.newFile({ path, type, name });
+    messageStore.toast("File Command", "Created");
   };
 
   const copyFiles = () => {
+    if (!fileBrowserStore.selectedFiles || !fileBrowserStore.selectedFiles.length) {
+      return;
+    }
+
     fileCommandStore.setCommand("copy");
     fileCommandStore.setFiles([...fileBrowserStore.selectedFiles]);
+
+    messageStore.toast("File Command", "Copy");
   };
 
   const cutFiles = () => {
+    if (!fileBrowserStore.selectedFiles || !fileBrowserStore.selectedFiles.length) {
+      return;
+    }
+
     fileCommandStore.setCommand("cut");
     fileCommandStore.setFiles([...fileBrowserStore.selectedFiles]);
+
+    messageStore.toast("File Command", "Cut");
   };
 
   const pasteFiles = async () => {
@@ -75,37 +96,73 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
       });
     }
     fileCommandStore.setCommand("paste");
+    messageStore.toast("File Command", "Pasted");
     refetch();
   };
 
   const renameFile = async ({ path, changeName }: { path: string; changeName: string }) => {
+    if (!path || !changeName) {
+      return;
+    }
+
     fileCommandStore.setCommand("rename");
     await fileCommandQuery.renameFile({ path, changeName });
+    messageStore.toast("File Command", "Rename");
     refetch();
   };
 
   const deleteFiles = async () => {
+    if (!fileBrowserStore.selectedFiles || !fileBrowserStore.selectedFiles.length) {
+      return;
+    }
+
     fileCommandStore.setCommand("delete");
     await fileCommandQuery.deleteFiles({ files: toPath(fileBrowserStore.selectedFiles) });
+    messageStore.toast("File Command", "Deleted");
     refetch();
   };
 
   const downloadFiles = async () => {
+    if (!fileBrowserStore.selectedFiles || !fileBrowserStore.selectedFiles.length) {
+      return;
+    }
+
+    messageStore.toast("File Command", "Download...");
     fileCommandStore.setCommand("download");
     await fileCommandApi.downloadFiles({ files: toPath(fileBrowserStore.selectedFiles) });
   };
 
   const exportFiles = async () => {
+    if (!fileBrowserStore.selectedFiles || !fileBrowserStore.selectedFiles.length) {
+      return;
+    }
+
     fileCommandStore.setCommand("export");
+    messageStore.toast("File Command", "Export...");
     await fileCommandApi.exportFiles({ files: toPath(fileBrowserStore.selectedFiles) });
   };
 
   const copyToClipboard = () => {
+    if (!fileBrowserStore.selectedFiles || !fileBrowserStore.selectedFiles.length) {
+      return;
+    }
+
     const lines = fileBrowserStore.selectedFiles.map(
       ({ name, path, owner, type, lastModifiedTime }: FileType) =>
         `${type}\t${name}\t${path}\t${owner}\t${lastModifiedTime}`,
     );
     navigator.clipboard.writeText(lines.join("\r\n"));
+    messageStore.toast("File Command", "Copy to clipboard");
+  };
+
+  const fileToBoard = async () => {
+    if (!fileBrowserStore.selectedFiles || !fileBrowserStore.selectedFiles.length) {
+      return;
+    }
+
+    fileCommandStore.setCommand("board");
+    await fileCommandApi.fileToBoard({ files: toPath(fileBrowserStore.selectedFiles) });
+    messageStore.toast("File Command", "Create board");
   };
 
   const start = (
@@ -226,6 +283,25 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={copyToClipboard}
         />
+        <Button
+          icon="pi pi-book"
+          rounded
+          text
+          aria-label="Board"
+          label="Board"
+          disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
+          onClick={fileToBoard}
+        />
+        <Button
+          icon="pi pi-book"
+          rounded
+          text
+          aria-label="Indexing"
+          label="Indexing"
+          onClick={async (e) => {
+            indexingPannel.current.toggle(e);
+          }}
+        />
       </div>
     </div>
   );
@@ -290,6 +366,11 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
               refetch();
             }}
           />
+        </OverlayPanel>
+        <OverlayPanel ref={indexingPannel} dismissable={true}>
+          <div style={{ width: "700px", height: "600px" }}>
+            <FileBrowserFileIndexing />
+          </div>
         </OverlayPanel>
         <Button
           type="button"

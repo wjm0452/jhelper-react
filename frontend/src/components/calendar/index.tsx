@@ -27,7 +27,7 @@ async function createData(obj: {
 }
 
 async function readAll(year: number, month: number) {
-  const res = await httpClient.get("/api/schedule", {
+  const res = await httpClient.get("/api/schedule", null, {
     params: {
       year,
       month,

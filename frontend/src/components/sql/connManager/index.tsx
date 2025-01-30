@@ -5,11 +5,16 @@ import ConnInfoForm from "./connInfoForm";
 import ConnInfoList from "./connInfoList";
 import { useSaveConnInfo } from "./connManager.query";
 import { useConnInfoStore, useConnManagerStore } from "./connManager.store";
+import {
+  MessageStoreProvider,
+  useMessageStoreInContext,
+} from "../../common/message/message.context";
 
 const ConnManager = (props: any) => {
   const connManagerStore = useConnManagerStore();
   const connInfoStore = useConnInfoStore();
   const { mutateAsync: saveConnInfo } = useSaveConnInfo();
+  const messageStore = useMessageStoreInContext();
 
   const footerContent = (
     <>
@@ -26,7 +31,33 @@ const ConnManager = (props: any) => {
           icon="pi pi-check"
           size="small"
           text
-          onClick={() => saveConnInfo(connInfoStore)}
+          onClick={() => {
+            if (!connInfoStore.name) {
+              messageStore.toast("Validation", "name을 입력해 주세요.", { severity: "warn" });
+              return;
+            } else if (!connInfoStore.vendor) {
+              messageStore.toast("Validation", "vendor을 입력해 주세요.", { severity: "warn" });
+              return;
+            } else if (!connInfoStore.jdbcUrl) {
+              messageStore.toast("Validation", "url을 입력해 주세요.", { severity: "warn" });
+              return;
+            } else if (!connInfoStore.driverClassName) {
+              messageStore.toast("Validation", "driverClassName을 입력해 주세요.", {
+                severity: "warn",
+              });
+              return;
+            } else if (!connInfoStore.username) {
+              messageStore.toast("Validation", "username을 입력해 주세요.", { severity: "warn" });
+              return;
+            } else if (!connInfoStore.password) {
+              messageStore.toast("Validation", "password을 입력해 주세요.", { severity: "warn" });
+              return;
+            }
+
+            // messageStore
+
+            saveConnInfo(connInfoStore);
+          }}
         />
         <Button
           label="닫기"
@@ -50,14 +81,16 @@ const ConnManager = (props: any) => {
       position="center"
       footer={footerContent}
     >
-      <div className="d-flex flex-row">
-        <div className="flex-grow-1 p-1">
-          <ConnInfoList />
+      <MessageStoreProvider>
+        <div className="d-flex flex-row">
+          <div className="flex-grow-1 p-1">
+            <ConnInfoList />
+          </div>
+          <div className="flex-grow-0 p-1" style={{ flexBasis: "300px" }}>
+            <ConnInfoForm />
+          </div>
         </div>
-        <div className="flex-grow-0 p-1" style={{ flexBasis: "300px" }}>
-          <ConnInfoForm />
-        </div>
-      </div>
+      </MessageStoreProvider>
     </Dialog>
   );
 };

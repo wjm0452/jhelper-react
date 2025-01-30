@@ -1,4 +1,4 @@
-package com.jhelper.jserve.fileBrowser.command;
+package com.jhelper.jserve.fileBrowser.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.jhelper.export.excel.SimpleCell;
 import com.jhelper.export.excel.SimpleExcelExporter;
-import com.jhelper.jserve.fileBrowser.FileBrowserService;
+import com.jhelper.jserve.fileBrowser.FileDownloadDto;
 import com.jhelper.jserve.fileBrowser.FileDto;
 import com.jhelper.jserve.fileBrowser.FileType;
 
@@ -35,12 +35,7 @@ public class FileCommandService {
     }
 
     public List<Path> getFiles(List<String> files) throws IOException {
-        List<Path> paths = new ArrayList<>();
-        for (String filePath : files) {
-            paths.add(getFile(filePath));
-        }
-
-        return paths;
+        return fileBrowserService.getFiles(files);
     }
 
     public Path getTrashPath() {

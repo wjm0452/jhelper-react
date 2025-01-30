@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useGetBoardList } from "./board.query.ts";
+import { useDeleteBoards, useGetBoardList } from "./board.query.ts";
 import { useSearchBoardsStore } from "./board.store.ts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTable, DataTableRowClickEvent, DataTableStateEvent } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { IconField } from "primereact/iconfield";
@@ -9,42 +9,77 @@ import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { dateUtils } from "../../common/dateUtils.ts";
+import { Dropdown } from "primereact/dropdown";
+import { useMessageStoreInContext } from "../common/message/message.context.tsx";
 
 const BoardList = () => {
   const searchBoardStore = useSearchBoardsStore();
   const { data: { items, totalElements } = {} } = useGetBoardList({
     filter: searchBoardStore.filter,
+    category: searchBoardStore.category,
     page: searchBoardStore.page,
     size: searchBoardStore.size,
   });
+  const { mutateAsync: mutateDeleteBoards } = useDeleteBoards();
+  const messageStore = useMessageStoreInContext();
 
-  const [headFilter, setHeadFilter] = useState(searchBoardStore.filter);
-  const [selectedItem, setSelectedItem] = useState({});
+  const [filter, setFilter] = useState(searchBoardStore.filter);
+  const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
-  const renderHeader = () => {
+  const header = () => {
     return (
       <div className="flex justify-content-between">
-        <Button
-          type="button"
-          icon="pi pi-plus"
-          label="등록"
-          text
-          onClick={() => navigate(`/board/details`)}
-        />
-        <IconField iconPosition="left">
-          <InputIcon className="pi pi-search" />
-          <InputText
-            value={headFilter}
-            onChange={(e) => setHeadFilter(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key == "Enter") {
-                searchBoardStore.put("filter", headFilter);
+        <div>
+          <Button
+            type="button"
+            icon="pi pi-plus"
+            label="등록"
+            text
+            onClick={() => {
+              navigate(`/board/details`);
+            }}
+          />
+          <Button
+            type="button"
+            icon="pi pi-minus"
+            label="삭제"
+            text
+            onClick={async () => {
+              if (await messageStore.confirm("선택한 게시물을 삭제 하시겠습니까?")) {
+                mutateDeleteBoards(selectedItems.map((item) => item.id));
               }
             }}
-            placeholder="Keyword Search"
           />
-        </IconField>
+        </div>
+        <div className="flex">
+          <Dropdown
+            value={searchBoardStore.category}
+            onChange={(e) => {
+              searchBoardStore.put("category", e.value);
+            }}
+            options={[
+              { code: "board", name: "게시판" },
+              { code: "file", name: "파일" },
+            ]}
+            optionLabel="name"
+            optionValue="code"
+            className="w-full text-base me-1"
+          />
+          <IconField iconPosition="left">
+            <InputIcon className="pi pi-search" />
+            <InputText
+              value={filter}
+              onChange={(e) => setFilter(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  searchBoardStore.put("filter", filter);
+                }
+              }}
+              placeholder="Search..."
+            />
+          </IconField>
+        </div>
       </div>
     );
   };
@@ -54,25 +89,26 @@ const BoardList = () => {
       value={items}
       resizableColumns
       stripedRows
-      selectionMode="single"
-      selection={selectedItem}
-      onSelectionChange={(e: any) => setSelectedItem(e.value)}
-      //sortMode="single"
+      selectionMode="multiple"
+      selection={selectedItems}
+      onSelectionChange={(e: any) => setSelectedItems(e.value)}
       dataKey="id"
       lazy
       paginator
       first={searchBoardStore.page * searchBoardStore.size}
       rows={searchBoardStore.size}
       totalRecords={totalElements || 0}
-      rowsPerPageOptions={[10, 25, 50]}
+      rowsPerPageOptions={[10, 15, 25, 50, 100]}
       tableStyle={{ minWidth: "50rem" }}
       onPage={(e: DataTableStateEvent) => {
         searchBoardStore.putAll({ page: e.page, size: e.rows });
       }}
       onRowDoubleClick={(e: DataTableRowClickEvent) => navigate(`/board/details/${e.data.id}`)}
-      header={renderHeader}
+      header={header}
     >
-      <Column field="id" header="#" style={{ width: "50px" }}></Column>
+      <Column selectionMode="multiple" style={{ width: "3rem" }}></Column>
+      <Column field="id" header="#" align="right" style={{ width: "3rem" }}></Column>
+      <Column field="category" header="카테고리" align="center" style={{ width: "5rem" }}></Column>
       <Column
         field="title"
         header="제목"
@@ -80,11 +116,12 @@ const BoardList = () => {
         filter
         filterPlaceholder=""
       ></Column>
-      <Column field="registerId" header="작성자" style={{ width: "200px" }}></Column>
+      <Column field="registerId" header="작성자" align="center" style={{ width: "15rem" }}></Column>
       <Column
         field="registerDate"
         header="작성일"
-        style={{ width: "200px" }}
+        align="center"
+        style={{ width: "15rem" }}
         body={({ registerDate }) => dateUtils.toString(dateUtils.toDate(registerDate))}
       ></Column>
     </DataTable>
@@ -92,8 +129,6 @@ const BoardList = () => {
 };
 
 const Board = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="v-100 h-100 overflow-auto">
       <div className="p-5">

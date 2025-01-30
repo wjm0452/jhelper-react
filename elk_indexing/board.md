@@ -34,6 +34,9 @@ PUT https://localhost:9200/board
             "id": {
                 "type": "integer"
             },
+            "category": {
+                "type": "keyword"
+            },
             "title": {
                 "type": "text",
                 "analyzer": "app_analyzer",
@@ -49,7 +52,7 @@ PUT https://localhost:9200/board
             },
             "registerDate": {
                 "type": "date",
-                "format": "yyyy-MM-dd HH:mm:ss"
+                "format": "uuuu-MM-dd'T'HH:mm:ss"
             }
         }
     }

@@ -6,6 +6,9 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDeleteBoard, useGetBoard, useSaveBoard } from "./board.query.ts";
 import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import { useMessageStoreInContext } from "../common/message/message.context.tsx";
 
 type InputFormProps = {
   item: Board;
@@ -16,28 +19,46 @@ type InputFormProps = {
 const InputForm = ({ item, setItem, readOnly }: InputFormProps) => {
   return (
     <>
-      <div className="col-md-6 flex-grow-0">
-        <label className="form-label">작성자</label>
-        <input type="text" className="form-control" value={item.registerId} readOnly={true}></input>
+      <div className="flex gap-3">
+        <div className="flex-auto">
+          <label className="font-bold block mb-2">작성자</label>
+          <InputText value={item.registerId} className="w-full" readOnly={true} />
+        </div>
+        <div className="flex-auto">
+          <label className="font-bold block mb-2">작성일</label>
+          <InputText
+            type="datetime-local"
+            value={item.registerDate}
+            className="w-full"
+            readOnly={true}
+          />
+        </div>
       </div>
-      <div className="col-md-6 flex-grow-0">
-        <label className="form-label">작성일</label>
-        <input
-          type="datetime-local"
-          className="form-control"
-          value={item.registerDate}
-          readOnly={true}
-        ></input>
+      <div className="flex-auto">
+        <label className="font-bold block mb-2">카테고리</label>
+        <Dropdown
+          value={item.category}
+          onChange={(e) => {
+            setItem({ ...item, category: e.value });
+          }}
+          options={[
+            { code: "board", name: "게시판" },
+            { code: "file", name: "파일" },
+          ]}
+          optionLabel="name"
+          optionValue="code"
+          className="w-full text-base"
+        />
       </div>
-      <div className="col-12 flex-grow-0">
-        <label className="form-label">제목</label>
-        <input
+      <div className="flex-auto">
+        <label className="font-bold block mb-2">제목</label>
+        <InputText
           type="text"
-          className="form-control"
           value={item.title}
           onChange={(e) => setItem({ ...item, title: e.target.value })}
           readOnly={readOnly}
-        ></input>
+          className="w-full"
+        />
       </div>
     </>
   );
@@ -52,6 +73,7 @@ const ActionButtons = ({ item, readOnly }: ActionButtonProps) => {
   const navigate = useNavigate();
   const { mutateAsync: mutateSaveBoard } = useSaveBoard();
   const { mutateAsync: mutateDeleteBoard } = useDeleteBoard();
+  const messageStore = useMessageStoreInContext();
 
   return (
     <>
@@ -62,8 +84,10 @@ const ActionButtons = ({ item, readOnly }: ActionButtonProps) => {
           size="small"
           text
           onClick={async () => {
-            await mutateDeleteBoard(item.id);
-            navigate(-1);
+            if (await messageStore.confirm("선택한 게시물을 삭제 하시겠습니까?")) {
+              await mutateDeleteBoard(item.id);
+              navigate(-1);
+            }
           }}
         />
       ) : (
@@ -98,9 +122,10 @@ const ActionButtons = ({ item, readOnly }: ActionButtonProps) => {
 const BoardDetails = () => {
   const { boardId } = useParams(); // path parameters
 
-  const { refetch: refetchBoard } = useGetBoard(boardId, { enabled: false });
+  const { refetch: refetchBoard } = useGetBoard(parseInt(boardId, 10), { enabled: false });
   const [item, setItem] = useState({
-    id: "",
+    id: null,
+    category: "board",
     title: "",
     content: "",
     registerId: "",

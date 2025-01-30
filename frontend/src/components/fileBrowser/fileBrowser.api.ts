@@ -17,7 +17,7 @@ export const getFileList = async ({
   filter?: FileBrowserFilterType;
 }): Promise<FileType[]> => {
   try {
-    let res: any = await httpClient.get("/api/file-browser/files", {
+    let res: any = await httpClient.get("/api/file-browser/files", null, {
       params: {
         path,
         ...filter,

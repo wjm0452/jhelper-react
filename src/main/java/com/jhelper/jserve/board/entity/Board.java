@@ -33,6 +33,10 @@ public class Board {
     @Comment(value = "등록일시")
     private LocalDateTime registerDate;
 
+    @Column(name = "category")
+    @Comment(value = "카테고리")
+    private String category;
+
     @Column(name = "title")
     @Comment(value = "제목")
     private String title;

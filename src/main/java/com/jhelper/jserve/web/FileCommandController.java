@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -24,14 +25,18 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.jhelper.jserve.fileBrowser.FileBrowserService;
+import com.jhelper.jserve.fileBrowser.FileBoardResultDto;
+import com.jhelper.jserve.fileBrowser.FileCommandDto;
+import com.jhelper.jserve.fileBrowser.FileDownloadDto;
 import com.jhelper.jserve.fileBrowser.FileDto;
+import com.jhelper.jserve.fileBrowser.FileNewDto;
+import com.jhelper.jserve.fileBrowser.FilePathsDto;
+import com.jhelper.jserve.fileBrowser.FileRenameDto;
 import com.jhelper.jserve.fileBrowser.FileType;
-import com.jhelper.jserve.fileBrowser.command.FileCommandDto;
-import com.jhelper.jserve.fileBrowser.command.FileCommandService;
-import com.jhelper.jserve.fileBrowser.command.FileDownloadDto;
-import com.jhelper.jserve.fileBrowser.command.FileNewDto;
-import com.jhelper.jserve.fileBrowser.command.FileRenameDto;
+import com.jhelper.jserve.fileBrowser.service.FileBoardSerivce;
+import com.jhelper.jserve.fileBrowser.service.FileBrowserService;
+import com.jhelper.jserve.fileBrowser.service.FileCommandService;
+import com.jhelper.jserve.fileBrowser.service.FileIndexService;
 
 @RestController
 @RequestMapping("/api/file-command")
@@ -42,6 +47,11 @@ public class FileCommandController {
 
     @Autowired
     private FileBrowserService fileBrowserService;
+    @Autowired
+    private FileIndexService fileIndexService;
+
+    @Autowired
+    private FileBoardSerivce fileBoardSerivce;
 
     @PostMapping("/copy")
     public void copy(@RequestBody FileCommandDto fileCommandDto) throws IOException {
@@ -55,8 +65,7 @@ public class FileCommandController {
 
     @PostMapping("/new")
     public void rename(@RequestBody FileNewDto fileNewDto) throws IOException {
-        fileCommandService.newFile(fileNewDto.getPath(), FileType.valueOf(fileNewDto.getType()),
-                fileNewDto.getName());
+        fileCommandService.newFile(fileNewDto.getPath(), FileType.valueOf(fileNewDto.getType()), fileNewDto.getName());
     }
 
     @PostMapping("/rename")
@@ -75,10 +84,8 @@ public class FileCommandController {
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"files.xlsx\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"files.xlsx\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
     }
 
     @PostMapping("/download")
@@ -93,9 +100,7 @@ public class FileCommandController {
                 .filename(fileDownloadDto.getFileName(), Charset.forName(acceptCharset)).build());
         headers.setContentLength(fileDownloadDto.getFile().length());
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(resource);
+        return ResponseEntity.ok().headers(headers).body(resource);
     }
 
     @PostMapping("/upload")
@@ -126,8 +131,11 @@ public class FileCommandController {
                 .filename(file.getFileName().toString(), Charset.forName(acceptCharset)).build());
         headers.setContentLength(file.toFile().length());
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(resource);
+        return ResponseEntity.ok().headers(headers).body(resource);
+    }
+
+    @PostMapping("/board")
+    public List<FileBoardResultDto> saveBoard(@RequestBody FilePathsDto filePathsDto) throws IOException {
+        return fileBoardSerivce.save(filePathsDto.getFiles());
     }
 }

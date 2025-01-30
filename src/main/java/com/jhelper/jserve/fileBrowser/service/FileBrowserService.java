@@ -1,4 +1,4 @@
-package com.jhelper.jserve.fileBrowser;
+package com.jhelper.jserve.fileBrowser.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -21,6 +22,9 @@ import org.springframework.util.AntPathMatcher;
 
 import com.jhelper.export.excel.SimpleCell;
 import com.jhelper.export.excel.SimpleExcelExporter;
+import com.jhelper.jserve.fileBrowser.FileDto;
+import com.jhelper.jserve.fileBrowser.FileSearchDto;
+import com.jhelper.jserve.fileBrowser.FileType;
 
 @Service
 public class FileBrowserService {
@@ -50,6 +54,15 @@ public class FileBrowserService {
         return file;
     }
 
+    public List<Path> getFiles(List<String> files) throws IOException {
+        List<Path> paths = new ArrayList<>();
+        for (String filePath : files) {
+            paths.add(getFile(filePath));
+        }
+
+        return paths;
+    }
+
     public FileDto toFileDto(Path path) {
         File file = path.toFile();
         FileDto fileDto = FileDto.builder().type(file.isDirectory() ? FileType.DIR : FileType.FILE).name(file.getName())
@@ -61,7 +74,6 @@ public class FileBrowserService {
         try {
             fileDto.setOwner(Files.getOwner(path).getName());
         } catch (IOException e) {
-
         }
 
         return fileDto;

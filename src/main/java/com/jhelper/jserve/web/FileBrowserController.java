@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jhelper.jserve.fileBrowser.FileBrowserService;
 import com.jhelper.jserve.fileBrowser.FileDto;
 import com.jhelper.jserve.fileBrowser.FileSearchDto;
+import com.jhelper.jserve.fileBrowser.service.FileBrowserService;
 
 @RestController
 @RequestMapping("/api/file-browser")
@@ -42,9 +42,7 @@ public class FileBrowserController {
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"files.xlsx\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"files.xlsx\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
     }
 }

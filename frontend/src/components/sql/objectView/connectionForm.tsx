@@ -35,7 +35,7 @@ const ConnectionForm = ({ onChange }: { onChange?: (connInfo: ConnInfo) => void 
             return { code: conn.name, name: conn.name };
           })}
           optionLabel="name"
-          optionValue="name"
+          optionValue="code"
           className="w-full text-base"
         />
         <Button

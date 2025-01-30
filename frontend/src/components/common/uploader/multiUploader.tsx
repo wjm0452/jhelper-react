@@ -1,6 +1,7 @@
 import { Button } from "primereact/button";
 import { useState } from "react";
 import { singleUpload } from "./uploader.api";
+import { useMessageStoreInContext } from "../message/message.context";
 
 type MultiUploaderProps = {
   uploadUrl: string;
@@ -9,7 +10,7 @@ type MultiUploaderProps = {
   onUpload?: (data: any) => void;
 };
 
-const sizeUnit = (size: number) => {
+const fileSize = (size: number) => {
   const SIZE_UNIT = ["Bytes", "KB", "MB", "GB"];
   let fileSize = size;
   let sizeUnit = "";
@@ -24,9 +25,32 @@ const sizeUnit = (size: number) => {
   return `${parseFloat(fileSize.toFixed(2))} ${sizeUnit}`;
 };
 
+const fileExtension = (fileName: string) => {
+  if (fileName.lastIndexOf(".") == -1) {
+    return "N/A";
+  }
+  return fileName.substring(fileName.lastIndexOf(".") + 1);
+};
+
 const MultiUploader = ({ uploadUrl, params, onUpload, accept }: MultiUploaderProps) => {
   const [files, setFiles] = useState<File[]>([]);
+  const messageStore = useMessageStoreInContext();
+
   const upload = async () => {
+    if (!files.length) {
+      messageStore.alert("파일을 선택하세요.", { header: "선택된 파일 없음" });
+      return;
+    }
+
+    if (
+      !(await messageStore.confirm("업로드 하시겠습니까?", {
+        header: "Upload",
+        icon: "pi-upload",
+      }))
+    ) {
+      return;
+    }
+
     try {
       const uploadResults = await Promise.all(
         files.map((file) => singleUpload({ file, params, uploadUrl })),
@@ -44,20 +68,20 @@ const MultiUploader = ({ uploadUrl, params, onUpload, accept }: MultiUploaderPro
 
   return (
     <div>
-      <div className="d-flex">
-        <input
-          type="file"
-          multiple={true}
-          accept={accept}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            addFile(e.currentTarget.files);
-            e.currentTarget.value = null;
-          }}
-        />
+      <div className="flex">
+        <div className="flex align-items-center">
+          <input
+            type="file"
+            multiple={true}
+            accept={accept}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              addFile(e.currentTarget.files);
+              e.currentTarget.value = null;
+            }}
+          />
+        </div>
         <div className="ml-auto">
-          <button className="btn btn-primary btn-sm me-1" onClick={(e) => upload()}>
-            업로드
-          </button>
+          <Button icon="pi pi-upload" aria-label="upload" onClick={(e) => upload()} />
         </div>
       </div>
       <div>
@@ -65,9 +89,9 @@ const MultiUploader = ({ uploadUrl, params, onUpload, accept }: MultiUploaderPro
           <div key={file.name}>
             <div className="d-flex">
               <div className="d-flex align-items-center">
-                <span className="ml-3">{file.type}</span>
+                <span className="ml-3">{fileExtension(file.name)}</span>
                 <span className="ml-3">{file.name}</span>
-                <span className="ml-3">{sizeUnit(file.size)}</span>
+                <span className="ml-3">{fileSize(file.size)}</span>
               </div>
               <div className="ml-auto">
                 <Button

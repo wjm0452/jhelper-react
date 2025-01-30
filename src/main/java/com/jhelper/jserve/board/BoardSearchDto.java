@@ -10,4 +10,5 @@ public class BoardSearchDto {
     private LocalDateTime to;
     private String registerId;
     private String filter;
+    private String category;
 }

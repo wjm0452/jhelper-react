@@ -147,7 +147,7 @@ export const findIndexes = async (
 
 export const findTableBookmark = async (tableBookmark: TableBookmark) => {
   try {
-    let res: any = await httpClient.get(`/api/table-bookmark`, {
+    let res: any = await httpClient.get(`/api/table-bookmark`, null, {
       params: {
         name: tableBookmark.name,
         owner: tableBookmark.owner,

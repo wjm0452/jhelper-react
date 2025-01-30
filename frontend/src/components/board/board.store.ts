@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 type SearchBoardsState = PagingData & {
   filter: string;
+  category: string;
 };
 
 type SearchBoardsAction = {
@@ -12,6 +13,7 @@ type SearchBoardsAction = {
 
 export const useSearchBoardsStore = create<SearchBoardsState & SearchBoardsAction>((set) => ({
   filter: "",
+  category: "board",
   page: 0,
   size: 10,
   putAll: (data: any) => set(data),

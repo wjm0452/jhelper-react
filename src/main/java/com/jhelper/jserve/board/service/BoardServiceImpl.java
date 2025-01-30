@@ -27,17 +27,6 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public PageDto<Board> findAll(int page, int size) {
-
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("registerDate").descending());
-        Page<Board> pageEntity = boardRepository.findAll(pageRequest);
-
-        return PageDto.<Board>builder().totalElements(pageEntity.getTotalElements()).size(pageEntity.getSize())
-                .page(pageEntity.getNumber()).numberOfElements(pageEntity.getNumberOfElements())
-                .items(pageEntity.getContent()).build();
-    }
-
-    @Override
     public PageDto<Board> findAll(BoardSearchDto boardSearchDto, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("registerDate").descending());
@@ -61,6 +50,11 @@ public class BoardServiceImpl implements BoardService {
                 Predicate registerIdPredicate = criteriaBuilder.equal(root.get("registerId"),
                         boardSearchDto.getRegisterId());
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(predicate, registerIdPredicate));
+            }
+
+            if (boardSearchDto.getCategory() != null && !boardSearchDto.getCategory().isEmpty()) {
+                Predicate categoryPredicate = criteriaBuilder.equal(root.get("category"), boardSearchDto.getCategory());
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(predicate, categoryPredicate));
             }
 
             if (boardSearchDto.getFilter() != null && !boardSearchDto.getFilter().isEmpty()) {
@@ -100,6 +94,7 @@ public class BoardServiceImpl implements BoardService {
             return null;
         }
 
+        oldBoard.setCategory(board.getCategory());
         oldBoard.setTitle(board.getTitle());
         oldBoard.setContent(board.getContent());
         return boardRepository.save(oldBoard);

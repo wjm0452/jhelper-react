@@ -8,6 +8,6 @@ logging:
       springframework:
         data:
           elasticsearch:
-            core: trace
+            core: debug
       docx4j: error
     root: debug

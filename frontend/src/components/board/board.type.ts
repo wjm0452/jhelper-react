@@ -1,5 +1,6 @@
 type Board = {
-  id: string;
+  id: number;
+  category: string;
   title: string;
   content: string;
   registerId: string;
@@ -7,5 +8,9 @@ type Board = {
 };
 
 type SearchBoardType = PagingData & {
-  filter: string;
+  category: string;
+  registerId?: string;
+  from?: string;
+  to?: string;
+  filter?: string;
 };

@@ -1,4 +1,4 @@
-package com.jhelper.jserve.fileBrowser.command;
+package com.jhelper.jserve.fileBrowser;
 
 import java.io.Serializable;
 

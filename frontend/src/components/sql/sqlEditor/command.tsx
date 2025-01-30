@@ -2,6 +2,7 @@ import httpClient from "../../../common/httpClient";
 import { useConnectionStoreInContext } from "../sql.context";
 import { useCommandQueryStore } from "../sql.store";
 import sqlApi from "../sql.api";
+import { useMessageStoreInContext } from "../../common/message/message.context";
 
 const exportTo = (
   {
@@ -34,12 +35,18 @@ const exportTo = (
 const Command = (editorRef: any) => {
   const connectionStore = useConnectionStoreInContext();
   const commandQueryStore = useCommandQueryStore();
+  const messageStore = useMessageStoreInContext();
 
   const module = {
     // sql execute
     executeSql: async () => {
       editorRef.current.setRangeAtCursorPos();
       const query = editorRef.current.getValueAtCursorPos();
+
+      if (!query) {
+        messageStore.toast("Run", "실행할 쿼리가 없습니다..", { severity: "warn" });
+        return;
+      }
 
       commandQueryStore.resetQuery();
       commandQueryStore.setQuery(query);
@@ -65,6 +72,10 @@ const Command = (editorRef: any) => {
       } else if (command == "fetchSize") {
         commandQueryStore.setFetchSize(data);
       } else if ("addSelectQuery" == command) {
+        if (!data.owner || !data.tableName) {
+          messageStore.toast("Command", "owner, tableName을 입력해주세요.", { severity: "warn" });
+          return;
+        }
         editorRef.current.addTextToFirstLine(
           await sqlApi.makeSelectQuery(
             {
@@ -74,6 +85,10 @@ const Command = (editorRef: any) => {
           ),
         );
       } else if ("addInsertQuery" == command) {
+        if (!data.owner || !data.tableName) {
+          messageStore.toast("Command", "owner, tableName을 입력해주세요.", { severity: "warn" });
+          return;
+        }
         editorRef.current.addTextToFirstLine(
           await sqlApi.makeInsertQuery(
             {
@@ -83,6 +98,10 @@ const Command = (editorRef: any) => {
           ),
         );
       } else if ("addUpdateQuery" == command) {
+        if (!data.owner || !data.tableName) {
+          messageStore.toast("Command", "owner, tableName을 입력해주세요.", { severity: "warn" });
+          return;
+        }
         editorRef.current.addTextToFirstLine(
           await sqlApi.makeUpdateQuery(
             {
@@ -92,6 +111,10 @@ const Command = (editorRef: any) => {
           ),
         );
       } else if ("addDeleteQuery" == command) {
+        if (!data.owner || !data.tableName) {
+          messageStore.toast("Command", "owner, tableName을 입력해주세요.", { severity: "warn" });
+          return;
+        }
         editorRef.current.addTextToFirstLine(
           await sqlApi.makeDeleteQuery(
             {
@@ -101,6 +124,10 @@ const Command = (editorRef: any) => {
           ),
         );
       } else if ("exportExcel" == command) {
+        if (!commandQueryStore.query) {
+          messageStore.toast("Export", "실행할 쿼리가 없습니다.", { severity: "warn" });
+          return;
+        }
         exportTo(
           {
             type: "excel",
@@ -110,6 +137,11 @@ const Command = (editorRef: any) => {
           connectionStore,
         );
       } else if ("exportText" == command) {
+        if (!commandQueryStore.query) {
+          messageStore.toast("Export", "실행할 쿼리가 없습니다.", { severity: "warn" });
+          return;
+        }
+
         exportTo(
           {
             type: "text",
@@ -119,6 +151,11 @@ const Command = (editorRef: any) => {
           connectionStore,
         );
       } else if ("exportJson" == command) {
+        if (!commandQueryStore.query) {
+          messageStore.toast("Export", "실행할 쿼리가 없습니다.", { severity: "warn" });
+          return;
+        }
+
         exportTo(
           {
             type: "json",

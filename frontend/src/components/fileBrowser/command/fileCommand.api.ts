@@ -115,6 +115,33 @@ export const getFile = async (path: string, options?: any) => {
   return res.data;
 };
 
+export const fileToBoard = async ({ files }: { files: string[] }) => {
+  try {
+    let res: any = await httpClient.post("/api/file-command/board", { files });
+    return res.data;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const indexingFiles = async ({ files }: { files: string[] }) => {
+  try {
+    let res: any = await httpClient.post("/api/file-index", { files });
+    return res.data;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const indexingFilesToTerminate = async () => {
+  try {
+    let res: any = await httpClient.post("/api/file-index/terminate");
+    return res.data;
+  } catch (e) {
+    throw e;
+  }
+};
+
 const fileCommandApi = {
   newFile,
   copyFiles,
@@ -124,6 +151,9 @@ const fileCommandApi = {
   downloadFiles,
   exportFiles,
   getFile,
+  fileToBoard,
+  indexingFiles,
+  indexingFilesToTerminate,
 };
 
 export default fileCommandApi;

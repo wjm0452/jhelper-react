@@ -1,12 +1,20 @@
 import httpClient from "../../common/httpClient";
 
 export const getBoardList = async ({
+  category,
+  registerId,
+  from,
+  to,
   filter,
   page,
   size,
 }: SearchBoardType): Promise<PagingResults<Board>> => {
-  const res = await httpClient.get("/api/board", {
+  const res = await httpClient.get("/api/board", null, {
     params: {
+      category,
+      registerId,
+      from,
+      to,
       filter,
       page,
       size,
@@ -16,7 +24,7 @@ export const getBoardList = async ({
   return res.data;
 };
 
-export const getBoard = async (id: string): Promise<Board> => {
+export const getBoard = async (id: number): Promise<Board> => {
   if (!id) {
     return {} as Board;
   }
@@ -49,20 +57,29 @@ export const saveBoard = async (item: Board): Promise<Board> => {
   if (item.id) {
     return updateBoard({
       id: item.id,
+      category: item.category,
       title: item.title,
       content: item.content,
     } as Board);
   } else {
     item.registerDate = new Date().toISOString().slice(0, 16);
     return createBoard({
+      category: item.category,
       title: item.title,
       content: item.content,
     } as Board);
   }
 };
 
-export const deleteBoard = async (id: string): Promise<Board> => {
+export const deleteBoard = async (id: number): Promise<Board> => {
   const res = await httpClient.delete(`/api/board/${id}`);
+  const data = res.data;
+
+  return data;
+};
+
+export const deleteBoards = async (ids: number[]): Promise<Board[]> => {
+  const res = await httpClient.delete(`/api/board`, { ids });
   const data = res.data;
 
   return data;
@@ -75,4 +92,5 @@ export default {
   updateBoard,
   saveBoard,
   deleteBoard,
+  deleteBoards,
 };

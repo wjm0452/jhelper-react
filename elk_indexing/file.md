@@ -1,6 +1,6 @@
 ## 색인 설정
 
-PUT https://localhost:9200/file-browser
+PUT https://localhost:9200/file
 ```json
 {
     "settings": {
@@ -21,9 +21,6 @@ PUT https://localhost:9200/file-browser
                         "stop",
                         "trim",
                         "nori_part_of_speech"
-                    ],
-                    "char_filter": [
-                        "html_strip"
                     ]
                 }
             }
@@ -31,33 +28,28 @@ PUT https://localhost:9200/file-browser
     },
     "mappings": {
         "properties": {
-            "type": {
-                "type": "keyword"
+            "name": {
+                "type": "text",
+                "analyzer": "app_analyzer",
+                "search_analyzer": "app_analyzer"
             },
             "path": {
                 "type": "text",
                 "analyzer": "app_analyzer",
                 "search_analyzer": "app_analyzer"
             },
-            "fileName": {
-                "type": "text",
-                "analyzer": "app_analyzer",
-                "search_analyzer": "app_analyzer"
-            },
-            "content": {
-                "type": "text",
-                "analyzer": "app_analyzer",
-                "search_analyzer": "app_analyzer"
+            "owner": {
+                "type": "keyword"
             },
             "size": {
                 "type": "long"
             },
-            "owner": {
-                "type": "keyword"
-            },
             "lastModifiedTime": {
                 "type": "date",
-                "format": "yyyy-MM-dd HH:mm:ss"
+                "format": "uuuu-MM-dd'T'HH:mm:ss"
+            },
+            "directory": {
+                "type": "boolean"
             },
             "hidden": {
                 "type": "boolean"

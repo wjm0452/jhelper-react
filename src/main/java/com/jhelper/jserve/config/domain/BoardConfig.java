@@ -1,4 +1,4 @@
-package com.jhelper.jserve.config.board;
+package com.jhelper.jserve.config.domain;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -10,7 +10,7 @@ import com.jhelper.jserve.board.BoardService;
 import com.jhelper.jserve.board.repository.BoardRepository;
 import com.jhelper.jserve.board.repository.ElalsticBoardRepository;
 import com.jhelper.jserve.board.service.BoardServiceImpl;
-import com.jhelper.jserve.board.service.ElalsticBoardSerivceImpl;
+import com.jhelper.jserve.board.service.ElalsticBoardSerivce;
 import com.jhelper.jserve.config.ElasticConfig;
 
 @Configuration
@@ -22,7 +22,7 @@ public class BoardConfig {
         @Bean
         public BoardService boardService(ElasticsearchOperations elasticsearchOperations,
                 ElalsticBoardRepository elalsticBoardRepository, BoardRepository boardRepository) {
-            ElalsticBoardSerivceImpl elalsticBoardSerivceImpl = new ElalsticBoardSerivceImpl(elalsticBoardRepository,
+            ElalsticBoardSerivce elalsticBoardSerivceImpl = new ElalsticBoardSerivce(elalsticBoardRepository,
                     elasticsearchOperations, new BoardServiceImpl(boardRepository));
 
             return elalsticBoardSerivceImpl;

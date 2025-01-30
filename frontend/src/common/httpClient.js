@@ -45,18 +45,20 @@ class HttpClient {
       });
   }
 
-  async get(url, config = {}) {
+  async get(url, data, config = {}) {
     return this.request({
       method: "get",
       url: url,
+      data: data,
       ...config,
     });
   }
 
-  async delete(url, config = {}) {
+  async delete(url, data, config = {}) {
     return this.request({
       method: "delete",
       url: url,
+      data: data,
       ...config,
     });
   }

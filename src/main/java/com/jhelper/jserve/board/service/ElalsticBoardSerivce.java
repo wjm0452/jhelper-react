@@ -19,22 +19,17 @@ import com.jhelper.jserve.board.entity.BoardDocument;
 import com.jhelper.jserve.board.repository.ElalsticBoardRepository;
 import com.jhelper.jserve.common.PageDto;
 
-public class ElalsticBoardSerivceImpl implements BoardService {
+public class ElalsticBoardSerivce implements BoardService {
 
     private ElalsticBoardRepository elalsticBoardRepository;
     private ElasticsearchOperations elasticsearchOperations;
     private BoardService boardService;
 
-    public ElalsticBoardSerivceImpl(ElalsticBoardRepository elalsticBoardRepository,
+    public ElalsticBoardSerivce(ElalsticBoardRepository elalsticBoardRepository,
             ElasticsearchOperations elasticsearchOperations, BoardService boardService) {
         this.elasticsearchOperations = elasticsearchOperations;
         this.elalsticBoardRepository = elalsticBoardRepository;
         this.boardService = boardService;
-    }
-
-    @Override
-    public PageDto<Board> findAll(int page, int size) {
-        return boardService.findAll(page, size);
     }
 
     @Override
@@ -56,8 +51,11 @@ public class ElalsticBoardSerivceImpl implements BoardService {
             criteria = criteria.and("registerId").is(boardSearchDto.getRegisterId());
         }
 
-        if (StringUtils.isNotEmpty(boardSearchDto.getFilter())) {
+        if (StringUtils.isNotEmpty(boardSearchDto.getCategory())) {
+            criteria = criteria.and("category").is(boardSearchDto.getCategory());
+        }
 
+        if (StringUtils.isNotEmpty(boardSearchDto.getFilter())) {
             Criteria filterCriteria = new Criteria("title").is(boardSearchDto.getFilter()).or("content")
                     .is(boardSearchDto.getFilter());
 
@@ -65,8 +63,7 @@ public class ElalsticBoardSerivceImpl implements BoardService {
         }
 
         Query query = new CriteriaQuery(criteria, pageRequest);
-        query.addSourceFilter(
-                new FetchSourceFilter(null, new String[] { "content" }));
+        query.addSourceFilter(new FetchSourceFilter(null, new String[] { "content" }));
 
         SearchHits<BoardDocument> results = elasticsearchOperations.search(query, BoardDocument.class);
 
@@ -75,7 +72,6 @@ public class ElalsticBoardSerivceImpl implements BoardService {
         return PageDto.<Board>builder().totalElements(results.getTotalHits()).size(size).page(page)
                 .numberOfElements(results.getSearchHits().size()).items(items).build();
 
-        // return boardService.findAll(boardSearchDto, page, size);
     }
 
     @Override

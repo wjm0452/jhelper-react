@@ -2,3 +2,10 @@ jhelper:
   file-browser:
     rootPath: "/work"
     trashPath: "/tmp/jhelper/trash"
+    board:
+      exclusions:
+        - "*.exe"
+        - "*.msi"
+        - "*.zip"
+        - "*.tar"
+        - "*.gzip"

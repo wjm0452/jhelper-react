@@ -105,108 +105,112 @@ const FileBrowserList = () => {
   };
 
   return (
-    <div className="w-100 h-100">
+    <div className="w-100 h-100 flex flex-column">
       <FileBrowserToolbar />
-      <FileViewerWrap
-        path={viewerPath}
-        show={showViewer}
-        onClose={() => {
-          setShowViewer(false);
-        }}
-      />
-      <DataTable
-        value={fileList}
-        loading={isLoading}
-        resizableColumns
-        stripedRows
-        selectionMode="single"
-        selection={selectedFile}
-        onSelectionChange={(e: any) => {
-          setSelectedFile(e.value);
-          fileBrowserStore.setActiveFile(e.value);
-        }}
-        sortMode="single"
-        tableStyle={{ minWidth: "50rem" }}
-        onRowDoubleClick={(e: DataTableRowClickEvent) => {
-          doubleClickHandler(e.data as FileType);
-        }}
-        onKeyDown={(e) => {
-          console.log(e.currentTarget);
-        }}
-      >
-        <Column
-          {...checkboxOptions({
-            field: "checked",
-            onHeaderChange: () => {
-              fileBrowserStore.setSelectedFiles(fileList?.filter((f) => f.checked));
-            },
-            onChange: () => {
-              fileBrowserStore.setSelectedFiles(fileList?.filter((f) => f.checked));
-            },
-          })}
-        ></Column>
-        <Column
-          field="type"
-          header="Type"
-          align="center"
-          headerStyle={{ width: "3rem" }}
-          body={typeTemplate}
-          sortable
-        ></Column>
-        <Column field="name" header="Name" headerStyle={{ width: "" }} sortable></Column>
-        <Column
-          field="path"
-          header="path"
-          headerStyle={{ width: "" }}
-          sortable
-          hidden={true}
-        ></Column>
-        <Column field="owner" header="owner" headerStyle={{ width: "12rem" }} sortable></Column>
-        <Column
-          field="lastModifiedTime"
-          header="lastModifiedTime"
-          headerStyle={{ width: "12rem" }}
-          sortable
-          body={({ lastModifiedTime }) =>
-            dateUtils.toString(dateUtils.toDate(lastModifiedTime), "yyyy-MM-dd HH:mm:ss")
-          }
-        ></Column>
-        <Column
-          field="size"
-          header="Size"
-          headerStyle={{ width: "3rem" }}
-          sortable
-          sortFunction={({ order, data }) => {
-            return data.sort((a: any, b: any) => {
-              const aSize = a.type == "DIR" ? 0 : a.size;
-              const bSize = b.type == "DIR" ? 0 : b.size;
-
-              if (order == 1) {
-                return aSize - bSize;
-              } else {
-                return bSize - aSize;
-              }
-            });
+      <div className="flex-grow-1 overflow-hidden">
+        <FileViewerWrap
+          path={viewerPath}
+          show={showViewer}
+          onClose={() => {
+            setShowViewer(false);
           }}
-          body={({ type, size }) => {
-            if (type != "FILE") {
-              return "";
+        />
+        <DataTable
+          value={fileList}
+          loading={isLoading}
+          resizableColumns
+          stripedRows
+          selectionMode="single"
+          selection={selectedFile}
+          onSelectionChange={(e: any) => {
+            setSelectedFile(e.value);
+            fileBrowserStore.setActiveFile(e.value);
+          }}
+          sortMode="single"
+          tableStyle={{ minWidth: "50rem" }}
+          scrollable
+          scrollHeight="flex"
+          onRowDoubleClick={(e: DataTableRowClickEvent) => {
+            doubleClickHandler(e.data as FileType);
+          }}
+          onKeyDown={(e) => {
+            console.log(e.currentTarget);
+          }}
+        >
+          <Column
+            {...checkboxOptions({
+              field: "checked",
+              onHeaderChange: () => {
+                fileBrowserStore.setSelectedFiles(fileList?.filter((f) => f.checked));
+              },
+              onChange: () => {
+                fileBrowserStore.setSelectedFiles(fileList?.filter((f) => f.checked));
+              },
+            })}
+          ></Column>
+          <Column
+            field="type"
+            header="Type"
+            align="center"
+            headerStyle={{ width: "3rem" }}
+            body={typeTemplate}
+            sortable
+          ></Column>
+          <Column field="name" header="Name" headerStyle={{ width: "" }} sortable></Column>
+          <Column
+            field="path"
+            header="path"
+            headerStyle={{ width: "" }}
+            sortable
+            hidden={true}
+          ></Column>
+          <Column field="owner" header="owner" headerStyle={{ width: "12rem" }} sortable></Column>
+          <Column
+            field="lastModifiedTime"
+            header="lastModifiedTime"
+            headerStyle={{ width: "12rem" }}
+            sortable
+            body={({ lastModifiedTime }) =>
+              dateUtils.toString(dateUtils.toDate(lastModifiedTime), "yyyy-MM-dd HH:mm:ss")
             }
-            const SIZE_UNIT = ["Bytes", "KB", "MB", "GB"];
-            let fileSize = size;
-            let sizeUnit = "";
-            for (sizeUnit of SIZE_UNIT) {
-              if (fileSize < 1024) {
-                break;
+          ></Column>
+          <Column
+            field="size"
+            header="Size"
+            headerStyle={{ width: "3rem" }}
+            sortable
+            sortFunction={({ order, data }) => {
+              return data.sort((a: any, b: any) => {
+                const aSize = a.type == "DIR" ? 0 : a.size;
+                const bSize = b.type == "DIR" ? 0 : b.size;
+
+                if (order == 1) {
+                  return aSize - bSize;
+                } else {
+                  return bSize - aSize;
+                }
+              });
+            }}
+            body={({ type, size }) => {
+              if (type != "FILE") {
+                return "";
+              }
+              const SIZE_UNIT = ["Bytes", "KB", "MB", "GB"];
+              let fileSize = size;
+              let sizeUnit = "";
+              for (sizeUnit of SIZE_UNIT) {
+                if (fileSize < 1024) {
+                  break;
+                }
+
+                fileSize /= 1024;
               }
 
-              fileSize /= 1024;
-            }
-
-            return `${parseFloat(fileSize.toFixed(2))} ${sizeUnit}`;
-          }}
-        ></Column>
-      </DataTable>
+              return `${parseFloat(fileSize.toFixed(2))} ${sizeUnit}`;
+            }}
+          ></Column>
+        </DataTable>
+      </div>
     </div>
   );
 };

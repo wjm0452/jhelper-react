@@ -1,11 +1,6 @@
 import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
-import FileBrowserToolbar from "./fileBrowser.toolbar";
-import { useFileCommandStore } from "../command/fileCommand.store";
-import { useFileBrowserStore } from "../fileBrowser.store";
 import { useState } from "react";
-import { renameFile } from "../command/fileCommand.api";
 
 type FileBrowserRenameFileProps = {
   path: string;

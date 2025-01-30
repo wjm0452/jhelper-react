@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jhelper.jserve.common.Doc2HtmlConverter;
-import com.jhelper.jserve.fileBrowser.command.FileCommandService;
+import com.jhelper.jserve.fileBrowser.service.FileCommandService;
 
 @RestController
 @RequestMapping("/api/file-viewer")

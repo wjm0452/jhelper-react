@@ -23,14 +23,19 @@ public class BoardDocument {
     @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
     private LocalDateTime registerDate;
 
-    @Field(type = FieldType.Keyword, analyzer = "app_analyzer", searchAnalyzer = "app_analyzer")
+    @Field(type = FieldType.Keyword)
+    private String category;
+
+    @Field(type = FieldType.Text, analyzer = "app_analyzer", searchAnalyzer = "app_analyzer")
     private String title;
-    @Field(type = FieldType.Keyword, analyzer = "app_analyzer", searchAnalyzer = "app_analyzer")
+
+    @Field(type = FieldType.Text, analyzer = "app_analyzer", searchAnalyzer = "app_analyzer")
     private String content;
 
     static public BoardDocument of(Board board) {
         BoardDocument doc = new BoardDocument();
         doc.setId(board.getId());
+        doc.setCategory(board.getCategory());
         doc.setRegisterId(board.getRegisterId());
         doc.setRegisterDate(board.getRegisterDate());
         doc.setTitle(board.getTitle());
@@ -42,6 +47,7 @@ public class BoardDocument {
     static public Board to(BoardDocument boardDocument) {
         Board board = new Board();
         board.setId(boardDocument.getId());
+        board.setCategory(boardDocument.getCategory());
         board.setRegisterId(boardDocument.getRegisterId());
         board.setRegisterDate(boardDocument.getRegisterDate());
         board.setTitle(boardDocument.getTitle());
