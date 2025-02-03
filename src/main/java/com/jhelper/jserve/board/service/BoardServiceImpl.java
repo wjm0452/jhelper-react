@@ -20,7 +20,7 @@ import jakarta.persistence.criteria.Root;
 
 public class BoardServiceImpl implements BoardService {
 
-    BoardRepository boardRepository;
+    private BoardRepository boardRepository;
 
     public BoardServiceImpl(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
@@ -76,7 +76,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board findById(Integer id) {
+    public Board findById(String id) {
         return boardRepository.findById(id).orElse(null);
     }
 
@@ -101,7 +101,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(String id) {
         boardRepository.deleteById(id);
     }
 

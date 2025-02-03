@@ -1,5 +1,6 @@
 package com.jhelper.jserve.board.entity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
@@ -12,10 +13,10 @@ import lombok.Data;
 
 @Data
 @Document(indexName = "board")
-public class BoardDocument {
+public class BoardDocument implements Serializable {
 
     @Id
-    private Integer id;
+    private String id;
 
     @Field(type = FieldType.Keyword)
     private String registerId;
@@ -36,22 +37,22 @@ public class BoardDocument {
         BoardDocument doc = new BoardDocument();
         doc.setId(board.getId());
         doc.setCategory(board.getCategory());
-        doc.setRegisterId(board.getRegisterId());
-        doc.setRegisterDate(board.getRegisterDate());
         doc.setTitle(board.getTitle());
         doc.setContent(board.getContent());
+        doc.setRegisterId(board.getRegisterId());
+        doc.setRegisterDate(board.getRegisterDate());
 
         return doc;
     }
 
-    static public Board to(BoardDocument boardDocument) {
+    public Board toBoard() {
         Board board = new Board();
-        board.setId(boardDocument.getId());
-        board.setCategory(boardDocument.getCategory());
-        board.setRegisterId(boardDocument.getRegisterId());
-        board.setRegisterDate(boardDocument.getRegisterDate());
-        board.setTitle(boardDocument.getTitle());
-        board.setContent(boardDocument.getContent());
+        board.setId(getId());
+        board.setCategory(getCategory());
+        board.setTitle(getTitle());
+        board.setContent(getContent());
+        board.setRegisterId(getRegisterId());
+        board.setRegisterDate(getRegisterDate());
 
         return board;
     }

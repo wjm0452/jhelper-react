@@ -7,5 +7,9 @@ spring:
       - classpath:/application-postgres.yml
       - classpath:/application-jhelper.yml
       - classpath:/application-log.yml
-      - classpath:/application-elastic.yml
+      - classpath:/application-search.yml
+      #- classpath:/application-elastic.yml
+  servlet:
+    multipart:
+      enabled: "true"
 

@@ -16,7 +16,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 @ConditionalOnProperty(value = "spring.datasource.driver-class-name", havingValue = "org.sqlite.JDBC", matchIfMissing = false)
 @Configuration
-public class DataSourceConfig {
+public class SqliteConfig {
 
     @Bean("dataSource")
     @ConfigurationProperties(prefix = "spring.datasource")

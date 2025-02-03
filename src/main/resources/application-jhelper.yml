@@ -9,3 +9,5 @@ jhelper:
         - "*.zip"
         - "*.tar"
         - "*.gzip"
+  # board:
+  #   search: "true"

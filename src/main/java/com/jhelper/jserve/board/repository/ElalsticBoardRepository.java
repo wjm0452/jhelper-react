@@ -7,5 +7,5 @@ import com.jhelper.jserve.board.entity.BoardDocument;
 import com.jhelper.jserve.config.ElasticConfig;
 
 @ConditionalOnBean(ElasticConfig.class)
-public interface ElalsticBoardRepository extends ElasticsearchRepository<BoardDocument, Integer> {
+public interface ElalsticBoardRepository extends ElasticsearchRepository<BoardDocument, String> {
 }

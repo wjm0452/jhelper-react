@@ -1,6 +1,3 @@
-server:
-  port: "9080"
-
 # sqlite
 spring:
   datasource:
@@ -8,6 +5,3 @@ spring:
     jdbc-url: jdbc:sqlite:data/jhelper.db
     username: ""
     password: ""
-  servlet:
-    multipart:
-      enabled: "true"

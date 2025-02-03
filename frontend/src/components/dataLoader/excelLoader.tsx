@@ -127,7 +127,7 @@ const ExcelLoader = () => {
             <ConnectionStoreProvider name="sqlExcelLoader">
               <Splitter layout="vertical">
                 <SplitterPanel className="overflow-hidden d-flex flex-column">
-                  <div>
+                  <div className="mb-1">
                     <ConnectionForm
                       onChange={(connInfo: ConnInfo) =>
                         setTargetData({ ...targetData, name: connInfo.name })

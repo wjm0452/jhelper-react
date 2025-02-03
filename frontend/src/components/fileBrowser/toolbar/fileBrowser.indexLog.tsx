@@ -1,8 +1,8 @@
 import { Button } from "primereact/button";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import JobLog from "../../common/log";
 import fileCommandApi from "../command/fileCommand.api";
-import { useFileCommandStore } from "../command/fileCommand.store";
+import { useFileCommandStore, useFileIndexingStore } from "../command/fileCommand.store";
 import { useFileBrowserStore } from "../fileBrowser.store";
 import { useMessageStoreInContext } from "../../common/message/message.context";
 
@@ -17,11 +17,14 @@ const useFiles = (): [string[], Dispatch<SetStateAction<string[]>>] => {
 const FileBrowserFileIndexing = () => {
   const fileBrowserStore = useFileBrowserStore();
   const fileCommandStore = useFileCommandStore();
+  const fileIndexingStore = useFileIndexingStore();
   const messageStore = useMessageStoreInContext();
 
-  const [isRunning, setRunning] = useState(false);
-  const [files, setFiles] = useFiles();
-  const [jobId, setJobId] = useState("");
+  useEffect(() => {
+    if (!fileIndexingStore.isRunning) {
+      fileIndexingStore.setIndexingFiles(toPath(fileBrowserStore.selectedFiles));
+    }
+  }, []);
 
   const indexingAllFiles = async () => {
     if (
@@ -31,17 +34,17 @@ const FileBrowserFileIndexing = () => {
     }
 
     fileCommandStore.setCommand("indexing_all");
-    setFiles([fileBrowserStore.path]);
+    fileIndexingStore.setIndexingFiles([fileBrowserStore.path]);
     const { jobId: newJobId } = await fileCommandApi.indexingFiles({
       files: [fileBrowserStore.path],
     });
 
-    setJobId(newJobId);
-    setRunning(true);
+    fileIndexingStore.setJobId(newJobId);
+    fileIndexingStore.setRunning(true);
   };
 
   const indexingFiles = async () => {
-    if (!files.length) {
+    if (!fileIndexingStore.indexingFiles.length) {
       await messageStore.alert("선택된 파일이 없습니다.");
       return;
     }
@@ -51,10 +54,12 @@ const FileBrowserFileIndexing = () => {
     }
 
     fileCommandStore.setCommand("indexing");
-    const { jobId: newJobId } = await fileCommandApi.indexingFiles({ files: files });
+    const { jobId: newJobId } = await fileCommandApi.indexingFiles({
+      files: fileIndexingStore.indexingFiles,
+    });
 
-    setJobId(newJobId);
-    setRunning(true);
+    fileIndexingStore.setJobId(newJobId);
+    fileIndexingStore.setRunning(true);
   };
 
   const indexingFilesToTerminate = async () => {
@@ -65,12 +70,12 @@ const FileBrowserFileIndexing = () => {
   return (
     <div className="w-100 h-100 flex flex-column">
       <div className="mb-1 overflow-auto" style={{ maxHeight: "200px" }}>
-        {files.map((file, i) => {
+        {fileIndexingStore.indexingFiles.map((file, i) => {
           return <div key={i}>{file}</div>;
         })}
       </div>
       <div className="flex-grow-1">
-        <JobLog jobId={jobId} isStart={isRunning} />
+        <JobLog jobId={fileIndexingStore.jobId} isStart={fileIndexingStore.isRunning} />
       </div>
       <div className="text-end">
         <Button

@@ -122,7 +122,7 @@ const ActionButtons = ({ item, readOnly }: ActionButtonProps) => {
 const BoardDetails = () => {
   const { boardId } = useParams(); // path parameters
 
-  const { refetch: refetchBoard } = useGetBoard(parseInt(boardId, 10), { enabled: false });
+  const { refetch: refetchBoard } = useGetBoard(boardId, { enabled: false });
   const [item, setItem] = useState({
     id: null,
     category: "board",

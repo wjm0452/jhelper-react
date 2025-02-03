@@ -1,16 +1,15 @@
 import { Button } from "primereact/button";
-import TextFileViewer from "./fileViewer.text";
-import ImageFileViewer from "./fileViewer.image";
-import VideoFileViewer from "./fileViewer.video";
-import PdfFileViewer from "./fileViewer.pdf";
-import { useEffect, useState } from "react";
-import XlsxFileViewer from "./fileViewer.xlsx";
-import MarkdownFileViewer from "./fileViewer.markdown";
-import { Card } from "primereact/card";
-import PptxFileViewer from "./fileViewer.pptx";
-import DocxFileViewer from "./fileViewer.docx";
 import { Dialog } from "primereact/dialog";
-import { ButtonGroup } from "primereact/buttongroup";
+import { useEffect, useState } from "react";
+import DocxFileViewer from "./fileViewer.docx";
+import ImageFileViewer from "./fileViewer.image";
+import MarkdownFileViewer from "./fileViewer.markdown";
+import PdfFileViewer from "./fileViewer.pdf";
+import PptxFileViewer from "./fileViewer.pptx";
+import SourceFileViewer from "./fileViewer.source";
+import TextFileViewer from "./fileViewer.text";
+import VideoFileViewer from "./fileViewer.video";
+import XlsxFileViewer from "./fileViewer.xlsx";
 
 const getFileType = (path: string) => {
   path = path.toLowerCase();
@@ -30,6 +29,8 @@ const getFileType = (path: string) => {
     return "pptx";
   } else if (/\S+.docx/.test(path)) {
     return "docx";
+  } else if (/\S+.java|js|jsx|ts|tsx|css|html|jsp|sql/.test(path)) {
+    return "source";
   }
 };
 
@@ -99,6 +100,8 @@ const FileViewer = ({ path }: { path: string }) => {
       return <DocxFileViewer path={path} />;
     case "video":
       return <VideoFileViewer path={path} />;
+    case "source":
+      return <SourceFileViewer path={path} />;
     default:
       return (
         <div className="flex align-items-center">

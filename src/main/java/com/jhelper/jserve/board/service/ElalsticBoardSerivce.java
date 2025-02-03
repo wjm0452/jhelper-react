@@ -67,7 +67,7 @@ public class ElalsticBoardSerivce implements BoardService {
 
         SearchHits<BoardDocument> results = elasticsearchOperations.search(query, BoardDocument.class);
 
-        List<Board> items = results.getSearchHits().stream().map(hit -> BoardDocument.to(hit.getContent())).toList();
+        List<Board> items = results.getSearchHits().stream().map(hit -> hit.getContent().toBoard()).toList();
 
         return PageDto.<Board>builder().totalElements(results.getTotalHits()).size(size).page(page)
                 .numberOfElements(results.getSearchHits().size()).items(items).build();
@@ -75,7 +75,7 @@ public class ElalsticBoardSerivce implements BoardService {
     }
 
     @Override
-    public Board findById(Integer id) {
+    public Board findById(String id) {
         return boardService.findById(id);
     }
 
@@ -96,7 +96,7 @@ public class ElalsticBoardSerivce implements BoardService {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(String id) {
         boardService.delete(id);
         elalsticBoardRepository.deleteById(id);
     }

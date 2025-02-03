@@ -15,7 +15,7 @@ export const useGetBoardList = (searchBoard: SearchBoardType) => {
   });
 };
 
-export const useGetBoard = (id: number, options?: { enabled: boolean }) => {
+export const useGetBoard = (id: string, options?: { enabled: boolean }) => {
   return useQuery({
     queryKey: ["board", id],
     queryFn: (): Promise<Board> => boardApi.getBoard(id),
@@ -39,7 +39,7 @@ export const useDeleteBoard = () => {
   const messageStore = useMessageStoreInContext();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number): Promise<Board> => boardApi.deleteBoard(id),
+    mutationFn: (id: string): Promise<Board> => boardApi.deleteBoard(id),
     onSuccess: (data) => {
       queryClient.removeQueries({ queryKey: ["board", data.id] });
       messageStore.toast("Delete", "삭제 되었습니다.");
@@ -51,7 +51,7 @@ export const useDeleteBoards = () => {
   const messageStore = useMessageStoreInContext();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number[]): Promise<Board[]> => boardApi.deleteBoards(id),
+    mutationFn: (id: string[]): Promise<Board[]> => boardApi.deleteBoards(id),
     onSuccess: (data) => {
       queryClient.removeQueries({ queryKey: ["boardList"] });
       messageStore.toast("Delete", "삭제 되었습니다.");

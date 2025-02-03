@@ -176,7 +176,7 @@ export const saveTableBookmark = async (tableBookmark: TableBookmark) => {
 
 export const deleteTableBookmark = async (tableBookmark: TableBookmark) => {
   try {
-    let res: any = await httpClient.delete(`/api/table-bookmark`, {
+    let res: any = await httpClient.delete(`/api/table-bookmark`, {}, {
       params: {
         name: tableBookmark.name,
         owner: tableBookmark.owner,

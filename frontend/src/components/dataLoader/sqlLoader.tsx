@@ -45,7 +45,7 @@ const DataLoader = () => {
           <ConnectionStoreProvider name="sqlLoader.source">
             <Splitter layout="vertical">
               <SplitterPanel className="overflow-hidden d-flex flex-column">
-                <div>
+                <div className="mb-1">
                   <ConnectionForm
                     onChange={(connInfo: ConnInfo) =>
                       setSourceData({ ...sourceData, name: connInfo.name })
@@ -96,7 +96,7 @@ const DataLoader = () => {
           <ConnectionStoreProvider name="sqlLoader.target">
             <Splitter layout="vertical">
               <SplitterPanel className="overflow-hidden d-flex flex-column">
-                <div>
+                <div className="mb-1">
                   <ConnectionForm
                     onChange={(connInfo: ConnInfo) =>
                       setTargetData({ ...targetData, name: connInfo.name })

@@ -1,5 +1,5 @@
 type Board = {
-  id: number;
+  id: string;
   category: string;
   title: string;
   content: string;
