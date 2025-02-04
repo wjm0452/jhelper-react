@@ -9,6 +9,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import jakarta.persistence.Column;
@@ -26,6 +27,7 @@ import lombok.NoArgsConstructor;
 @Comment(value = "게시판")
 @AllArgsConstructor
 @NoArgsConstructor
+@Indexed
 public class Board implements Serializable {
 
     @Id

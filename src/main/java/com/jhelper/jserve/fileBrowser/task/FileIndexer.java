@@ -25,7 +25,7 @@ public class FileIndexer {
     private FileBrowserService fileBrowserService;
 
     @Autowired
-    private FileWatcher fileWatcher;
+    private FileIndexingWatcher fileWatcher;
 
     @Autowired
     private FileIndexingTaskFactoryBean fileIndexingJobFactory;

@@ -1,7 +1,0 @@
-# lucene
-hibernate:
-  search:
-    backend:
-      directory:
-        type: local-filesystem
-        root: c:\\tmp\\jhelper
