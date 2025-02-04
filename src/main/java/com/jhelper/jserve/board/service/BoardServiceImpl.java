@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jhelper.jserve.board.BoardSearchDto;
 import com.jhelper.jserve.board.BoardService;
@@ -80,12 +81,14 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     @Override
     public Board create(Board board) {
         board.setRegisterDate(LocalDateTime.now());
         return boardRepository.save(board);
     }
 
+    @Transactional
     @Override
     public Board update(Board board) {
         Board oldBoard = findById(board.getId());
@@ -100,6 +103,7 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.save(oldBoard);
     }
 
+    @Transactional
     @Override
     public void delete(String id) {
         boardRepository.deleteById(id);

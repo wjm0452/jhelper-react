@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FileWatcher {
+public class FileIndexingWatcher {
 
     public static interface FileWatcherCallback {
         public void call(List<WatchEvent<?>> events);

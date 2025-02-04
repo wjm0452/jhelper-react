@@ -16,8 +16,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@SearchEntity
-@Indexed
+// @SearchEntity
+// @Indexed
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchBoard implements Serializable {

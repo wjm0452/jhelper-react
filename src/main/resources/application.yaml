@@ -1,0 +1,15 @@
+server:
+  port: "9080"
+
+spring:
+  config:
+    import:
+      - classpath:/application-postgres.yaml
+      - classpath:/application-jhelper.yaml
+      - classpath:/application-log.yaml
+      - classpath:/application-search.yaml
+      #- classpath:/application-elastic.yml
+  servlet:
+    multipart:
+      enabled: "true"
+

@@ -13,6 +13,7 @@ import org.hibernate.boot.model.relational.SqlStringGenerationContext;
 import org.hibernate.dialect.DatabaseVersion;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.NationalizationSupport;
+import org.hibernate.dialect.NullOrdering;
 import org.hibernate.dialect.Replacer;
 import org.hibernate.dialect.function.CommonFunctionFactory;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
@@ -32,7 +33,6 @@ import org.hibernate.internal.util.JdbcExceptionHelper;
 import org.hibernate.mapping.Column;
 import org.hibernate.query.SemanticException;
 import org.hibernate.query.sqm.IntervalType;
-import org.hibernate.query.sqm.NullOrdering;
 import org.hibernate.query.sqm.TemporalUnit;
 import org.hibernate.query.sqm.TrimSpec;
 import org.hibernate.query.sqm.produce.function.StandardFunctionReturnTypeResolvers;
@@ -107,25 +107,25 @@ public class SQLiteDialect extends Dialect {
     @Override
     protected String columnType(int sqlTypeCode) {
         switch (sqlTypeCode) {
-            case DECIMAL:
-                return getVersion().isBefore(3) ? columnType(SqlTypes.NUMERIC) : super.columnType(sqlTypeCode);
-            case CHAR:
-                return getVersion().isBefore(3) ? "char" : super.columnType(sqlTypeCode);
-            case NCHAR:
-                return getVersion().isBefore(3) ? "nchar" : super.columnType(sqlTypeCode);
-            // No precision support
-            case FLOAT:
-                return "float";
-            case TIMESTAMP:
-            case TIMESTAMP_WITH_TIMEZONE:
-                return "timestamp";
-            case TIME_WITH_TIMEZONE:
-                return "time";
-            case BINARY:
-            case VARBINARY:
-                return "blob";
-            default:
-                return super.columnType(sqlTypeCode);
+        case DECIMAL:
+            return getVersion().isBefore(3) ? columnType(SqlTypes.NUMERIC) : super.columnType(sqlTypeCode);
+        case CHAR:
+            return getVersion().isBefore(3) ? "char" : super.columnType(sqlTypeCode);
+        case NCHAR:
+            return getVersion().isBefore(3) ? "nchar" : super.columnType(sqlTypeCode);
+        // No precision support
+        case FLOAT:
+            return "float";
+        case TIMESTAMP:
+        case TIMESTAMP_WITH_TIMEZONE:
+            return "timestamp";
+        case TIME_WITH_TIMEZONE:
+            return "time";
+        case BINARY:
+        case VARBINARY:
+            return "blob";
+        default:
+            return super.columnType(sqlTypeCode);
         }
     }
 
@@ -153,38 +153,37 @@ public class SQLiteDialect extends Dialect {
 
     /**
      * The {@code extract()} function returns {@link TemporalUnit#DAY_OF_WEEK}
-     * numbered from 0 to 6. This isn't consistent with what most other
-     * databases do, so here we adjust the result by generating
-     * {@code (extract(dow,arg)+1))}.
+     * numbered from 0 to 6. This isn't consistent with what most other databases
+     * do, so here we adjust the result by generating {@code (extract(dow,arg)+1))}.
      */
     @Override
     public String extractPattern(TemporalUnit unit) {
         switch (unit) {
-            case SECOND:
-                return "cast(strftime('%S.%f',?2) as double)";
-            case MINUTE:
-                return "strftime('%M',?2)";
-            case HOUR:
-                return "strftime('%H',?2)";
-            case DAY:
-            case DAY_OF_MONTH:
-                return "(strftime('%d',?2)+1)";
-            case MONTH:
-                return "strftime('%m',?2)";
-            case YEAR:
-                return "strftime('%Y',?2)";
-            case DAY_OF_WEEK:
-                return "(strftime('%w',?2)+1)";
-            case DAY_OF_YEAR:
-                return "strftime('%j',?2)";
-            case EPOCH:
-                return "strftime('%s',?2)";
-            case WEEK:
-                // Thanks
-                // https://stackoverflow.com/questions/15082584/sqlite-return-wrong-week-number-for-2013
-                return "((strftime('%j',date(?2,'-3 days','weekday 4'))-1)/7+1)";
-            default:
-                return super.extractPattern(unit);
+        case SECOND:
+            return "cast(strftime('%S.%f',?2) as double)";
+        case MINUTE:
+            return "strftime('%M',?2)";
+        case HOUR:
+            return "strftime('%H',?2)";
+        case DAY:
+        case DAY_OF_MONTH:
+            return "(strftime('%d',?2)+1)";
+        case MONTH:
+            return "strftime('%m',?2)";
+        case YEAR:
+            return "strftime('%Y',?2)";
+        case DAY_OF_WEEK:
+            return "(strftime('%w',?2)+1)";
+        case DAY_OF_YEAR:
+            return "strftime('%j',?2)";
+        case EPOCH:
+            return "strftime('%s',?2)";
+        case WEEK:
+            // Thanks
+            // https://stackoverflow.com/questions/15082584/sqlite-return-wrong-week-number-for-2013
+            return "((strftime('%j',date(?2,'-3 days','weekday 4'))-1)/7+1)";
+        default:
+            return super.extractPattern(unit);
         }
     }
 
@@ -192,15 +191,15 @@ public class SQLiteDialect extends Dialect {
     public String timestampaddPattern(TemporalUnit unit, TemporalType temporalType, IntervalType intervalType) {
         final String function = temporalType == TemporalType.DATE ? "date" : "datetime";
         switch (unit) {
-            case NANOSECOND:
-            case NATIVE:
-                return "datetime(?3,'+?2 seconds')";
-            case QUARTER: // quarter is not supported in interval literals
-                return function + "(?3,'+'||(?2*3)||' months')";
-            case WEEK: // week is not supported in interval literals
-                return function + "(?3,'+'||(?2*7)||' days')";
-            default:
-                return function + "(?3,'+?2 ?1s')";
+        case NANOSECOND:
+        case NATIVE:
+            return "datetime(?3,'+?2 seconds')";
+        case QUARTER: // quarter is not supported in interval literals
+            return function + "(?3,'+'||(?2*3)||' months')";
+        case WEEK: // week is not supported in interval literals
+            return function + "(?3,'+'||(?2*7)||' days')";
+        default:
+            return function + "(?3,'+?2 ?1s')";
         }
     }
 
@@ -208,47 +207,44 @@ public class SQLiteDialect extends Dialect {
     public String timestampdiffPattern(TemporalUnit unit, TemporalType fromTemporalType, TemporalType toTemporalType) {
         final StringBuilder pattern = new StringBuilder();
         switch (unit) {
-            case YEAR:
-                extractField(pattern, YEAR, unit);
-                break;
-            case QUARTER:
-                pattern.append("(");
-                extractField(pattern, YEAR, unit);
-                pattern.append("+");
-                extractField(pattern, QUARTER, unit);
-                pattern.append(")");
-                break;
-            case MONTH:
-                pattern.append("(");
-                extractField(pattern, YEAR, unit);
-                pattern.append("+");
-                extractField(pattern, MONTH, unit);
-                pattern.append(")");
-                break;
-            case WEEK: // week is not supported by extract() when the argument is a duration
-            case DAY:
-                extractField(pattern, DAY, unit);
-                break;
-            // in order to avoid multiple calls to extract(),
-            // we use extract(epoch from x - y) * factor for
-            // all the following units:
-            case HOUR:
-            case MINUTE:
-            case SECOND:
-            case NANOSECOND:
-            case NATIVE:
-                extractField(pattern, EPOCH, unit);
-                break;
-            default:
-                throw new SemanticException("unrecognized field: " + unit);
+        case YEAR:
+            extractField(pattern, YEAR, unit);
+            break;
+        case QUARTER:
+            pattern.append("(");
+            extractField(pattern, YEAR, unit);
+            pattern.append("+");
+            extractField(pattern, QUARTER, unit);
+            pattern.append(")");
+            break;
+        case MONTH:
+            pattern.append("(");
+            extractField(pattern, YEAR, unit);
+            pattern.append("+");
+            extractField(pattern, MONTH, unit);
+            pattern.append(")");
+            break;
+        case WEEK: // week is not supported by extract() when the argument is a duration
+        case DAY:
+            extractField(pattern, DAY, unit);
+            break;
+        // in order to avoid multiple calls to extract(),
+        // we use extract(epoch from x - y) * factor for
+        // all the following units:
+        case HOUR:
+        case MINUTE:
+        case SECOND:
+        case NANOSECOND:
+        case NATIVE:
+            extractField(pattern, EPOCH, unit);
+            break;
+        default:
+            throw new SemanticException("unrecognized field: " + unit);
         }
         return pattern.toString();
     }
 
-    private void extractField(
-            StringBuilder pattern,
-            TemporalUnit unit,
-            TemporalUnit toUnit) {
+    private void extractField(StringBuilder pattern, TemporalUnit unit, TemporalUnit toUnit) {
         final String rhs = extractPattern(unit);
         final String lhs = rhs.replace("?2", "?3");
         pattern.append('(');
@@ -282,50 +278,36 @@ public class SQLiteDialect extends Dialect {
         functionFactory.substring_substr();
         functionFactory.chr_char();
 
-        functionContributions.getFunctionRegistry().registerBinaryTernaryPattern(
-                "locate",
-                integerType,
-                "instr(?2,?1)",
-                "instr(?2,?1,?3)",
-                STRING, STRING, INTEGER,
-                functionContributions.getTypeConfiguration()).setArgumentListSignature("(pattern, string[, start])");
-        functionContributions.getFunctionRegistry().registerBinaryTernaryPattern(
-                "lpad",
-                stringType,
-                "(substr(replace(hex(zeroblob(?2)),'00',' '),1,?2-length(?1))||?1)",
-                "(substr(replace(hex(zeroblob(?2)),'00',?3),1,?2-length(?1))||?1)",
-                STRING, INTEGER, STRING,
-                functionContributions.getTypeConfiguration()).setArgumentListSignature("(string, length[, padding])");
-        functionContributions.getFunctionRegistry().registerBinaryTernaryPattern(
-                "rpad",
-                stringType,
-                "(?1||substr(replace(hex(zeroblob(?2)),'00',' '),1,?2-length(?1)))",
-                "(?1||substr(replace(hex(zeroblob(?2)),'00',?3),1,?2-length(?1)))",
-                STRING, INTEGER, STRING,
-                functionContributions.getTypeConfiguration()).setArgumentListSignature("(string, length[, padding])");
+        functionContributions.getFunctionRegistry()
+                .registerBinaryTernaryPattern("locate", integerType, "instr(?2,?1)", "instr(?2,?1,?3)", STRING, STRING,
+                        INTEGER, functionContributions.getTypeConfiguration())
+                .setArgumentListSignature("(pattern, string[, start])");
+        functionContributions.getFunctionRegistry()
+                .registerBinaryTernaryPattern("lpad", stringType,
+                        "(substr(replace(hex(zeroblob(?2)),'00',' '),1,?2-length(?1))||?1)",
+                        "(substr(replace(hex(zeroblob(?2)),'00',?3),1,?2-length(?1))||?1)", STRING, INTEGER, STRING,
+                        functionContributions.getTypeConfiguration())
+                .setArgumentListSignature("(string, length[, padding])");
+        functionContributions.getFunctionRegistry()
+                .registerBinaryTernaryPattern("rpad", stringType,
+                        "(?1||substr(replace(hex(zeroblob(?2)),'00',' '),1,?2-length(?1)))",
+                        "(?1||substr(replace(hex(zeroblob(?2)),'00',?3),1,?2-length(?1)))", STRING, INTEGER, STRING,
+                        functionContributions.getTypeConfiguration())
+                .setArgumentListSignature("(string, length[, padding])");
 
         functionContributions.getFunctionRegistry().namedDescriptorBuilder("format", "strftime")
-                .setInvariantType(stringType)
-                .setExactArgumentCount(2)
-                .setParameterTypes(TEMPORAL, STRING)
-                .setArgumentListSignature("(TEMPORAL datetime as STRING pattern)")
-                .register();
+                .setInvariantType(stringType).setExactArgumentCount(2).setParameterTypes(TEMPORAL, STRING)
+                .setArgumentListSignature("(TEMPORAL datetime as STRING pattern)").register();
 
         if (!supportsMathFunctions()) {
-            functionContributions.getFunctionRegistry().patternDescriptorBuilder(
-                    "floor",
-                    "(cast(?1 as int)-(?1<cast(?1 as int)))")
-                    .setReturnTypeResolver(StandardFunctionReturnTypeResolvers.useArgType(1))
-                    .setExactArgumentCount(1)
-                    .setParameterTypes(NUMERIC)
-                    .register();
-            functionContributions.getFunctionRegistry().patternDescriptorBuilder(
-                    "ceiling",
-                    "(cast(?1 as int)+(?1>cast(?1 as int)))")
-                    .setReturnTypeResolver(StandardFunctionReturnTypeResolvers.useArgType(1))
-                    .setExactArgumentCount(1)
-                    .setParameterTypes(NUMERIC)
-                    .register();
+            functionContributions.getFunctionRegistry()
+                    .patternDescriptorBuilder("floor", "(cast(?1 as int)-(?1<cast(?1 as int)))")
+                    .setReturnTypeResolver(StandardFunctionReturnTypeResolvers.useArgType(1)).setExactArgumentCount(1)
+                    .setParameterTypes(NUMERIC).register();
+            functionContributions.getFunctionRegistry()
+                    .patternDescriptorBuilder("ceiling", "(cast(?1 as int)+(?1>cast(?1 as int)))")
+                    .setReturnTypeResolver(StandardFunctionReturnTypeResolvers.useArgType(1)).setExactArgumentCount(1)
+                    .setParameterTypes(NUMERIC).register();
         }
         functionFactory.windowFunctions();
         functionFactory.listagg_groupConcat();
@@ -334,18 +316,12 @@ public class SQLiteDialect extends Dialect {
     @Override
     public String trimPattern(TrimSpec specification, char character) {
         switch (specification) {
-            case BOTH:
-                return character == ' '
-                        ? "trim(?1)"
-                        : "trim(?1,'" + character + "')";
-            case LEADING:
-                return character == ' '
-                        ? "ltrim(?1)"
-                        : "ltrim(?1,'" + character + "')";
-            case TRAILING:
-                return character == ' '
-                        ? "rtrim(?1)"
-                        : "rtrim(?1,'" + character + "')";
+        case BOTH:
+            return character == ' ' ? "trim(?1)" : "trim(?1,'" + character + "')";
+        case LEADING:
+            return character == ' ' ? "ltrim(?1)" : "ltrim(?1,'" + character + "')";
+        case TRAILING:
+            return character == ' ' ? "rtrim(?1)" : "rtrim(?1,'" + character + "')";
         }
         throw new UnsupportedOperationException("Unsupported specification: " + specification);
     }
@@ -359,8 +335,7 @@ public class SQLiteDialect extends Dialect {
     @Override
     public void contributeTypes(TypeContributions typeContributions, ServiceRegistry serviceRegistry) {
         super.contributeTypes(typeContributions, serviceRegistry);
-        final JdbcTypeRegistry jdbcTypeRegistry = typeContributions.getTypeConfiguration()
-                .getJdbcTypeRegistry();
+        final JdbcTypeRegistry jdbcTypeRegistry = typeContributions.getTypeConfiguration().getJdbcTypeRegistry();
         jdbcTypeRegistry.addDescriptor(Types.BLOB, BlobJdbcType.PRIMITIVE_ARRAY_BINDING);
         jdbcTypeRegistry.addDescriptor(Types.CLOB, ClobJdbcType.STRING_BINDING);
     }
@@ -439,19 +414,19 @@ public class SQLiteDialect extends Dialect {
         return (sqlException, message, sql) -> {
             final int errorCode = JdbcExceptionHelper.extractErrorCode(sqlException);
             switch (errorCode) {
-                case SQLITE_TOOBIG:
-                case SQLITE_MISMATCH:
-                    return new DataException(message, sqlException, sql);
-                case SQLITE_BUSY:
-                case SQLITE_LOCKED:
-                    return new LockAcquisitionException(message, sqlException, sql);
-                case SQLITE_NOTADB:
+            case SQLITE_TOOBIG:
+            case SQLITE_MISMATCH:
+                return new DataException(message, sqlException, sql);
+            case SQLITE_BUSY:
+            case SQLITE_LOCKED:
+                return new LockAcquisitionException(message, sqlException, sql);
+            case SQLITE_NOTADB:
+                return new JDBCConnectionException(message, sqlException, sql);
+            default:
+                if (errorCode >= SQLITE_IOERR && errorCode <= SQLITE_PROTOCOL) {
                     return new JDBCConnectionException(message, sqlException, sql);
-                default:
-                    if (errorCode >= SQLITE_IOERR && errorCode <= SQLITE_PROTOCOL) {
-                        return new JDBCConnectionException(message, sqlException, sql);
-                    }
-                    return null;
+                }
+                return null;
             }
         };
     }
@@ -485,12 +460,8 @@ public class SQLiteDialect extends Dialect {
     }
 
     @Override
-    public String getAddForeignKeyConstraintString(
-            String constraintName,
-            String[] foreignKey,
-            String referencedTable,
-            String[] primaryKey,
-            boolean referencesPrimaryKey) {
+    public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKey, String referencedTable,
+            String[] primaryKey, boolean referencesPrimaryKey) {
         throw new UnsupportedOperationException("No add foreign key syntax supported by SQLiteDialect");
     }
 
@@ -582,54 +553,42 @@ public class SQLiteDialect extends Dialect {
     }
 
     public static Replacer datetimeFormat(String format) {
-        return new Replacer(format, "'", "")
-                .replace("%", "%%")
+        return new Replacer(format, "'", "").replace("%", "%%")
 
                 // year
-                .replace("yyyy", "%Y")
-                .replace("yyy", "%Y")
-                .replace("yy", "%y") // ?????
+                .replace("yyyy", "%Y").replace("yyy", "%Y").replace("yy", "%y") // ?????
                 .replace("y", "%y") // ?????
 
                 // month of year
                 .replace("MMMM", "%B") // ?????
                 .replace("MMM", "%b") // ?????
-                .replace("MM", "%m")
-                .replace("M", "%m") // ?????
+                .replace("MM", "%m").replace("M", "%m") // ?????
 
                 // day of week
                 .replace("EEEE", "%A") // ?????
                 .replace("EEE", "%a") // ?????
-                .replace("ee", "%w")
-                .replace("e", "%w") // ?????
+                .replace("ee", "%w").replace("e", "%w") // ?????
 
                 // day of month
-                .replace("dd", "%d")
-                .replace("d", "%d") // ?????
+                .replace("dd", "%d").replace("d", "%d") // ?????
 
                 // am pm
                 .replace("a", "%p") // ?????
 
                 // hour
                 .replace("hh", "%I") // ?????
-                .replace("HH", "%H")
-                .replace("h", "%I") // ?????
+                .replace("HH", "%H").replace("h", "%I") // ?????
                 .replace("H", "%H") // ?????
 
                 // minute
-                .replace("mm", "%M")
-                .replace("m", "%M") // ?????
+                .replace("mm", "%M").replace("m", "%M") // ?????
 
                 // second
-                .replace("ss", "%S")
-                .replace("s", "%S") // ?????
+                .replace("ss", "%S").replace("s", "%S") // ?????
 
                 // fractional seconds
                 .replace("SSSSSS", "%f") // 5 is the max
-                .replace("SSSSS", "%f")
-                .replace("SSSS", "%f")
-                .replace("SSS", "%f")
-                .replace("SS", "%f")
+                .replace("SSSSS", "%f").replace("SSSS", "%f").replace("SSS", "%f").replace("SS", "%f")
                 .replace("S", "%f");
     }
 
@@ -641,79 +600,73 @@ public class SQLiteDialect extends Dialect {
     }
 
     @Override
-    public void appendDateTimeLiteral(
-            SqlAppender appender,
-            TemporalAccessor temporalAccessor,
-            TemporalType precision,
+    public void appendDateTimeLiteral(SqlAppender appender, TemporalAccessor temporalAccessor, TemporalType precision,
             TimeZone jdbcTimeZone) {
         switch (precision) {
-            case DATE:
-                appender.appendSql("date(");
-                appendAsDate(appender, temporalAccessor);
-                appender.appendSql(')');
-                break;
-            case TIME:
-                appender.appendSql("time(");
-                appendAsTime(appender, temporalAccessor, supportsTemporalLiteralOffset(), jdbcTimeZone);
-                appender.appendSql(')');
-                break;
-            case TIMESTAMP:
-                appender.appendSql("datetime(");
-                appendAsTimestampWithNanos(appender, temporalAccessor, supportsTemporalLiteralOffset(), jdbcTimeZone);
-                appender.appendSql(')');
-                break;
-            default:
-                throw new IllegalArgumentException();
+        case DATE:
+            appender.appendSql("date(");
+            appendAsDate(appender, temporalAccessor);
+            appender.appendSql(')');
+            break;
+        case TIME:
+            appender.appendSql("time(");
+            appendAsTime(appender, temporalAccessor, supportsTemporalLiteralOffset(), jdbcTimeZone);
+            appender.appendSql(')');
+            break;
+        case TIMESTAMP:
+            appender.appendSql("datetime(");
+            appendAsTimestampWithNanos(appender, temporalAccessor, supportsTemporalLiteralOffset(), jdbcTimeZone);
+            appender.appendSql(')');
+            break;
+        default:
+            throw new IllegalArgumentException();
         }
     }
 
     @Override
     public void appendDateTimeLiteral(SqlAppender appender, Date date, TemporalType precision, TimeZone jdbcTimeZone) {
         switch (precision) {
-            case DATE:
-                appender.appendSql("date(");
-                appendAsDate(appender, date);
-                appender.appendSql(')');
-                break;
-            case TIME:
-                appender.appendSql("time(");
-                appendAsTime(appender, date);
-                appender.appendSql(')');
-                break;
-            case TIMESTAMP:
-                appender.appendSql("datetime(");
-                appendAsTimestampWithNanos(appender, date, jdbcTimeZone);
-                appender.appendSql(')');
-                break;
-            default:
-                throw new IllegalArgumentException();
+        case DATE:
+            appender.appendSql("date(");
+            appendAsDate(appender, date);
+            appender.appendSql(')');
+            break;
+        case TIME:
+            appender.appendSql("time(");
+            appendAsTime(appender, date);
+            appender.appendSql(')');
+            break;
+        case TIMESTAMP:
+            appender.appendSql("datetime(");
+            appendAsTimestampWithNanos(appender, date, jdbcTimeZone);
+            appender.appendSql(')');
+            break;
+        default:
+            throw new IllegalArgumentException();
         }
     }
 
     @Override
-    public void appendDateTimeLiteral(
-            SqlAppender appender,
-            Calendar calendar,
-            TemporalType precision,
+    public void appendDateTimeLiteral(SqlAppender appender, Calendar calendar, TemporalType precision,
             TimeZone jdbcTimeZone) {
         switch (precision) {
-            case DATE:
-                appender.appendSql("date(");
-                appendAsDate(appender, calendar);
-                appender.appendSql(')');
-                break;
-            case TIME:
-                appender.appendSql("time(");
-                appendAsTime(appender, calendar);
-                appender.appendSql(')');
-                break;
-            case TIMESTAMP:
-                appender.appendSql("datetime(");
-                appendAsTimestampWithMillis(appender, calendar, jdbcTimeZone);
-                appender.appendSql(')');
-                break;
-            default:
-                throw new IllegalArgumentException();
+        case DATE:
+            appender.appendSql("date(");
+            appendAsDate(appender, calendar);
+            appender.appendSql(')');
+            break;
+        case TIME:
+            appender.appendSql("time(");
+            appendAsTime(appender, calendar);
+            appender.appendSql(')');
+            break;
+        case TIMESTAMP:
+            appender.appendSql("datetime(");
+            appendAsTimestampWithMillis(appender, calendar, jdbcTimeZone);
+            appender.appendSql(')');
+            break;
+        default:
+            throw new IllegalArgumentException();
         }
     }
 
