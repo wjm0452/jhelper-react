@@ -12,8 +12,6 @@ public class TextTokenizer {
     private int pos;
     private Map<String, String> customToken;
 
-    private Thread thr = new Thread();
-
     public TextTokenizer(String text) {
         _text = text;
         _buff = text.toCharArray();
@@ -33,8 +31,7 @@ public class TextTokenizer {
      */
     public boolean isAlphaNumeric(char c) {
 
-        if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
-                || c == '_') {
+        if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_') {
             return true;
         }
 
@@ -79,8 +76,7 @@ public class TextTokenizer {
 
         for (Map.Entry<String, String> elem : this.customToken.entrySet()) {
 
-            String begin = elem.getKey(),
-                    end = elem.getValue();
+            String begin = elem.getKey(), end = elem.getValue();
 
             char c = get(1);
 
