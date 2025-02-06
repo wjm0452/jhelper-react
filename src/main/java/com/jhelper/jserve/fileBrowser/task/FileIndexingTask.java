@@ -64,12 +64,13 @@ public class FileIndexingTask implements Task {
     public void execute() {
         try {
             indexing();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("indexing error", e);
+            jobLogger.log(String.format("[indexing] error - %s", e.getMessage()));
         }
     }
 
-    public void indexing() throws IOException {
+    private void indexing() throws IOException {
 
         try {
             for (Path f : files) {
