@@ -159,7 +159,7 @@ public class FileBrowserService {
             }
 
             if (StringUtils.isNotEmpty(fileSearch.getName())) {
-                predicate = predicate.must(f.match().fields("name").matching(fileSearch.getName()));
+                predicate = predicate.must(f.match().field("name").matching(fileSearch.getName()));
             }
 
             if (StringUtils.isNotEmpty(fileSearch.getExclusionName())) {
