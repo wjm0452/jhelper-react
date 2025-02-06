@@ -16,7 +16,7 @@ import lombok.Data;
 public class BoardDocument implements Serializable {
 
     @Id
-    private String id;
+    private Integer id;
 
     @Field(type = FieldType.Keyword)
     private String registerId;

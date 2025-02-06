@@ -8,7 +8,7 @@ spring:
       - classpath:/application-jhelper.yaml
       - classpath:/application-log.yaml
       - classpath:/application-search.yaml
-      #- classpath:/application-elastic.yml
+      #- classpath:/application-elastic.yaml
   servlet:
     multipart:
       enabled: "true"

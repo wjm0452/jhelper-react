@@ -7,11 +7,11 @@ public interface BoardService {
 
     public PageDto<Board> findAll(BoardSearchDto boardSearchDto, int page, int size);
 
-    public Board findById(String id);
+    public Board findById(int id);
 
     public Board create(Board board);
 
     public Board update(Board board);
 
-    public void delete(String id);
+    public void delete(int id);
 }

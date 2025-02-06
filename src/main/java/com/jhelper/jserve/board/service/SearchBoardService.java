@@ -1,120 +1,66 @@
 package com.jhelper.jserve.board.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.query.SearchResult;
-import org.hibernate.search.mapper.pojo.standalone.mapping.SearchMapping;
-import org.hibernate.search.mapper.pojo.standalone.session.SearchSession;
-import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.search.engine.search.query.SearchResultTotal;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 
 import com.jhelper.jserve.board.BoardSearchDto;
-import com.jhelper.jserve.board.BoardService;
 import com.jhelper.jserve.board.entity.Board;
-import com.jhelper.jserve.board.entity.SearchBoard;
+import com.jhelper.jserve.board.repository.BoardRepository;
 import com.jhelper.jserve.common.PageDto;
 
-public class SearchBoardService implements BoardService {
+public class SearchBoardService extends BoardServiceImpl {
 
-    private SearchMapping searchMapping;
+    private SearchSession searchSession;
 
-    public SearchBoardService(SearchMapping searchMapping) {
-        this.searchMapping = searchMapping;
+    public SearchBoardService(BoardRepository boardRepository, SearchSession searchSession) {
+        super(boardRepository);
+        this.searchSession = searchSession;
     }
 
-    private SearchMapping getSearchMapping() {
-        return searchMapping;
-    }
-
-    @Transactional
     @Override
     public PageDto<Board> findAll(BoardSearchDto boardSearchDto, int page, int size) {
 
-        SearchResult<Object[]> result = getSearchMapping().createSession().search(SearchBoard.class)
-                .select(f -> f.composite()
-                        .from(f.id(String.class),
-                            f.field("category", String.class),
-                            f.field("title", String.class),
-                            f.field("content", String.class),
-                            f.field("registerId", String.class),
-                            f.field("registerDate", LocalDateTime.class))
-                        .asArray())
-                .where(f -> f.matchAll()).fetch(page * size, (page + 1) * size);
+        SearchResult<Board> searchResult = searchSession.search(Board.class).where(f -> {
 
-        long total = result.total().hitCount();
-        List<Board> hits = result.hits().stream().map(doc -> {
-            Board board = new Board();
-            board.setId((String) doc[0]);
-            board.setCategory((String) doc[1]);
-            board.setTitle((String) doc[2]);
-            board.setContent((String) doc[3]);
-            board.setRegisterId((String) doc[4]);
-            board.setRegisterDate((LocalDateTime) doc[5]);
-            return board;
-        }).toList();
+            BooleanPredicateClausesStep<?> predicate = f.bool();
+            boolean hasCondition = false;
 
-        return PageDto.<Board>builder().totalElements(total).size(size).page(page).numberOfElements(hits.size())
-                .items(hits).build();
-    }
+            if (boardSearchDto.getFrom() != null) {
+                predicate = predicate.must(
+                        f.range().field("registerDate").between(boardSearchDto.getFrom(), boardSearchDto.getTo()));
+                hasCondition = true;
+            }
 
-    @Transactional
-    @Override
-    public Board findById(String id) {
-        Object[] doc = getSearchMapping().createSession().search(SearchBoard.class)
-                .select(f -> f.composite()
-                        .from(f.id(String.class),
-                            f.field("category", String.class),
-                            f.field("title", String.class),
-                            f.field("content", String.class),
-                            f.field("registerId", String.class),
-                            f.field("registerDate", LocalDateTime.class))
-                        .asArray())
-                .where(f -> f.id().matching(id)).fetchSingleHit().orElse(null);
+            if (boardSearchDto.getRegisterId() != null && !boardSearchDto.getRegisterId().isEmpty()) {
+                predicate = predicate.must(f.match().field("registerId").matching(boardSearchDto.getRegisterId()));
+                hasCondition = true;
+            }
 
-        Board board = new Board();
-        board.setId((String) doc[0]);
-        board.setCategory((String) doc[1]);
-        board.setTitle((String) doc[2]);
-        board.setContent((String) doc[3]);
-        board.setRegisterId((String) doc[4]);
-        board.setRegisterDate((LocalDateTime) doc[5]);
+            if (boardSearchDto.getCategory() != null && !boardSearchDto.getCategory().isEmpty()) {
+                predicate = predicate.must(f.match().field("category").matching(boardSearchDto.getCategory()));
+                hasCondition = true;
+            }
 
-        return board;
-    }
+            if (boardSearchDto.getFilter() != null && !boardSearchDto.getFilter().isEmpty()) {
+                predicate = predicate.must(f.match().fields("title", "content").matching(boardSearchDto.getFilter()));
+                hasCondition = true;
+            }
 
-    @Transactional
-    @Override
-    public Board create(Board board) {
-        try (SearchSession searchSession = getSearchMapping().createSession()) {
-            board.setId(UUID.randomUUID().toString());
-            board.setRegisterDate(LocalDateTime.now());
+            if (!hasCondition) {
+                return f.matchAll();
+            }
 
-            SearchBoard doc = SearchBoard.of(board);
+            return predicate;
+        }).sort(f -> f.field("registerDate").desc()).fetch(page * size, page + 1 * size);
 
-            searchSession.indexingPlan().addOrUpdate(doc);
-        }
+        SearchResultTotal searchResultTotal = searchResult.total();
+        List<Board> items = searchResult.hits();
 
-        return board;
-    }
-
-    @Transactional
-    @Override
-    public Board update(Board board) {
-        try (SearchSession searchSession = getSearchMapping().createSession()) {
-            SearchBoard doc = SearchBoard.of(board);
-            searchSession.indexingPlan().addOrUpdate(doc);
-        }
-
-        return board;
-    }
-
-    @Override
-    public void delete(String id) {
-        Board board = findById(id);
-        try (SearchSession searchSession = searchMapping.createSession()) {
-            SearchBoard doc = SearchBoard.of(board);
-            searchSession.indexingPlan().delete(doc);
-        }
+        return PageDto.<Board>builder().totalElements(searchResultTotal.hitCount()).size(size).page(page)
+                .numberOfElements(items.size()).items(items).build();
     }
 }

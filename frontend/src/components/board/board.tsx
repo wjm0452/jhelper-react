@@ -59,6 +59,7 @@ const BoardList = () => {
               searchBoardStore.put("category", e.value);
             }}
             options={[
+              { code: "", name: "전체" },
               { code: "board", name: "게시판" },
               { code: "file", name: "파일" },
             ]}

@@ -24,7 +24,7 @@ export const getBoardList = async ({
   return res.data;
 };
 
-export const getBoard = async (id: string): Promise<Board> => {
+export const getBoard = async (id: number): Promise<Board> => {
   if (!id) {
     return {} as Board;
   }
@@ -71,14 +71,14 @@ export const saveBoard = async (item: Board): Promise<Board> => {
   }
 };
 
-export const deleteBoard = async (id: string): Promise<Board> => {
+export const deleteBoard = async (id: number): Promise<Board> => {
   const res = await httpClient.delete(`/api/board/${id}`);
   const data = res.data;
 
   return data;
 };
 
-export const deleteBoards = async (ids: string[]): Promise<Board[]> => {
+export const deleteBoards = async (ids: number[]): Promise<Board[]> => {
   const res = await httpClient.delete(`/api/board`, { ids });
   const data = res.data;
 

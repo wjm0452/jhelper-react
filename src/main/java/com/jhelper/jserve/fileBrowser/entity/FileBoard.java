@@ -24,7 +24,7 @@ public class FileBoard {
     @Id
     @Column(name = "board_id")
     @Comment(value = "board_id")
-    private String boardId;
+    private Integer boardId;
 
     @Column(name = "file_path")
     @Comment(value = "파일경로")
