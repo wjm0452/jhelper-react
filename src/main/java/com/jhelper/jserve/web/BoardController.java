@@ -53,7 +53,7 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public Board getBoard(@PathVariable String id) {
+    public Board getBoard(@PathVariable int id) {
         return boardService.findById(id);
     }
 
@@ -77,7 +77,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBoard(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails) {
+    public void deleteBoard(@PathVariable int id, @AuthenticationPrincipal UserDetails userDetails) {
 
         Board savedBoard = boardService.findById(id);
 

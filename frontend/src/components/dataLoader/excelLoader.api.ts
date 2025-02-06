@@ -2,11 +2,15 @@ import httpClient from "../../common/httpClient";
 
 export const readExcel = async ({ uploadedPath }: { uploadedPath: string }) => {
   return httpClient
-    .get("/api/dataloader/excel-file", {
-      params: {
-        path: uploadedPath,
+    .get(
+      "/api/dataloader/excel-file",
+      {},
+      {
+        params: {
+          path: uploadedPath,
+        },
       },
-    })
+    )
     .then((res) => res.data);
 };
 

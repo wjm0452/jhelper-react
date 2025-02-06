@@ -77,7 +77,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board findById(String id) {
+    public Board findById(int id) {
         return boardRepository.findById(id).orElse(null);
     }
 
@@ -105,7 +105,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public void delete(String id) {
+    public void delete(int id) {
         boardRepository.deleteById(id);
     }
 

@@ -6,5 +6,5 @@ import lombok.Data;
 
 @Data
 public class BoardDeleteDto {
-    private List<String> ids;
+    private List<Integer> ids;
 }

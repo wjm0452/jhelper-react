@@ -16,15 +16,25 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.query.SearchResultTotal;
+import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
 import com.jhelper.export.excel.SimpleCell;
 import com.jhelper.export.excel.SimpleExcelExporter;
+import com.jhelper.jserve.board.entity.Board;
+import com.jhelper.jserve.common.PageDto;
 import com.jhelper.jserve.fileBrowser.FileDto;
 import com.jhelper.jserve.fileBrowser.FileSearchDto;
 import com.jhelper.jserve.fileBrowser.FileType;
+import com.jhelper.jserve.fileBrowser.entity.FileIndex;
+
+import jakarta.persistence.EntityManager;
 
 @Service
 public class FileBrowserService {
@@ -36,6 +46,9 @@ public class FileBrowserService {
     private String trashPath;
 
     private AntPathMatcher pathMatcher = new AntPathMatcher();
+
+    @Autowired
+    private SearchSession searchSession;
 
     public Path getRootPath() {
         return Paths.get(rootPath).toAbsolutePath();
@@ -131,6 +144,38 @@ public class FileBrowserService {
         return false;
     }
 
+    private List<FileDto> searchIndexingFiles(FileSearchDto fileSearch) {
+
+        List<FileIndex> searchResults = searchSession.search(FileIndex.class).where(f -> {
+
+            BooleanPredicateClausesStep<?> predicate = f.bool();
+
+            if (fileSearch.getFrom() != null) {
+                predicate = predicate.must(f.range().field("lastModifiedTime").greaterThan(fileSearch.getFrom()));
+            }
+
+            if (fileSearch.getTo() != null) {
+                predicate = predicate.must(f.range().field("lastModifiedTime").lessThan(fileSearch.getFrom()));
+            }
+
+            if (StringUtils.isNotEmpty(fileSearch.getName())) {
+                predicate = predicate.must(f.match().fields("name").matching(fileSearch.getName()));
+            }
+
+            if (StringUtils.isNotEmpty(fileSearch.getExclusionName())) {
+                predicate = predicate.mustNot(f.match().field("name").matching(fileSearch.getExclusionName()));
+            }
+
+            return predicate;
+        }).sort(f -> f.field("path").desc()).fetchAllHits();
+
+        return searchResults.stream().map(fileIndex -> {
+            String path = fileIndex.getPath();
+
+            return toFileDto(Paths.get(path));
+        }).toList();
+    }
+
     public List<FileDto> searchFiles(FileSearchDto fileSearch) throws IOException {
 
         String path = fileSearch.getPath();
@@ -145,9 +190,11 @@ public class FileBrowserService {
             throw new AccessDeniedException("is not directory");
         }
 
-        Stream<Path> files = fileSearch.isIncludeSubDirs() ? Files.walk(dir, 255) : Files.list(dir);
+        if (fileSearch.isIncludeSubDirs()) {
+            return searchIndexingFiles(fileSearch);
+        }
 
-        return files.filter(file -> Files.isReadable(file)).filter(file -> filterFile(file, fileSearch))
+        return Files.list(dir).filter(file -> Files.isReadable(file)).filter(file -> filterFile(file, fileSearch))
                 .map(p -> toFileDto(p)).toList();
     }
 

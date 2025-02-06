@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -18,28 +19,24 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity(name = "board")
 @Comment(value = "게시판")
-@AllArgsConstructor
-@NoArgsConstructor
 @Indexed
 public class Board implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     @Comment(value = "id")
     @DocumentId
-    private String id;
+    private Integer id;
 
     @Column(name = "category")
     @Comment(value = "카테고리")
-    @KeywordField
+    @KeywordField(sortable = Sortable.YES)
     private String category;
 
     @Column(name = "title")
@@ -56,11 +53,11 @@ public class Board implements Serializable {
 
     @Column(name = "register_id")
     @Comment(value = "등록자ID")
-    @KeywordField
+    @KeywordField(sortable = Sortable.YES)
     private String registerId;
 
     @Column(name = "register_date")
     @Comment(value = "등록일시")
-    @GenericField
+    @GenericField(sortable = Sortable.YES)
     private LocalDateTime registerDate;
 }
