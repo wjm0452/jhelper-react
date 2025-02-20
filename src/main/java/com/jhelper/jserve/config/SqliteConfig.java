@@ -33,7 +33,7 @@ public class SqliteConfig {
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect", "com.jhelper.jserve.jdbc.SQLiteDialect");
+        properties.setProperty("hibernate.dialect", "com.jhelper.jserve.config.jdbc.SQLiteDialect");
         properties.setProperty("hibernate.hbm2ddl.auto", "update");
         em.setJpaProperties(properties);
 
