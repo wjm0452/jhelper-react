@@ -195,6 +195,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="New"
           label="New"
+          title="New"
           onClick={(e) => {
             newFilePannel.current.toggle(e);
           }}
@@ -205,6 +206,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Cut"
           label="Cut"
+          title="Cut"
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={cutFiles}
         />
@@ -214,6 +216,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Copy"
           label="Copy"
+          title="Copy"
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={copyFiles}
         />
@@ -223,6 +226,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Paste"
           label="Paste"
+          title="Copy"
           disabled={(() => !["cut", "copy"].includes(fileCommandStore.command))()}
           onClick={pasteFiles}
         />
@@ -232,6 +236,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Rename"
           label="Rename"
+          title="Rename"
           disabled={fileBrowserStore.activeFile == null}
           onClick={(e) => {
             renamePannel.current.toggle(e);
@@ -243,6 +248,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Trash"
           label="Delete"
+          title="Delete"
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={deleteFiles}
         />
@@ -252,6 +258,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Upload"
           label="Upload"
+          title="Upload"
           onClick={(e) => {
             uploadPannel.current.toggle(e);
           }}
@@ -262,6 +269,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Download"
           label="Download"
+          title="Download"
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={downloadFiles}
         />
@@ -271,6 +279,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Export"
           label="Export"
+          title="Export"
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={exportFiles}
         />
@@ -280,6 +289,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           text
           aria-label="Clipboard"
           label="Clipboard"
+          title="Clipboard"
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={copyToClipboard}
         />
@@ -287,8 +297,9 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           icon="pi pi-book"
           rounded
           text
-          aria-label="Board"
-          label="Board"
+          aria-label="게시물 등록"
+          label="게시물 등록"
+          title="게시물 등록"
           disabled={(() => fileBrowserStore.selectedFiles.length == 0)()}
           onClick={fileToBoard}
         />
@@ -296,8 +307,9 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           icon="pi pi-book"
           rounded
           text
-          aria-label="Indexing"
-          label="Indexing"
+          aria-label="색인"
+          label="색인"
+          title="색인"
           onClick={async (e) => {
             indexingPannel.current.toggle(e);
           }}
@@ -313,6 +325,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           inputId="includeSubDirs"
           onChange={(e: CheckboxChangeEvent) => setIncludeSubDirs(e.checked)}
           checked={includeSubDirs}
+          title="하위 검색은 색ㅇㄴㄴ"
         ></Checkbox>
         <label htmlFor="includeSubDirs" className="ml-2">
           하위포함
@@ -378,6 +391,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           rounded
           text
           label="상세 검색"
+          title="상세 검색"
           onClick={(e) => detailPannel.current.toggle(e)}
         />
       </div>

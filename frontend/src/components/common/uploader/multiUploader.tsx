@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
 import { useState } from "react";
-import { singleUpload } from "./uploader.api";
+import { uploadFile } from "./uploader.api";
 import { useMessageStoreInContext } from "../message/message.context";
 
 type MultiUploaderProps = {
@@ -53,7 +53,7 @@ const MultiUploader = ({ uploadUrl, params, onUpload, accept }: MultiUploaderPro
 
     try {
       const uploadResults = await Promise.all(
-        files.map((file) => singleUpload({ file, params, uploadUrl })),
+        files.map((file) => uploadFile({ file, params, uploadUrl })),
       );
       onUpload && onUpload(uploadResults);
       setFiles([]);
