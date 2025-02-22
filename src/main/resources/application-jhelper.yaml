@@ -9,4 +9,6 @@ jhelper:
         - "*.zip"
         - "*.tar"
         - "*.gzip"
+  search:
+    indexingOnLoad: true
 
