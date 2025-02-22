@@ -4,7 +4,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { useEffect, useRef, useState } from "react";
 import TableView from "../common/tableViewer";
-import { singleUpload } from "../common/uploader/uploader.api";
+import { uploadFile } from "../common/uploader/uploader.api";
 import ConnectionForm from "../sql/objectView/connectionForm";
 import TablesView from "../sql/objectView/tablesView";
 import { ConnectionStoreProvider } from "../sql/sql.context";
@@ -100,7 +100,7 @@ const ExcelLoader = () => {
                     uploadHandler={async ({ files, options }) => {
                       const file = files[0];
                       console.log(options.props.url);
-                      const uploadResult = await singleUpload({
+                      const uploadResult = await uploadFile({
                         file,
                         uploadUrl: options.props.url,
                       });
