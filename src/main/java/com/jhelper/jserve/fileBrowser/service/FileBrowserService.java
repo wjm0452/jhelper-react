@@ -38,6 +38,9 @@ public class FileBrowserService {
     @Value("${jhelper.file-browser.trashPath}")
     private String trashPath;
 
+    @Value("${jhelper.file-browser.searchMode}")
+    private String searchMode;
+
     private AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Autowired
@@ -184,7 +187,12 @@ public class FileBrowserService {
         }
 
         if (fileSearch.isIncludeSubDirs()) {
-            return searchIndexingFiles(fileSearch);
+            if ("search".equals(searchMode)) {
+                return searchIndexingFiles(fileSearch);
+            } else { // file directory
+                return Files.walk(dir).filter(file -> Files.isReadable(file))
+                        .filter(file -> filterFile(file, fileSearch)).map(p -> toFileDto(p)).toList();
+            }
         }
 
         return Files.list(dir).filter(file -> Files.isReadable(file)).filter(file -> filterFile(file, fileSearch))
