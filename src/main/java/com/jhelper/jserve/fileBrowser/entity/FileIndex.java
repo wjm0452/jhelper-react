@@ -2,6 +2,7 @@ package com.jhelper.jserve.fileBrowser.entity;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -26,7 +27,7 @@ import lombok.Data;
 @Entity(name = "fileIndex")
 @Comment(value = "파일정보")
 @Indexed
-public class FileIndex {
+public class FileIndex implements Serializable {
 
     @Id
     @Column(name = "path")
