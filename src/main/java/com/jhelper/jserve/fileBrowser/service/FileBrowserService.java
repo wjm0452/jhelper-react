@@ -13,12 +13,9 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
-import org.hibernate.search.engine.search.query.SearchResult;
-import org.hibernate.search.engine.search.query.SearchResultTotal;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,14 +24,10 @@ import org.springframework.util.AntPathMatcher;
 
 import com.jhelper.export.excel.SimpleCell;
 import com.jhelper.export.excel.SimpleExcelExporter;
-import com.jhelper.jserve.board.entity.Board;
-import com.jhelper.jserve.common.PageDto;
 import com.jhelper.jserve.fileBrowser.FileDto;
 import com.jhelper.jserve.fileBrowser.FileSearchDto;
 import com.jhelper.jserve.fileBrowser.FileType;
 import com.jhelper.jserve.fileBrowser.entity.FileIndex;
-
-import jakarta.persistence.EntityManager;
 
 @Service
 public class FileBrowserService {

@@ -367,7 +367,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
             }}
           />
         </OverlayPanel>
-        <OverlayPanel ref={indexingPannel} dismissable={true}>
+        <OverlayPanel ref={indexingPannel} dismissable={false}>
           <div style={{ width: "700px", height: "600px" }}>
             <FileBrowserFileIndexing />
           </div>
