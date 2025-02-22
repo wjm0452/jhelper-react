@@ -30,6 +30,7 @@ dependencies {
 	implementation 'com.ibm.db2.jcc:db2jcc:db2jcc4'
 	implementation 'com.microsoft.sqlserver:mssql-jdbc:12.3.0.jre17-preview'
 	implementation 'org.postgresql:postgresql:42.7.4'
+	runtimeOnly 'com.h2database:h2'
 
 	implementation 'org.apache.poi:poi:5.2.3'
 	implementation 'org.apache.poi:poi-ooxml:5.2.3'
