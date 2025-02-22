@@ -50,12 +50,12 @@ public class BoardServiceImpl implements BoardService {
             if (boardSearchDto.getRegisterId() != null && !boardSearchDto.getRegisterId().isEmpty()) {
                 Predicate registerIdPredicate = criteriaBuilder.equal(root.get("registerId"),
                         boardSearchDto.getRegisterId());
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(predicate, registerIdPredicate));
+                predicate = criteriaBuilder.and(predicate, registerIdPredicate);
             }
 
             if (boardSearchDto.getCategory() != null && !boardSearchDto.getCategory().isEmpty()) {
                 Predicate categoryPredicate = criteriaBuilder.equal(root.get("category"), boardSearchDto.getCategory());
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(predicate, categoryPredicate));
+                predicate = criteriaBuilder.and(predicate, categoryPredicate);
             }
 
             if (boardSearchDto.getFilter() != null && !boardSearchDto.getFilter().isEmpty()) {

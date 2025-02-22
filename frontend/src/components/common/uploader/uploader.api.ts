@@ -1,12 +1,12 @@
 import httpClient from "../../../common/httpClient";
 
-type SingleUploadType = {
+type UploadType = {
   file: File;
   uploadUrl: string;
   params?: any;
 };
 
-export const singleUpload = async ({ file, uploadUrl, params }: SingleUploadType) => {
+export const uploadFile = async ({ file, uploadUrl, params }: UploadType) => {
   if (!file) {
     throw "선택된 파일이 없습니다.";
   }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { singleUpload } from "./uploader.api";
+import { uploadFile } from "./uploader.api";
 
 type SingleUploaderProps = {
   uploadUrl: string;
@@ -12,7 +12,7 @@ const SingleUploader = ({ uploadUrl, params, onUpload, accept }: SingleUploaderP
   const [file, setFile] = useState<File>(null);
   const upload = async () => {
     try {
-      const uploadResult = await singleUpload({ file, params, uploadUrl });
+      const uploadResult = await uploadFile({ file, params, uploadUrl });
       onUpload && onUpload(uploadResult);
     } catch (message) {
       window.alert(message);
