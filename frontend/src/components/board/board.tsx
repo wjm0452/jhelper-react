@@ -45,6 +45,7 @@ const BoardList = () => {
             icon="pi pi-minus"
             label="삭제"
             text
+            disabled={selectedItems.length <= 0}
             onClick={async () => {
               if (await messageStore.confirm("선택한 게시물을 삭제 하시겠습니까?")) {
                 mutateDeleteBoards(selectedItems.map((item) => item.id));
