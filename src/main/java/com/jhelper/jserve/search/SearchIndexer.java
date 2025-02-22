@@ -2,6 +2,7 @@ package com.jhelper.jserve.search;
 
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Async;
@@ -14,11 +15,16 @@ public class SearchIndexer implements ApplicationListener<ContextRefreshedEvent>
     @Autowired
     private SearchSession searchSession;
 
+    @Value("${jhelper.search.indexingOnLoad:false}")
+    private boolean indexingOnLoad;
+
     @Transactional
     @Async
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        // indexing();
+        if(indexingOnLoad) {
+            indexing();
+        }
     }
 
     @Transactional
