@@ -25,7 +25,7 @@ public class TaskExecutor extends ThreadPoolExecutor {
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
-    }
+}
 
     public void execute(Task task) {
         execute(() -> {
