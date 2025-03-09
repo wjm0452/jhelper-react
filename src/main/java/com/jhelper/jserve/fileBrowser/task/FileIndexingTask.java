@@ -118,7 +118,7 @@ public class FileIndexingTask implements Task {
     private void saveFiles(List<Path> files) {
         List<FileIndex> fileIndexes = files.stream().map(path -> FileIndex.of(path)).toList();
 
-        List<String> deleteDirs = fileIndexes.stream().filter(fileIndex -> fileIndex.isHidden())
+        List<String> deleteDirs = fileIndexes.stream().filter(fileIndex -> fileIndex.isDirectory())
                 .map(fileIndex -> fileIndex.getPath()).toList();
 
         if (deleteDirs.size() > 0) {

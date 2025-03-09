@@ -1,7 +1,7 @@
 logging:
   file:
-    path: c:/work/logs/
-    name: c:/work/logs/app.log
+    path: /work/logs/
+    name: /work/logs/app.log
   level:
     web: debug
     org:

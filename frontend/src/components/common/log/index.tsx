@@ -4,13 +4,13 @@ import { Button } from "primereact/button";
 
 type JobLogProps = {
   jobId: string;
-  isStart: boolean;
   tryTime?: number;
+  onFinished?: () => void;
 };
 
 let start: number = 0;
 
-const JobLog = ({ jobId, tryTime = 2000 }: JobLogProps) => {
+const JobLog = ({ jobId, tryTime = 2000, onFinished = () => {} }: JobLogProps) => {
   const textRef = useRef<HTMLTextAreaElement>();
   const [isStart, setStart] = useState(false);
   const [logsState, setLogsState] = useState("");
@@ -62,6 +62,7 @@ const JobLog = ({ jobId, tryTime = 2000 }: JobLogProps) => {
     if (jobLog.state == "END") {
       textRef.current.value += "\nfinished";
       setStart(false);
+      onFinished();
     }
   };
 

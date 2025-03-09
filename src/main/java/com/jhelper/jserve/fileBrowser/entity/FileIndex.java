@@ -43,7 +43,7 @@ public class FileIndex implements Serializable {
 
     @Column(name = "name")
     @Comment(value = "파일명")
-    @FullTextField
+    @FullTextField(analyzer = "app_analyzer", searchAnalyzer = "app_analyzer")
     @GenericField(name = "name_sort", sortable = Sortable.YES)
     private String name;
 
