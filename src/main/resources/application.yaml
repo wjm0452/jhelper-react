@@ -4,8 +4,8 @@ server:
 spring:
   config:
     import:
-      - classpath:/application-postgres.yaml
-      #- classpath:/application-h2.yaml
+      #- classpath:/application-postgres.yaml
+      - classpath:/application-h2.yaml
       - classpath:/application-jhelper.yaml
       - classpath:/application-log.yaml
       - classpath:/application-search.yaml

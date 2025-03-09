@@ -41,14 +41,14 @@ public class Board implements Serializable {
 
     @Column(name = "title")
     @Comment(value = "제목")
-    @FullTextField
+    @FullTextField(analyzer = "app_analyzer", searchAnalyzer = "app_analyzer")
     private String title;
 
     @Lob
     @JdbcTypeCode(Types.LONGVARCHAR)
     @Column(name = "content")
     @Comment(value = "내용")
-    @FullTextField
+    @FullTextField(analyzer = "app_analyzer", searchAnalyzer = "app_analyzer")
     private String content;
 
     @Column(name = "register_id")

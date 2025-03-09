@@ -32,4 +32,8 @@ public class FileIndexService {
     public void terminateIndexing() throws IOException {
         fileIndexer.terminate();
     }
+
+    public void deleteIndexing() throws IOException {
+        fileIndexer.deleteAll();
+    }
 }

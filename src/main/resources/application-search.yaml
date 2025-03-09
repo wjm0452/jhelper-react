@@ -8,4 +8,6 @@ spring:
             type: "lucene"
             directory:
               type: local-filesystem
-              root: c:\\tmp\\jhelper-index
+              root: /tmp/jhelper-index
+            analysis:
+              configurer: class:com.jhelper.jserve.config.SearchAnalysisConfigurer

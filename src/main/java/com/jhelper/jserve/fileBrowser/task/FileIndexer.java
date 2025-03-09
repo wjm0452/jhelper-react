@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.jhelper.jserve.fileBrowser.repository.FileIndexRepository;
 import com.jhelper.jserve.fileBrowser.service.FileBrowserService;
 import com.jhelper.jserve.task.TaskExecutor;
 
@@ -29,6 +30,9 @@ public class FileIndexer {
 
     @Autowired
     private FileIndexingTaskFactoryBean fileIndexingJobFactory;
+
+    @Autowired
+    private FileIndexRepository fileIndexRepository;
 
     private TaskExecutor taskExecutor = new TaskExecutor();
 
@@ -57,6 +61,10 @@ public class FileIndexer {
         taskExecutor.execute(fileIndexingTask);
 
         return fileIndexingTask.getTaskId();
+    }
+
+    public void deleteAll() {
+        fileIndexRepository.deleteAll();
     }
 
     public void terminate() {

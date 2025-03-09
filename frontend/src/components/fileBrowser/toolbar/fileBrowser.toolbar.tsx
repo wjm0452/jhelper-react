@@ -325,9 +325,13 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           inputId="includeSubDirs"
           onChange={(e: CheckboxChangeEvent) => setIncludeSubDirs(e.checked)}
           checked={includeSubDirs}
-          title="하위 검색은 색ㅇㄴㄴ"
+          title="하위 검색은 색인된 대상만 조회 됩니다."
         ></Checkbox>
-        <label htmlFor="includeSubDirs" className="ml-2">
+        <label
+          htmlFor="includeSubDirs"
+          className="ml-2"
+          title="하위 검색은 색인된 대상만 조회 됩니다."
+        >
           하위포함
         </label>
         <IconField iconPosition="left" style={{ marginLeft: "0.5rem" }}>

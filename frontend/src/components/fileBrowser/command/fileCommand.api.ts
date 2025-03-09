@@ -142,6 +142,15 @@ export const indexingFilesToTerminate = async () => {
   }
 };
 
+export const deleteIndexingFiles = async () => {
+  try {
+    let res: any = await httpClient.delete("/api/file-index");
+    return res.data;
+  } catch (e) {
+    throw e;
+  }
+};
+
 const fileCommandApi = {
   newFile,
   copyFiles,
@@ -154,6 +163,7 @@ const fileCommandApi = {
   fileToBoard,
   indexingFiles,
   indexingFilesToTerminate,
+  deleteIndexingFiles,
 };
 
 export default fileCommandApi;

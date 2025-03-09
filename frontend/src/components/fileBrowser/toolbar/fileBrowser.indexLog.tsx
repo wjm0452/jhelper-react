@@ -67,6 +67,17 @@ const FileBrowserFileIndexing = () => {
     await fileCommandApi.indexingFilesToTerminate();
   };
 
+  const deleteIndexingFiles = async () => {
+    if (!(await messageStore.confirm(`색인된 파일 정보를 삭제 하시겠습니까`))) {
+      return;
+    }
+
+    fileCommandStore.setCommand("deleteAll_indexing");
+    await fileCommandApi.deleteIndexingFiles();
+
+    messageStore.toast("File Command", "삭제 하였습니다.");
+  };
+
   return (
     <div className="w-100 h-100 flex flex-column">
       <div className="mb-1 overflow-auto" style={{ maxHeight: "200px" }}>
@@ -75,7 +86,13 @@ const FileBrowserFileIndexing = () => {
         })}
       </div>
       <div className="flex-grow-1">
-        <JobLog jobId={fileIndexingStore.jobId} isStart={fileIndexingStore.isRunning} />
+        <JobLog
+          jobId={fileIndexingStore.jobId}
+          onFinished={() => {
+            fileIndexingStore.setJobId("");
+            fileIndexingStore.setRunning(false);
+          }}
+        />
       </div>
       <div className="text-end">
         <Button
@@ -103,6 +120,15 @@ const FileBrowserFileIndexing = () => {
           label="Terminate"
           onClick={async (e) => {
             await indexingFilesToTerminate();
+          }}
+        />
+        <Button
+          rounded
+          text
+          aria-label="Delete"
+          label="Delete"
+          onClick={async (e) => {
+            await deleteIndexingFiles();
           }}
         />
       </div>

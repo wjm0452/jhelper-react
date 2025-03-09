@@ -73,7 +73,8 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/index.html", "/vendor/**", "/static/**", "*.ico");
+        return (web) -> web.ignoring().requestMatchers("/index.html", "/vendor/**", "/static/**", "*.ico",
+                "/h2-console");
     }
 
     @Bean
