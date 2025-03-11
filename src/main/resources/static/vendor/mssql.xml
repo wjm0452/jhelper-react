@@ -24,7 +24,7 @@
                        (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, default, default)) as table_comments,
                        c.name as column_name,
                        c.column_id,
-                       (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, 'column', default)) as comments,
+                       (select cast(value as varchar) from ::fn_listextendedproperty(null, 'schema', a.name, 'table', b.name, 'column', c.name)) as comments,
                        (select name from sys.systypes where xusertype = c.user_type_id) as data_type,
                        c.max_length as data_length,
                        c.precision,
