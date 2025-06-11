@@ -94,7 +94,7 @@ const ExcelLoader = () => {
                     }}
                     name="file"
                     url="/api/dataloader/excel-file"
-                    accept="*.xlsx"
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     auto
                     customUpload
                     uploadHandler={async ({ files, options }) => {
