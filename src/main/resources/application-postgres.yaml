@@ -14,7 +14,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/jHelper
     username: root
-    password: whdaks1!
+    password: 
     hikari:
       connection-timeout: "30000"
       idle-timeout: "300000"
