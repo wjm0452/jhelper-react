@@ -38,7 +38,7 @@
                  where a.name = '{{owner}}') a
          where 1=1
          {{#tableName}}
-         and (table_name = '{{tableName}}' OR table_comments LIKE '%' + '{{tableName}}' + '%')
+         and table_name = '{{tableName}}'
          {{/tableName}}
          {{#columnName}}
          and (column_name = '{{columnName}}' OR comments LIKE '%' + '{{columnName}}' + '%')

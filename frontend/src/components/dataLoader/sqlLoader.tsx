@@ -39,94 +39,108 @@ const DataLoader = () => {
   };
 
   return (
-    <div className="h-100">
-      <Splitter className="h-100">
-        <SplitterPanel size={50} className="overflow-hidden p-1">
-          <ConnectionStoreProvider name="sqlLoader.source">
-            <Splitter layout="vertical">
-              <SplitterPanel className="overflow-hidden d-flex flex-column">
-                <div className="mb-1">
-                  <ConnectionForm
-                    onChange={(connInfo: ConnInfo) =>
-                      setSourceData({ ...sourceData, name: connInfo.name })
-                    }
-                  />
-                </div>
-                <div className="flex-grow-1 overflow-hidden">
-                  <TablesView
-                    name="sqlLoader.source.tableView"
-                    onClick={({ item }: any) =>
-                      setSourceData({ ...sourceData, owner: item.owner, tableName: item.tableName })
-                    }
-                  />
-                </div>
-              </SplitterPanel>
-              <SplitterPanel className="overflow-hidden d-flex flex-column">
-                <div className="flex-grow-1 overflow-hidden">
-                  <EditableTableColumns
-                    ref={sourceColumnRef}
-                    filter={{ owner: sourceData.owner, tableName: sourceData.tableName }}
-                  />
-                </div>
-                <div className="text-end mt-1">
-                  <Button
-                    label="생성"
-                    size="small"
-                    onClick={(e) => {
-                      const sourceCellValues = sourceColumnRef.current.getCellValues(1);
-                      const sourceColumns = sourceCellValues.join(",\r\n       ");
-                      const generatedQuery = `select ${sourceColumns}\r\n  from ${sourceData.owner}.${sourceData.tableName}`;
+    <div className="h-100 d-flex flex-column">
+      <div className="flex-grow-1 overflow-hidden">
+        <Splitter className="h-100">
+          <SplitterPanel size={50} className="overflow-hidden p-1">
+            <ConnectionStoreProvider name="sqlLoader.source">
+              <Splitter layout="vertical">
+                <SplitterPanel className="overflow-hidden d-flex flex-column">
+                  <div className="mb-1">
+                    <ConnectionForm
+                      onChange={(connInfo: ConnInfo) =>
+                        setSourceData({ ...sourceData, name: connInfo.name })
+                      }
+                    />
+                  </div>
+                  <div className="flex-grow-1 overflow-hidden">
+                    <TablesView
+                      name="sqlLoader.source.tableView"
+                      onClick={({ item }: any) =>
+                        setSourceData({
+                          ...sourceData,
+                          owner: item.owner,
+                          tableName: item.tableName,
+                        })
+                      }
+                    />
+                  </div>
+                </SplitterPanel>
+                <SplitterPanel className="overflow-hidden d-flex flex-column">
+                  <div className="flex-grow-1 overflow-hidden">
+                    <EditableTableColumns
+                      ref={sourceColumnRef}
+                      filter={{ owner: sourceData.owner, tableName: sourceData.tableName }}
+                    />
+                  </div>
+                  <div className="text-end mt-1">
+                    <Button
+                      label="생성"
+                      size="small"
+                      onClick={(e) => {
+                        const sourceCellValues = sourceColumnRef.current.getCellValues(1);
+                        const sourceColumns = sourceCellValues.join(",\r\n       ");
+                        const generatedQuery = `select ${sourceColumns}\r\n  from ${sourceData.owner}.${sourceData.tableName}`;
 
-                      setQuery(generatedQuery);
-                    }}
+                        setQuery(generatedQuery);
+                      }}
+                    />
+                  </div>
+                  <div style={{ height: "250px", minHeight: "150px" }}>
+                    <textarea
+                      className="form-control w-100 h-100"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    ></textarea>
+                  </div>
+                </SplitterPanel>
+              </Splitter>
+            </ConnectionStoreProvider>
+          </SplitterPanel>
+          <SplitterPanel size={50} className="overflow-hidden p-1">
+            <ConnectionStoreProvider name="sqlLoader.target">
+              <Splitter layout="vertical">
+                <SplitterPanel className="overflow-hidden d-flex flex-column">
+                  <div className="mb-1">
+                    <ConnectionForm
+                      onChange={(connInfo: ConnInfo) =>
+                        setTargetData({ ...targetData, name: connInfo.name })
+                      }
+                    />
+                  </div>
+                  <div className="flex-grow-1 overflow-hidden">
+                    <TablesView
+                      name="sqlLoader.target.tableView"
+                      onClick={({ item }: any) =>
+                        setTargetData({
+                          ...targetData,
+                          owner: item.owner,
+                          tableName: item.tableName,
+                        })
+                      }
+                    />
+                  </div>
+                </SplitterPanel>
+                <SplitterPanel className="overflow-hidden">
+                  <EditableTableColumns
+                    ref={targetColumnRef}
+                    filter={{ owner: targetData.owner, tableName: targetData.tableName }}
+                    editable={false}
                   />
-                </div>
-                <div style={{ height: "250px", minHeight: "150px" }}>
-                  <textarea
-                    className="form-control w-100 h-100"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  ></textarea>
-                </div>
-              </SplitterPanel>
-            </Splitter>
-          </ConnectionStoreProvider>
-        </SplitterPanel>
-        <SplitterPanel size={50} className="overflow-hidden p-1">
-          <ConnectionStoreProvider name="sqlLoader.target">
-            <Splitter layout="vertical">
-              <SplitterPanel className="overflow-hidden d-flex flex-column">
-                <div className="mb-1">
-                  <ConnectionForm
-                    onChange={(connInfo: ConnInfo) =>
-                      setTargetData({ ...targetData, name: connInfo.name })
-                    }
-                  />
-                </div>
-                <div className="flex-grow-1 overflow-hidden">
-                  <TablesView
-                    name="sqlLoader.target.tableView"
-                    onClick={({ item }: any) =>
-                      setTargetData({
-                        ...targetData,
-                        owner: item.owner,
-                        tableName: item.tableName,
-                      })
-                    }
-                  />
-                </div>
-              </SplitterPanel>
-              <SplitterPanel className="overflow-hidden">
-                <EditableTableColumns
-                  ref={targetColumnRef}
-                  filter={{ owner: targetData.owner, tableName: targetData.tableName }}
-                  editable={false}
-                />
-              </SplitterPanel>
-            </Splitter>
-          </ConnectionStoreProvider>
-        </SplitterPanel>
-      </Splitter>
+                </SplitterPanel>
+              </Splitter>
+            </ConnectionStoreProvider>
+          </SplitterPanel>
+        </Splitter>
+      </div>
+      <div className="text-end">
+        <Button
+          label="실행"
+          onClick={(e) => {
+            goLoadData();
+          }}
+        />
+      </div>
     </div>
   );
 };

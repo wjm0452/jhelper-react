@@ -24,7 +24,7 @@
        AND A.COLUMN_NAME = C.COLUMN_NAME
      WHERE A.OWNER = '{{owner}}'
        {{#tableName}}
-       AND (A.TABLE_NAME = '{{tableName}}' OR B.COMMENTS LIKE '%' || '{{tableName}}' || '%')
+       AND A.TABLE_NAME = '{{tableName}}'
        {{/tableName}}
        {{#columnName}}
        AND (C.COLUMN_NAME = '{{columnName}}' OR C.COMMENTS LIKE '%' || '{{columnName}}' || '%')
