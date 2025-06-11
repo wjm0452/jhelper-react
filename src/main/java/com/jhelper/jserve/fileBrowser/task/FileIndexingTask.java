@@ -25,7 +25,6 @@ public class FileIndexingTask implements Task {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private FileIndexRepository fileIndexRepository;
-    private JobLogService jobLogService;
     private List<Path> files;
     private JobLogger jobLogger;
 
@@ -36,8 +35,8 @@ public class FileIndexingTask implements Task {
         this.fileIndexRepository = fileIndexRepository;
     }
 
-    public void setJobLogService(JobLogService jobLogService) {
-        this.jobLogService = jobLogService;
+    public void setJobLogger(JobLogger jobLogger) {
+        this.jobLogger = jobLogger;
     }
 
     public void terminate() {
@@ -61,8 +60,6 @@ public class FileIndexingTask implements Task {
     }
 
     public void execute() {
-
-        jobLogger = jobLogService.getJobLogger();
 
         try {
             indexing();

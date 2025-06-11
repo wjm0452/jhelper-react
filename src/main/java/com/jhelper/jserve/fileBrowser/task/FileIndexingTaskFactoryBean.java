@@ -20,7 +20,7 @@ public class FileIndexingTaskFactoryBean implements FactoryBean<FileIndexingTask
     public FileIndexingTask getObject() {
         FileIndexingTask task = new FileIndexingTask();
         task.setFileIndexRepository(fileIndexRepository);
-        task.setJobLogService(jobLogService);
+        task.setJobLogger(jobLogService.getJobLogger());
 
         return task;
     }
