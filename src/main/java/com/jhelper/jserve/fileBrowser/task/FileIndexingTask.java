@@ -38,7 +38,6 @@ public class FileIndexingTask implements Task {
 
     public void setJobLogService(JobLogService jobLogService) {
         this.jobLogService = jobLogService;
-        this.jobLogger = jobLogService.getJobLogger();
     }
 
     public void terminate() {
@@ -62,24 +61,25 @@ public class FileIndexingTask implements Task {
     }
 
     public void execute() {
+
+        jobLogger = jobLogService.getJobLogger();
+
         try {
             indexing();
         } catch (Exception e) {
             logger.error("indexing error", e);
             jobLogger.log(String.format("[indexing] error - %s", e.getMessage()));
+        } finally {
+            try {
+                jobLogger.close();
+            } catch (IOException e) {
+            }
         }
     }
 
     private void indexing() throws IOException {
-
-        try {
-            for (Path f : files) {
-                indexing(f);
-            }
-        } finally {
-            if (jobLogger != null) {
-                jobLogger.close();
-            }
+        for (Path f : files) {
+            indexing(f);
         }
     }
 
@@ -92,7 +92,7 @@ public class FileIndexingTask implements Task {
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
                 if (isTerminate()) {
-                    throw new RuntimeException("terminated");
+                    return FileVisitResult.TERMINATE;
                 }
 
                 waitFiles.add(file);
@@ -132,10 +132,8 @@ public class FileIndexingTask implements Task {
             fileIndexRepository.saveAll(fileIndexes);
         }
 
-        if (jobLogger != null) {
-            fileIndexes.forEach(file -> {
-                jobLogger.log(String.format("[indexing] %s %s", isDelete ? "[delete]" : "[update]", file.getPath()));
-            });
-        }
+        fileIndexes.forEach(file -> {
+            jobLogger.log(String.format("[indexing] %s %s", isDelete ? "[delete]" : "[update]", file.getPath()));
+        });
     }
 }

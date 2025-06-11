@@ -34,7 +34,7 @@ import com.jhelper.jserve.fileBrowser.repository.FileBoardRepository;
 @Service
 public class FileBoardSerivce {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private BoardService boardService;

@@ -1,6 +1,7 @@
-package com.jhelper.utils;
+package com.jhelper.text;
 
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * TextTokenizer
@@ -15,7 +16,8 @@ public class TextTokenizer {
     public TextTokenizer(String text) {
         _text = text;
         _buff = text.toCharArray();
-        this.pos = -1;
+        this.pos = 0;
+        this.customToken = new HashMap<>();
     }
 
     public TextTokenizer(String text, Map<String, String> customToken) {
@@ -46,12 +48,16 @@ public class TextTokenizer {
         return this.pos;
     }
 
-    public int position(int pos) {
+    private int addPosition(int pos) {
         return this.pos += pos;
     }
 
+    public void reset() {
+        this.pos = 0;
+    }
+
     public char get() {
-        return _buff[++this.pos];
+        return _buff[this.pos++];
     }
 
     public char get(int pos) {
@@ -78,20 +84,20 @@ public class TextTokenizer {
 
             String begin = elem.getKey(), end = elem.getValue();
 
-            char c = get(1);
+            char c = get(0);
 
-            if (begin.equals(getString(1, begin.length()))) {
+            if (begin.equals(getString(begin.length()))) {
 
                 StringBuilder append = new StringBuilder();
                 append.append(begin);
-                position(begin.length());
+                addPosition(begin.length());
 
                 while (remaning()) {
 
                     c = get();
 
                     if (end.charAt(0) == c) {
-                        if (end.equals(getString(end.length()))) {
+                        if (end.equals(getString(-1, end.length()))) {
                             break;
                         }
                     }
@@ -100,7 +106,7 @@ public class TextTokenizer {
                 }
 
                 append.append(end);
-                position(end.length() - 1);
+                addPosition(end.length() - 1);
                 return append.toString();
             }
 
@@ -108,7 +114,7 @@ public class TextTokenizer {
 
         StringBuilder append = new StringBuilder();
 
-        do {
+        while (remaning()) {
 
             char c = get();
 
@@ -118,11 +124,10 @@ public class TextTokenizer {
                 break;
             }
 
-            if (!remaning()) {
+            if (!remaning() || !isAlphaNumeric(get(0))) {
                 break;
             }
-
-        } while (isAlphaNumeric(get(1)));
+        }
 
         return append.toString();
     }

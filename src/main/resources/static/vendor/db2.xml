@@ -24,7 +24,7 @@
        AND A.TABSCHEMA = '{{owner}}'
        AND A.TYPE = 'T'
        {{#tableName}}
-       AND (A.TABNAME = '{{tableName}}' OR A.REMARKS LIKE '%' || '{{tableName}}' || '%')
+       AND A.TABNAME = '{{tableName}}'
        {{/tableName}}
        {{#columnName}}
        AND (B.COLNAME = '{{columnName}}' OR B.REMARKS LIKE '%' || '{{columnName}}' || '%')
