@@ -54,13 +54,18 @@ const ExcelLoader = () => {
     }
 
     const targetCellValues = targetColumnRef.current.getCellValues(1);
-    await loadExcelData({
-      path: uploadedPath,
-      startRow,
-      startCol,
-      queryParams,
-      target: { ...targetData, columns: targetCellValues },
-    });
+    try {
+      await loadExcelData({
+        path: uploadedPath,
+        startRow,
+        startCol,
+        queryParams,
+        target: { ...targetData, columns: targetCellValues },
+      });
+    } catch (e: any) {
+      console.error(e);
+      alert(e.toJSON().message);
+    }
   };
 
   return (

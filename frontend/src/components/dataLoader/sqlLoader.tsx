@@ -31,11 +31,16 @@ const DataLoader = () => {
     }
 
     const targetCellValues = targetColumnRef.current.getCellValues(1);
-    await loadData({
-      query,
-      source: { ...sourceData },
-      target: { ...targetData, columns: targetCellValues },
-    });
+    try {
+      await loadData({
+        query,
+        source: { ...sourceData },
+        target: { ...targetData, columns: targetCellValues },
+      });
+    } catch (e: any) {
+      console.error(e);
+      alert(e.toJSON().message);
+    }
   };
 
   return (

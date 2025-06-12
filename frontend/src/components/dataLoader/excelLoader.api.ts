@@ -40,5 +40,5 @@ export const loadExcelData = async ({
     targetColumns: target.columns,
   };
 
-  httpClient.post("/api/dataloader/excel", data);
+  await httpClient.post("/api/dataloader/excel", data);
 };
