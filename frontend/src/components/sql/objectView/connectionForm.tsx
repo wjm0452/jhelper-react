@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetConnInfoList } from "../connManager/connManager.query";
 import { useConnManagerStore } from "../connManager/connManager.store";
 import { useConnectionStoreInContext } from "../sql.context";
@@ -15,6 +15,10 @@ const ConnectionForm = ({ onChange }: { onChange?: (connInfo: ConnInfo) => void 
     onChange && onChange(connInfo);
   };
 
+  useEffect(() => {
+    triggerOnChangeHandler(connectionStore);
+  }, [connectionStore.name]);
+
   return (
     <>
       <ConnManager />
@@ -23,13 +27,9 @@ const ConnectionForm = ({ onChange }: { onChange?: (connInfo: ConnInfo) => void 
           value={connectionStore.name}
           onChange={(e) => {
             const value: string = e.value;
-            if (value) {
-              const connInfo = connInfoList.find(({ name }) => name == value);
-              connectionStore.setConnInfo(connInfo);
-              triggerOnChangeHandler(connInfo);
-            } else {
-              triggerOnChangeHandler(null);
-            }
+            const connInfo = value ? connInfoList.find(({ name }) => name == value) : null;
+
+            connectionStore.setConnInfo(connInfo);
           }}
           options={connInfoList?.map((conn: ConnInfo) => {
             return { code: conn.name, name: conn.name };
