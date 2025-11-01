@@ -7,16 +7,16 @@ type PutAction = {
 };
 
 type CommandQueryState = FetchQuery & {
-  sqlState: string;
-  errorMessage: string;
+  state: string;
+  detail: string;
 };
 
 type CommandQueryAction = PutAction & {
   setQuery: (query: string) => void;
   setFetchSize: (fetchSize: number) => void;
   setSqlResult: (sqlResult: SqlResult) => void;
-  setSqlState: (sqlState: string) => void;
-  setErrorMessage: (errorMessage: string) => void;
+  setState: (state: string) => void;
+  setDetail: (errorMessage: string) => void;
   resetQuery: () => void;
 };
 
@@ -28,8 +28,8 @@ const initialCommandQueryState: CommandQueryState = {
     result: [],
     count: 0,
   },
-  sqlState: "",
-  errorMessage: "",
+  state: "",
+  detail: "",
 };
 
 export const useCommandQueryStore = create<CommandQueryState & CommandQueryAction>((set) => ({
@@ -37,8 +37,8 @@ export const useCommandQueryStore = create<CommandQueryState & CommandQueryActio
   setQuery: (query: string) => set({ query: query }),
   setFetchSize: (fetchSize: number) => set({ fetchSize: fetchSize }),
   setSqlResult: (sqlResult: SqlResult) => set({ sqlResult: sqlResult }),
-  setSqlState: (sqlState: string) => set({ sqlState: sqlState }),
-  setErrorMessage: (errorMessage: string) => set({ errorMessage: errorMessage }),
+  setState: (state: string) => set({ state: state }),
+  setDetail: (detail: string) => set({ detail: detail }),
   putAll: (values: any) => set((state) => ({ ...state, ...values })),
   put: (key: string, value: any) => set({ [key]: value }),
   reset: () => set({ ...initialCommandQueryState }),
@@ -50,8 +50,8 @@ export const useCommandQueryStore = create<CommandQueryState & CommandQueryActio
         result: [],
         count: 0,
       },
-      sqlState: "",
-      errorMessage: "",
+      state: "",
+      detail: "",
     });
   },
 }));

@@ -10,13 +10,13 @@ export const newFile = async ({
   name: string;
 }): Promise<void> => {
   try {
-    let res: any = await httpClient.post("/api/file-command/new", {
+    return await httpClient.post("/api/file-command/new", {
       path,
       type,
       name,
     });
-    return res.data;
-  } catch (e) {
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
@@ -29,9 +29,9 @@ export const copyFiles = async ({
   path: string;
 }): Promise<void> => {
   try {
-    let res: any = await httpClient.post("/api/file-command/copy", { files, path });
-    return res.data;
-  } catch (e) {
+    return await httpClient.post("/api/file-command/copy", { files, path });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
@@ -44,9 +44,9 @@ export const moveFiles = async ({
   path: string;
 }): Promise<void> => {
   try {
-    let res: any = await httpClient.post("/api/file-command/move", { files, path });
-    return res.data;
-  } catch (e) {
+    return await httpClient.post("/api/file-command/move", { files, path });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
@@ -59,18 +59,18 @@ export const renameFile = async ({
   changeName: string;
 }): Promise<void> => {
   try {
-    let res: any = await httpClient.post("/api/file-command/rename", { path, changeName });
-    return res.data;
-  } catch (e) {
+    return await httpClient.post("/api/file-command/rename", { path, changeName });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
 
 export const deleteFiles = async ({ files }: { files: string[] }): Promise<void> => {
   try {
-    let res: any = await httpClient.post("/api/file-command/delete", { files });
-    return res.data;
-  } catch (e) {
+    return await httpClient.post("/api/file-command/delete", { files });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
@@ -83,7 +83,8 @@ export const downloadFiles = async ({ files }: { files: string[] }): Promise<voi
       responseType: "blob",
       data: { files },
     });
-  } catch (e) {
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
@@ -99,54 +100,58 @@ export const exportFiles = async ({ files }: { files: string[] }): Promise<void>
       },
       { fileName: "files.xlsx" },
     );
-  } catch (e) {
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
 
 export const getFile = async (path: string, options?: any) => {
-  const res = await httpClient.request({
-    method: "get",
-    url: "/api/file-command/file",
-    responseType: options?.responseType || "blob",
-    params: { path: path },
-  });
-
-  return res.data;
+  try {
+    return await httpClient.request({
+      method: "get",
+      url: "/api/file-command/file",
+      responseType: options?.responseType || "blob",
+      params: { path: path },
+    });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };
 
 export const fileToBoard = async ({ files }: { files: string[] }) => {
   try {
-    let res: any = await httpClient.post("/api/file-command/board", { files });
-    return res.data;
-  } catch (e) {
+    return await httpClient.post("/api/file-command/board", { files });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
 
 export const indexingFiles = async ({ files }: { files: string[] }) => {
   try {
-    let res: any = await httpClient.post("/api/file-index", { files });
-    return res.data;
-  } catch (e) {
+    return await httpClient.post("/api/file-index", { files });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
 
 export const indexingFilesToTerminate = async () => {
   try {
-    let res: any = await httpClient.post("/api/file-index/terminate");
-    return res.data;
-  } catch (e) {
+    return await httpClient.post("/api/file-index/terminate");
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
 
 export const deleteIndexingFiles = async () => {
   try {
-    let res: any = await httpClient.delete("/api/file-index");
-    return res.data;
-  } catch (e) {
+    return await httpClient.delete("/api/file-index");
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };

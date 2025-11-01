@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/dataloader/excel")
-public class ExcelLoaderController {
+@RequestMapping("/api/dataloader/file")
+public class FileLoaderController {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -61,7 +61,7 @@ public class ExcelLoaderController {
     }
 
     @GetMapping("read-file")
-    public ResponseEntity<Map<String, ?>> excelFile(@RequestParam("path") final String path,
+    public ResponseEntity<Map<String, ?>> readFile(@RequestParam("path") final String path,
             @RequestParam(name = "offset", defaultValue = "0") final int offset,
             @RequestParam(name = "limit", defaultValue = "100") final int limit) throws IOException {
 

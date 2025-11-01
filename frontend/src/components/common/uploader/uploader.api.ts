@@ -20,16 +20,12 @@ export const uploadFile = async ({ file, uploadUrl, params }: UploadType) => {
     }
   }
 
-  return httpClient
-    .request({
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      url: uploadUrl,
-      method: "POST",
-      data: formData,
-    })
-    .then((res: any) => {
-      return res.data;
-    });
+  return httpClient.request({
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    url: uploadUrl,
+    method: "POST",
+    data: formData,
+  });
 };

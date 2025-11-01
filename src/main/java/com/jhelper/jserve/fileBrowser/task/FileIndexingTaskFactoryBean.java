@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.jhelper.jserve.fileBrowser.repository.FileIndexRepository;
-import com.jhelper.jserve.jobLog.JobLogService;
+import com.jhelper.jserve.task.TaskLogService;
 
 @Component
 public class FileIndexingTaskFactoryBean implements FactoryBean<FileIndexingTask> {
@@ -14,13 +14,13 @@ public class FileIndexingTaskFactoryBean implements FactoryBean<FileIndexingTask
     private FileIndexRepository fileIndexRepository;
 
     @Autowired
-    private JobLogService jobLogService;
+    private TaskLogService taskLogService;
 
     @Override
     public FileIndexingTask getObject() {
         FileIndexingTask task = new FileIndexingTask();
         task.setFileIndexRepository(fileIndexRepository);
-        task.setJobLogger(jobLogService.getJobLogger());
+        task.setTaskLogService(taskLogService);
 
         return task;
     }

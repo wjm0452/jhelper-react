@@ -57,8 +57,8 @@ const Command = (editorRef: any) => {
         });
         commandQueryStore.setSqlResult(sqlResult);
       } catch (e: any) {
-        commandQueryStore.setSqlState(e.sqlState);
-        commandQueryStore.setErrorMessage(e.errorMessage);
+        commandQueryStore.setState(e.state);
+        commandQueryStore.setDetail(e.detail);
       }
     },
 

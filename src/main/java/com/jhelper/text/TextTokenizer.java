@@ -41,7 +41,8 @@ public class TextTokenizer {
     }
 
     public boolean remaning() {
-        return !(this.pos == _buff.length - 1);
+        //return !(this.pos == _buff.length - 1);
+        return !(this.pos == _buff.length);
     }
 
     public int position() {

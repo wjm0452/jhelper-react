@@ -21,12 +21,7 @@ const getJsql = async (vendor: string) => {
 };
 
 export const fetchSql = async (query: string, params: any) => {
-  try {
-    let res: any = await httpClient.post("/api/sql", { query, ...params });
-    return res.data;
-  } catch (e) {
-    throw e;
-  }
+  return await httpClient.post("/api/sql", { query, ...params });
 };
 
 export const runSql = async (
@@ -40,36 +35,7 @@ export const runSql = async (
 
   console.log("runSql %s", query);
 
-  try {
-    return await fetchSql(query, { name: name, fetchSize: fetchSize });
-  } catch (e: any) {
-    console.error(e);
-
-    let sqlState = "";
-    let errorMessage = "";
-
-    const response = e.response;
-
-    if (response) {
-      const data = response.data;
-
-      if (data && data.sqlState) {
-        sqlState = data.sqlState;
-        errorMessage = data.errorMessage;
-      } else {
-        sqlState = "-1";
-        errorMessage = e.toString();
-      }
-    } else {
-      sqlState = "-1";
-      errorMessage = e.toString();
-    }
-
-    throw {
-      sqlState,
-      errorMessage,
-    };
-  }
+  return await fetchSql(query, { name: name, fetchSize: fetchSize });
 };
 
 export const makeSelectQuery = async (
@@ -146,47 +112,36 @@ export const findIndexes = async (
 };
 
 export const findTableBookmark = async (tableBookmark: TableBookmark) => {
-  try {
-    let res: any = await httpClient.get(`/api/table-bookmark`, null, {
-      params: {
-        name: tableBookmark.name,
-        owner: tableBookmark.owner,
-        tableName: tableBookmark.tableName,
-      },
-    });
-    return res.data;
-  } catch (e) {
-    throw e;
-  }
-};
-
-export const saveTableBookmark = async (tableBookmark: TableBookmark) => {
-  try {
-    let res: any = await httpClient.post(`/api/table-bookmark`, {
+  return await httpClient.get(`/api/table-bookmark`, null, {
+    params: {
       name: tableBookmark.name,
       owner: tableBookmark.owner,
       tableName: tableBookmark.tableName,
-      comments: tableBookmark.comments,
-    });
-    return res.data;
-  } catch (e) {
-    throw e;
-  }
+    },
+  });
+};
+
+export const saveTableBookmark = async (tableBookmark: TableBookmark) => {
+  return await httpClient.post(`/api/table-bookmark`, {
+    name: tableBookmark.name,
+    owner: tableBookmark.owner,
+    tableName: tableBookmark.tableName,
+    comments: tableBookmark.comments,
+  });
 };
 
 export const deleteTableBookmark = async (tableBookmark: TableBookmark) => {
-  try {
-    let res: any = await httpClient.delete(`/api/table-bookmark`, {}, {
+  return await httpClient.delete(
+    `/api/table-bookmark`,
+    {},
+    {
       params: {
         name: tableBookmark.name,
         owner: tableBookmark.owner,
         tableName: tableBookmark.tableName,
       },
-    });
-    return res.data;
-  } catch (e) {
-    throw e;
-  }
+    },
+  );
 };
 
 export default {

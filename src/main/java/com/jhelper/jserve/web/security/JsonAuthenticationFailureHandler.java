@@ -25,7 +25,8 @@ public class JsonAuthenticationFailureHandler implements AuthenticationFailureHa
 
         Map<String, Object> result = new HashMap<>();
         result.put("authenticated", false);
-        result.put("message", "Failed authentication!");
+        result.put("state", "AUTH_FAIL");
+        result.put("detail", "Failed authentication!");
 
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

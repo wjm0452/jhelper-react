@@ -26,12 +26,7 @@ const InputForm = ({ item, setItem, readOnly }: InputFormProps) => {
         </div>
         <div className="flex-auto">
           <label className="font-bold block mb-2">작성일</label>
-          <InputText
-            type="datetime-local"
-            value={item.registerDate}
-            className="w-full"
-            readOnly={true}
-          />
+          <InputText type="datetime-local" value={item.registerDate} className="w-full" readOnly={true} />
         </div>
       </div>
       <div className="flex-auto">

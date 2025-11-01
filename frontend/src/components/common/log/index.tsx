@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import jobLogApi from "./jobLog.api";
+import taskLogApi from "./taskLog.api";
 import { Button } from "primereact/button";
 
 type JobLogProps = {
@@ -45,12 +45,12 @@ const JobLog = ({ jobId, tryTime = 2000, onFinished = () => {} }: JobLogProps) =
       return;
     }
 
-    const jobLog = await jobLogApi.getJobLog({ id: parseInt(jobId, 10), start });
-    const logMessages = jobLog.jobLogMessages;
+    const taskLog = await taskLogApi.getTaskLog({ id: parseInt(jobId, 10), start });
+    const logMessages = taskLog.taskLogMessages;
 
     if (logMessages != null && logMessages.length) {
       const lines = logMessages.map(
-        (log: any) => `${jobLog.id} ${log.no} ${log.loggingDate} ${log.message}`,
+        (log: any) => `${taskLog.id} ${log.no} ${log.loggingDate} ${log.message}`,
       );
 
       textRef.current.value += lines.join("\n") + "\n";
@@ -59,8 +59,10 @@ const JobLog = ({ jobId, tryTime = 2000, onFinished = () => {} }: JobLogProps) =
       start += lines.length;
     }
 
-    if (jobLog.state == "END") {
-      textRef.current.value += "\nfinished";
+    if (taskLog.state == "FINISHED") {
+      setStart(false);
+      onFinished();
+    } else if (taskLog.state == "ERROR") {
       setStart(false);
       onFinished();
     }

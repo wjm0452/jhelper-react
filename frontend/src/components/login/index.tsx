@@ -2,27 +2,15 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import httpClient from "../../common/httpClient";
 
-function checkLogin() {
-  return httpClient
-    .get("/api/auth")
-    .then((res) => res.data)
-    .catch((e) => {
-      console.log("error", e);
-      throw e.response.data;
-    });
+async function checkLogin() {
+  return await httpClient.get("/api/auth");
 }
 
-function doLogin(username: string, password: string) {
-  return httpClient
-    .post("/api/auth/signin", {
-      username,
-      password,
-    })
-    .then((res) => res.data)
-    .catch((e) => {
-      console.log("error", e);
-      throw e.response.data;
-    });
+async function doLogin(username: string, password: string) {
+  return await httpClient.post("/api/auth/signin", {
+    username,
+    password,
+  });
 }
 
 function Login() {
@@ -55,7 +43,7 @@ function Login() {
         });
       })
       .catch((data) => {
-        alert(data.message);
+        alert(data.detail);
       });
   };
 
@@ -63,10 +51,7 @@ function Login() {
 
   return (
     <div className="w-100 h-100 d-flex">
-      <div
-        className="mx-auto"
-        style={{ marginTop: "auto", marginBottom: "auto", width: "300px" }}
-      >
+      <div className="mx-auto" style={{ marginTop: "auto", marginBottom: "auto", width: "300px" }}>
         <div className="shadow-sm p-3 mb-5 bg-body rounded border">
           <div className="mb-5 text-center">
             <h2>Login</h2>

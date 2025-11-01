@@ -5,7 +5,7 @@ import DaySelelctor from "./daySelector";
 
 function getLastDay(month: number) {
   let d = new Date();
-  d.setMonth(month);
+  d.setMonth(month + 1);
   d.setDate(0);
 
   return d.getDate();
@@ -16,29 +16,21 @@ function toKorDay(day: number) {
   return DAY_KO[day];
 }
 
-async function createData(obj: {
-  fromDate: string;
-  toDate: string;
-  title: string;
-  content: string;
-}) {
-  const res = await httpClient.post("/api/schedule", obj);
-  return res.data;
+async function createData(obj: { fromDate: string; toDate: string; title: string; content: string }) {
+  return await httpClient.post("/api/schedule", obj);
 }
 
 async function readAll(year: number, month: number) {
-  const res = await httpClient.get("/api/schedule", null, {
+  return await httpClient.get("/api/schedule", null, {
     params: {
       year,
       month,
     },
   });
-  return res.data;
 }
 
 async function readData(id: string) {
-  const res = await httpClient.get(`/api/schedule/${id}`);
-  const data = res.data;
+  const data = await httpClient.get(`/api/schedule/${id}`);
 
   if (data.registerDate) {
     data.registerDate = data.registerDate.slice(0, 16);
@@ -46,15 +38,8 @@ async function readData(id: string) {
 
   return data;
 }
-async function updateData(obj: {
-  id: string;
-  fromDate?: string;
-  toDate?: string;
-  title?: string;
-  content?: string;
-}) {
-  const res = await httpClient.put("/api/schedule", obj);
-  return res.data;
+async function updateData(obj: { id: string; fromDate?: string; toDate?: string; title?: string; content?: string }) {
+  return await httpClient.put("/api/schedule", obj);
 }
 
 function saveData(data: any) {
@@ -83,10 +68,7 @@ function saveData(data: any) {
 }
 
 async function deleteData(id: string) {
-  const res = await httpClient.delete(`/api/schedule/${id}`);
-  const data = res.data;
-
-  return data;
+  return await httpClient.delete(`/api/schedule/${id}`);
 }
 
 export default class Scheduler extends React.Component<any, any> {
@@ -112,17 +94,7 @@ export default class Scheduler extends React.Component<any, any> {
       },
     };
 
-    this.colors = [
-      "blue",
-      "indigo",
-      "purple",
-      "pink",
-      "orange",
-      "yellow",
-      "green",
-      "teal",
-      "cyan",
-    ];
+    this.colors = ["blue", "indigo", "purple", "pink", "orange", "yellow", "green", "teal", "cyan"];
   }
 
   componentDidMount() {
@@ -139,8 +111,8 @@ export default class Scheduler extends React.Component<any, any> {
   }
 
   getDayInfo(year: number, month: number) {
-    let d = new Date(year, month, 1);
-    let lastDate = getLastDay(month);
+    let d = new Date(year, month - 1, 1);
+    let lastDate = getLastDay(month - 1);
     let days = [];
     for (let i = 1; i <= lastDate; i++) {
       d.setDate(i);
@@ -178,13 +150,7 @@ export default class Scheduler extends React.Component<any, any> {
     });
   }
 
-  updateSchedule(item: {
-    id: string;
-    fromDate: string;
-    toDate: string;
-    title?: string;
-    content?: string;
-  }) {
+  updateSchedule(item: { id: string; fromDate: string; toDate: string; title?: string; content?: string }) {
     updateData(item);
   }
 
@@ -244,10 +210,7 @@ export default class Scheduler extends React.Component<any, any> {
     return (
       <div className="">
         <div className="text-nowrap">
-          <div
-            className="d-inline-block text-center day-head"
-            style={{ width: "160px" }}
-          >
+          <div className="d-inline-block text-center day-head" style={{ width: "160px" }}>
             <div>#</div>
             <div>Title</div>
           </div>
@@ -280,10 +243,7 @@ export default class Scheduler extends React.Component<any, any> {
     const state = this.state;
     return (
       <div className="w-100 h-100 d-flex flex-row">
-        <div
-          className="flex-grow-0 flex-shrink-0"
-          style={{ flexBasis: "320px" }}
-        >
+        <div className="flex-grow-0 flex-shrink-0" style={{ flexBasis: "320px" }}>
           <div className="p-3">
             <div className="shadow p-3 mb-5 bg-white rounded">
               <div className="row g-3">
@@ -400,10 +360,7 @@ export default class Scheduler extends React.Component<any, any> {
                 />
               </svg>
             </button>
-            <div
-              className="d-inline-block text-center"
-              style={{ width: "120px" }}
-            >
+            <div className="d-inline-block text-center" style={{ width: "120px" }}>
               {state.year}년 {state.month}월
             </div>
             <button

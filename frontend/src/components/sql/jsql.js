@@ -18,22 +18,18 @@ export default function Jsql(options) {
 
     //sql = window.encodeURIComponent(sql);
 
-    return httpClient
-      .post(_url, {
-        ...params,
-        query,
-      })
-      .then(function (res) {
-        return res.data;
-      });
+    return httpClient.post(_url, {
+      ...params,
+      query,
+    });
   };
 
   this.loadTemplate = function (vendor) {
     var that = this;
 
-    return httpClient.get("vendor/" + vendor + ".xml").then(function (res) {
+    return httpClient.get("vendor/" + vendor + ".xml").then(function (data) {
       var sqlNode = document.createElement("div");
-      sqlNode.innerHTML = res.data;
+      sqlNode.innerHTML = data;
 
       var tableQuery = sqlNode.querySelector("#table").innerHTML,
         columnQuery = sqlNode.querySelector("#columns").innerHTML,
@@ -49,7 +45,7 @@ export default function Jsql(options) {
         return indexesQuery;
       };
 
-      return res.data;
+      return data;
     });
   };
 
@@ -278,20 +274,15 @@ UPDATE {{tableName}}
   }
 
   function setData(key, value) {
-    return httpClient
-      .post(_cacheUrl, {
-        key: key,
-        value: value,
-      })
-      .then(function (res) {
-        return res.data;
-      });
+    return httpClient.post(_cacheUrl, {
+      key: key,
+      value: value,
+    });
   }
 
   function getData(key) {
-    return httpClient.get(_cacheUrl + "/" + key).then(function (res) {
-      var data = res.data;
-      return data && data.value != null ? res.data.value : null;
+    return httpClient.get(_cacheUrl + "/" + key).then(function (data) {
+      return data && data.value != null ? data.value : null;
     });
   }
 

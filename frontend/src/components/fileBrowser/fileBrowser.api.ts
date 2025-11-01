@@ -2,9 +2,9 @@ import httpClient from "../../common/httpClient";
 
 export const getRootPath = async (): Promise<FileType> => {
   try {
-    let res: any = await httpClient.get("/api/file-browser/root-path");
-    return res.data;
-  } catch (e) {
+    return await httpClient.get("/api/file-browser/root-path");
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };
@@ -17,14 +17,14 @@ export const getFileList = async ({
   filter?: FileBrowserFilterType;
 }): Promise<FileType[]> => {
   try {
-    let res: any = await httpClient.get("/api/file-browser/files", null, {
+    return await httpClient.get("/api/file-browser/files", null, {
       params: {
         path,
         ...filter,
       },
     });
-    return res.data;
-  } catch (e) {
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };

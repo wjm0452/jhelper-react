@@ -1,7 +1,7 @@
 package com.jhelper.jserve.web;
 
+import com.jhelper.jserve.common.ProgramErrorDto;
 import com.jhelper.jserve.sql.QueryDto;
-import com.jhelper.jserve.sql.SqlErrorDto;
 import com.jhelper.jserve.sql.SqlHelperService;
 import com.jhelper.jserve.sql.SqlResultDto;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
@@ -28,31 +28,19 @@ public class SqlHelperController {
     SqlHelperService sqlHelperService;
 
     @ExceptionHandler(SQLServerException.class)
-    public ResponseEntity<SqlErrorDto> sqlServerError(SQLServerException e) {
+    public ResponseEntity<ProgramErrorDto> sqlServerError(SQLServerException e) {
 
-        SqlErrorDto sqlError = new SqlErrorDto();
+        ProgramErrorDto sqlError = new ProgramErrorDto(e.getSQLState(), e.getSQLServerError().getErrorMessage());
 
-        sqlError.setSqlState(e.getSQLState());
-        sqlError.setErrorMessage(e.getSQLServerError().getErrorMessage());
-
-        return ResponseEntity
-                .badRequest()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(sqlError);
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(sqlError);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<SqlErrorDto> runtimeError(Exception e) {
+    public ResponseEntity<ProgramErrorDto> runtimeError(Exception e) {
 
-        SqlErrorDto sqlError = new SqlErrorDto();
+        ProgramErrorDto sqlError = new ProgramErrorDto("RUNTIME", e.getMessage());
 
-        sqlError.setSqlState("RUN");
-        sqlError.setErrorMessage(e.getMessage());
-
-        return ResponseEntity
-                .badRequest()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(sqlError);
+        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(sqlError);
     }
 
     @PostMapping

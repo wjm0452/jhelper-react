@@ -68,11 +68,7 @@ export default class DaySelelctor extends React.Component<any, any> {
           return (
             <div
               key={d.day}
-              className={
-                "d-inline-block text-center day-select" +
-                ` ${selected ? "selected" : ""}` +
-                ` ${color}`
-              }
+              className={"d-inline-block text-center day-select" + ` ${selected ? "selected" : ""}` + ` ${color}`}
               data-day={d.day}
               data-weekday={d.weekday}
               style={{
@@ -81,11 +77,7 @@ export default class DaySelelctor extends React.Component<any, any> {
               }}
               onClick={(e: React.MouseEvent) => {
                 let day = parseInt(e.currentTarget.getAttribute("data-day"));
-                if (
-                  this.state.start >= day &&
-                  this.state.end <= day &&
-                  this.end == -1
-                ) {
+                if (this.state.start >= day && this.state.end <= day && this.end == -1) {
                   this.start = -1;
                   this.end = -1;
                 } else {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.jhelper.jserve.fileBrowser.repository.FileIndexRepository;
 import com.jhelper.jserve.fileBrowser.service.FileBrowserService;
+import com.jhelper.jserve.task.TaskContext;
 import com.jhelper.jserve.task.TaskExecutor;
 
 import jakarta.annotation.PostConstruct;
@@ -34,7 +35,8 @@ public class FileIndexer {
     @Autowired
     private FileIndexRepository fileIndexRepository;
 
-    private TaskExecutor taskExecutor = new TaskExecutor();
+    @Autowired
+    private TaskExecutor taskExecutor;
 
     public String asyncIndexing(List<Path> files) throws IOException {
         if (taskExecutor.getActiveCount() > 0) {
@@ -48,9 +50,9 @@ public class FileIndexer {
         FileIndexingTask fileIndexingTask = fileIndexingJobFactory.getObject();
         fileIndexingTask.setFiles(files);
 
-        taskExecutor.execute(fileIndexingTask);
+        TaskContext taskContext = taskExecutor.execute(fileIndexingTask);
 
-        return fileIndexingTask.getTaskId();
+        return String.format("%d", taskContext.getTaskId());
     }
 
     private String deleteIndexing(List<Path> files) {
@@ -58,9 +60,9 @@ public class FileIndexer {
         fileIndexingTask.setFiles(files);
         fileIndexingTask.setDelete();
 
-        taskExecutor.execute(fileIndexingTask);
+        TaskContext taskContext = taskExecutor.execute(fileIndexingTask);
 
-        return fileIndexingTask.getTaskId();
+        return String.format("%d", taskContext.getTaskId());
     }
 
     public void deleteAll() {

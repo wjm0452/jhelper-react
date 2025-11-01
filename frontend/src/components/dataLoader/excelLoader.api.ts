@@ -1,17 +1,20 @@
 import httpClient from "../../common/httpClient";
 
 export const readExcel = async ({ uploadedPath }: { uploadedPath: string }) => {
-  return httpClient
-    .get(
-      "/api/dataloader/excel-file",
+  try {
+    return httpClient.get(
+      "/api/dataloader/excel/read-file",
       {},
       {
         params: {
           path: uploadedPath,
         },
       },
-    )
-    .then((res) => res.data);
+    );
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };
 
 type LoadExcelDataType = {
@@ -39,6 +42,10 @@ export const loadExcelData = async ({
     targetTableName: target.tableName,
     targetColumns: target.columns,
   };
-
-  await httpClient.post("/api/dataloader/excel", data);
+  try {
+    await httpClient.post("/api/dataloader/excel/load", data);
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };

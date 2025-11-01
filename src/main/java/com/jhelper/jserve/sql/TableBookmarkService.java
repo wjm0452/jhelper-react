@@ -3,8 +3,7 @@ package com.jhelper.jserve.sql;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.jhelper.jserve.sql.entity.TableBookmark;
@@ -12,34 +11,39 @@ import com.jhelper.jserve.sql.entity.TableBookmark;
 @Service
 public class TableBookmarkService {
 
-    @Autowired
-    private TableBookmarkRepository tableBookmarkRepository;
+        @Autowired
+        private TableBookmarkRepository tableBookmarkRepository;
 
-    public List<TableBookmark> findAllBy(TableBookmark tableBookmark) {
+        public List<TableBookmark> findAllBy(TableBookmark tableBookmark) {
 
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withIgnoreCase() // 대소문자 구분 없이 검색
-                .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
-                .withStringMatcher(ExampleMatcher.StringMatcher.EXACT)
-                .withMatcher("name",
-                        ExampleMatcher.GenericPropertyMatcher.of(ExampleMatcher.StringMatcher.EXACT))
-                .withMatcher("owner",
-                        ExampleMatcher.GenericPropertyMatcher.of(ExampleMatcher.StringMatcher.EXACT))
-                .withMatcher("tableName",
-                        ExampleMatcher.GenericPropertyMatcher.of(ExampleMatcher.StringMatcher.CONTAINING));
+                Specification<TableBookmark> spec = Specification.where(null);
+                spec = spec.and((root, query, cb) -> cb.and(cb.equal(root.get("name"), tableBookmark.getName()),
+                                cb.equal(root.get("owner"), tableBookmark.getOwner())));
 
-        return tableBookmarkRepository.findAll(Example.of(tableBookmark, matcher));
-    }
+                // tableName OR comments
+                Specification<TableBookmark> orSpec = Specification.where(null);
+                if (tableBookmark.getTableName() != null && !tableBookmark.getTableName().isEmpty()) {
+                        orSpec = orSpec.or((root, query, cb) -> cb.equal(root.get("tableName"), tableBookmark.getTableName()));
+                        orSpec = orSpec.or((root, query, cb) -> cb.like(root.get("comments"), "%" + tableBookmark.getTableName() + "%"));
+                }
+                if (tableBookmark.getComments() != null && !tableBookmark.getComments().isEmpty()) {
+                        orSpec = orSpec.or((root, query, cb) -> cb.like(root.get("comments"), "%" + tableBookmark.getComments() + "%"));
+                }
 
-    public TableBookmark findById(TableBookmark.PK tableBookmarkPk) {
-        return tableBookmarkRepository.findById(tableBookmarkPk).orElse(null);
-    }
+                spec = spec.and(orSpec);
 
-    public TableBookmark save(TableBookmark tableBookmark) {
-        return tableBookmarkRepository.save(tableBookmark);
-    }
+                return tableBookmarkRepository.findAll(spec);
+        }
 
-    public void delete(TableBookmark.PK tableBookmarkPk) {
-        tableBookmarkRepository.deleteById(tableBookmarkPk);
-    }
+        public TableBookmark findById(TableBookmark.PK tableBookmarkPk) {
+                return tableBookmarkRepository.findById(tableBookmarkPk).orElse(null);
+        }
+
+        public TableBookmark save(TableBookmark tableBookmark) {
+                return tableBookmarkRepository.save(tableBookmark);
+        }
+
+        public void delete(TableBookmark.PK tableBookmarkPk) {
+                tableBookmarkRepository.deleteById(tableBookmarkPk);
+        }
 }

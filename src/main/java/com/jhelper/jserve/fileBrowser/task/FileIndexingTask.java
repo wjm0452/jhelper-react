@@ -16,27 +16,32 @@ import org.slf4j.LoggerFactory;
 
 import com.jhelper.jserve.fileBrowser.entity.FileIndex;
 import com.jhelper.jserve.fileBrowser.repository.FileIndexRepository;
-import com.jhelper.jserve.jobLog.JobLogService;
-import com.jhelper.jserve.jobLog.JobLogger;
+import com.jhelper.jserve.task.entity.TaskLog;
+
 import com.jhelper.jserve.task.Task;
+import com.jhelper.jserve.task.TaskContext;
+import com.jhelper.jserve.task.TaskLogService;
 
 public class FileIndexingTask implements Task {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private FileIndexRepository fileIndexRepository;
+    private TaskLogService taskLogService;
     private List<Path> files;
-    private JobLogger jobLogger;
 
     private boolean isDelete = false;
     private boolean terminate = false;
+
+    private TaskContext taskContext;
+    private TaskLog taskLog;
 
     public void setFileIndexRepository(FileIndexRepository fileIndexRepository) {
         this.fileIndexRepository = fileIndexRepository;
     }
 
-    public void setJobLogger(JobLogger jobLogger) {
-        this.jobLogger = jobLogger;
+    public void setTaskLogService(TaskLogService taskLogService) {
+        this.taskLogService = taskLogService;
     }
 
     public void terminate() {
@@ -51,26 +56,20 @@ public class FileIndexingTask implements Task {
         this.files = files;
     }
 
-    public String getTaskId() {
-        return String.format("%d", jobLogger.getId());
-    }
-
     public void setDelete() {
         isDelete = true;
     }
 
-    public void execute() {
+    public void execute(TaskContext taskContext) throws Exception {
+
+        this.taskContext = taskContext;
 
         try {
             indexing();
         } catch (Exception e) {
             logger.error("indexing error", e);
-            jobLogger.log(String.format("[indexing] error - %s", e.getMessage()));
-        } finally {
-            try {
-                jobLogger.close();
-            } catch (IOException e) {
-            }
+            taskLog(String.format("[indexing] error - %s", e.getMessage()));
+            throw e;
         }
     }
 
@@ -130,7 +129,17 @@ public class FileIndexingTask implements Task {
         }
 
         fileIndexes.forEach(file -> {
-            jobLogger.log(String.format("[indexing] %s %s", isDelete ? "[delete]" : "[update]", file.getPath()));
+            taskLog(String.format("[indexing] %s %s", isDelete ? "[delete]" : "[update]", file.getPath()));
         });
     }
+
+    private void taskLog(String message) {
+
+        if (taskLog == null) {
+            taskLog = taskLogService.findTaskLogById(taskContext.getTaskId());
+        }
+
+        taskLog.log(message);
+    }
+
 }

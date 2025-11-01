@@ -9,19 +9,22 @@ export const getBoardList = async ({
   page,
   size,
 }: SearchBoardType): Promise<PagingResults<Board>> => {
-  const res = await httpClient.get("/api/board", null, {
-    params: {
-      category,
-      registerId,
-      from,
-      to,
-      filter,
-      page,
-      size,
-    },
-  });
-
-  return res.data;
+  try {
+    return await httpClient.get("/api/board", null, {
+      params: {
+        category,
+        registerId,
+        from,
+        to,
+        filter,
+        page,
+        size,
+      },
+    });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };
 
 export const getBoard = async (id: number): Promise<Board> => {
@@ -29,24 +32,36 @@ export const getBoard = async (id: number): Promise<Board> => {
     return {} as Board;
   }
 
-  const res = await httpClient.get(`/api/board/${id}`);
-  const data = res.data;
+  try {
+    const data = await httpClient.get(`/api/board/${id}`);
 
-  if (data.registerDate) {
-    data.registerDate = data.registerDate.slice(0, 16);
+    if (data.registerDate) {
+      data.registerDate = data.registerDate.slice(0, 16);
+    }
+
+    return data;
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
   }
-
-  return data;
 };
 
 export const createBoard = async (item: Board): Promise<Board> => {
-  const res = await httpClient.post("/api/board", item);
-  return res.data;
+  try {
+    return await httpClient.post("/api/board", item);
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };
 
 export const updateBoard = async (item: Board): Promise<Board> => {
-  const res = await httpClient.put("/api/board", item);
-  return res.data;
+  try {
+    return await httpClient.put("/api/board", item);
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };
 
 export const saveBoard = async (item: Board): Promise<Board> => {
@@ -72,17 +87,21 @@ export const saveBoard = async (item: Board): Promise<Board> => {
 };
 
 export const deleteBoard = async (id: number): Promise<Board> => {
-  const res = await httpClient.delete(`/api/board/${id}`);
-  const data = res.data;
-
-  return data;
+  try {
+    return await httpClient.delete(`/api/board/${id}`);
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };
 
 export const deleteBoards = async (ids: number[]): Promise<Board[]> => {
-  const res = await httpClient.delete(`/api/board`, { ids });
-  const data = res.data;
-
-  return data;
+  try {
+    return await httpClient.delete(`/api/board`, { ids });
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };
 
 export default {

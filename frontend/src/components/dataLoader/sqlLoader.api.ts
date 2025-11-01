@@ -18,5 +18,10 @@ export const loadData = async ({ query, source, target }: LoadDataType) => {
     targetColumns: target.columns,
   };
 
-  await httpClient.post("/api/dataloader", data);
+  try {
+    await httpClient.post("/api/dataloader/sql", data);
+  } catch (e: any) {
+    alert(`[${e.state}] ${e.detail}`);
+    throw e;
+  }
 };

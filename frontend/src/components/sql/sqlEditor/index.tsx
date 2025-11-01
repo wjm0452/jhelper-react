@@ -9,25 +9,25 @@ import { useSqlEditorState } from "./sqlEditor.store";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 
 type SqlResultViewProps = {
-  sqlState: string;
-  errorMessage: string;
+  state: string;
+  detail: string;
   sqlResult: SqlResult;
 };
 
-const SqlResultView = ({ sqlState, errorMessage, sqlResult }: SqlResultViewProps) => {
-  if (sqlState) {
+const SqlResultView = ({ state, detail, sqlResult }: SqlResultViewProps) => {
+  if (state) {
     return (
       <div
         style={{
-          display: sqlState ? "" : "none",
+          display: state ? "" : "none",
           height: "95%",
           backgroundColor: "grey",
           padding: "5px",
           fontWeight: "bold",
         }}
       >
-        <div>{sqlState}</div>
-        <div>{errorMessage}</div>
+        <div>{state}</div>
+        <div>{detail}</div>
       </div>
     );
   }
@@ -82,8 +82,8 @@ const SqlEditor = forwardRef((props, ref) => {
         <SplitterPanel className="overflow-hidden flex flex-column" size={30}>
           <div className="h-100 overflow-auto">
             <SqlResultView
-              sqlState={commandQueryStore.sqlState}
-              errorMessage={commandQueryStore.errorMessage}
+              state={commandQueryStore.state}
+              detail={commandQueryStore.detail}
               sqlResult={commandQueryStore.sqlResult}
             />
           </div>{" "}

@@ -33,15 +33,38 @@ class HttpClient {
           this._token = token;
         }
 
-        return res;
+        return res.data;
       })
       .catch((e) => {
-        if (e.response.status == 403) {
-          const data = e.response.data;
-          alert(data.message);
+        let state = "";
+        let detail = "";
+
+        const response = e.response;
+
+        if (response.status == 403) {
+          const data = response.data;
+          alert(data.detail);
         }
 
-        throw e;
+        if (response) {
+          const data = response.data;
+
+          if (data && data.state) {
+            state = data.state;
+            detail = data.detail;
+          } else {
+            state = "-1";
+            detail = e.toString();
+          }
+        } else {
+          state = "-1";
+          detail = e.toString();
+        }
+
+        throw {
+          state,
+          detail,
+        };
       });
   }
 

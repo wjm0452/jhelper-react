@@ -16,6 +16,7 @@ import ExcelLoader from "./components/dataLoader/excelLoader";
 import DataLoader from "./components/dataLoader/sqlLoader";
 import FileBrowser from "./components/fileBrowser";
 import Login from "./components/login";
+import Schedule from "./components/schedule/schedule";
 
 function App() {
   const login = useSelector((state: any) => state.login);
@@ -49,6 +50,7 @@ function App() {
               <Route path="details/:boardId" element={<BoardDetails />}></Route>
             </Route>
             <Route path="/calendar" element={<Calendar />}></Route>
+            <Route path="/schedule" element={<Schedule />}></Route>
           </Routes>
         </main>
         <aside
@@ -113,6 +115,11 @@ const AppMenu = () => {
     {
       label: "Calendar",
       data: { link: "/calendar" },
+      command: (e: any) => goPage(e),
+    },
+    {
+      label: "Schedule",
+      data: { link: "/schedule" },
       command: (e: any) => goPage(e),
     },
   ];

@@ -5,8 +5,7 @@ import ResponseArea from "./responseArea";
 import CacheContext from "../../common/cacheContext";
 
 async function readRestProxy(requestData: any) {
-  const res = await httpClient.post("/api/rest-proxy/", requestData);
-  return res.data;
+  return await httpClient.post("/api/rest-proxy/", requestData);
 }
 
 export default class Rest extends React.Component<any, any> {
@@ -78,11 +77,7 @@ export default class Rest extends React.Component<any, any> {
               this.setState({ url: e.target.value });
             }}
           />
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => this.send()}
-          >
+          <button type="button" className="btn btn-primary" onClick={() => this.send()}>
             send
           </button>
         </div>

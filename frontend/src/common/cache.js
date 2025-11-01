@@ -11,15 +11,14 @@ export default class Cache {
         key: key,
         value: value,
       })
-      .then(function (res) {
-        return res.data;
+      .then(function (data) {
+        return data;
       });
   }
 
   get(key) {
-    return httpClient.get(this._url + "/" + key).then(function (res) {
-      var data = res.data;
-      return data && data.value != null ? res.data.value : null;
+    return httpClient.get(this._url + "/" + key).then(function (data) {
+      return data && data.value != null ? data.value : null;
     });
   }
 }
