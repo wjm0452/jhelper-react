@@ -25,11 +25,10 @@ public class ScheduleService {
         schedule.setFromDate(date);
         schedule.setToDate(date);
 
-        ExampleMatcher matcher = ExampleMatcher.matchingAny()
-                .withMatcher("fromDate", match -> match.startsWith())
+        ExampleMatcher matcher = ExampleMatcher.matchingAny().withMatcher("fromDate", match -> match.startsWith())
                 .withMatcher("toDate", match -> match.startsWith());
 
-        return scheduleRepository.findAll(Example.of(schedule, matcher), Sort.by("fromDate", "toDate").ascending());
+        return scheduleRepository.findAll(Example.of(schedule, matcher), Sort.by("id").descending());
     }
 
     public Schedule findById(Integer id) {
@@ -57,6 +56,7 @@ public class ScheduleService {
 
         oldSchedule.setFromDate(schedule.getFromDate());
         oldSchedule.setToDate(schedule.getToDate());
+        oldSchedule.setColor(schedule.getColor());
 
         return scheduleRepository.save(oldSchedule);
     }

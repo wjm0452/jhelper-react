@@ -11,6 +11,7 @@ export const dateUtils = {
     return d ? DateTime.fromJSDate(d).toString().substring(0, 16) : null;
   },
   toDate: (dateString: string) => {
-    return dateString ? new Date(dateString) : null;
+    //return dateString ? new Date(dateString) : null;
+    return DateTime.fromFormat(dateString, "yyyy-MM-dd").toJSDate();
   },
 };

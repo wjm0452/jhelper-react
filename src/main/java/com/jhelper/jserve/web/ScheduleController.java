@@ -31,9 +31,7 @@ public class ScheduleController {
     ScheduleService scheduleService;
 
     @GetMapping
-    public List<Schedule> allSchedule(
-            @RequestParam(name = "year") int year,
-            @RequestParam(name = "month") int month) {
+    public List<Schedule> allSchedule(@RequestParam(name = "year") int year, @RequestParam(name = "month") int month) {
         return scheduleService.findAll(year, month);
     }
 
@@ -47,6 +45,21 @@ public class ScheduleController {
         schedule.setRegisterId(userDetails.getUsername());
         schedule.setRegisterDate(new Date());
         return scheduleService.create(schedule);
+    }
+
+    @PostMapping("/batch")
+    public List<Schedule> updateSchedules(@RequestBody List<Schedule> schedules,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        return schedules.stream().map(schedule -> {
+            Schedule savedSchedule = scheduleService.findById(schedule.getId());
+
+            if (!userDetails.getUsername().equals(savedSchedule.getRegisterId())) {
+                throw new AccessDeniedException("변경할 수 없습니다.");
+            }
+
+            return scheduleService.update(schedule);
+        }).toList();
     }
 
     @PutMapping

@@ -72,22 +72,6 @@ const ActionButtons = ({ item, readOnly }: ActionButtonProps) => {
 
   return (
     <>
-      {readOnly ? (
-        <Button
-          label="삭제"
-          icon="pi pi-times"
-          size="small"
-          text
-          onClick={async () => {
-            if (await messageStore.confirm("선택한 게시물을 삭제 하시겠습니까?")) {
-              await mutateDeleteBoard(item.id);
-              navigate(-1);
-            }
-          }}
-        />
-      ) : (
-        <></>
-      )}
       <Button
         label="저장"
         icon="pi pi-check"
@@ -100,6 +84,22 @@ const ActionButtons = ({ item, readOnly }: ActionButtonProps) => {
           }
         }}
       />
+      {readOnly ? (
+        <Button
+          label="삭제"
+          icon="pi pi-trash"
+          size="small"
+          text
+          onClick={async () => {
+            if (await messageStore.confirm("선택한 게시물을 삭제 하시겠습니까?")) {
+              await mutateDeleteBoard(item.id);
+              navigate(-1);
+            }
+          }}
+        />
+      ) : (
+        <></>
+      )}
       <Button
         label="이전"
         icon="pi pi-arrow-left"

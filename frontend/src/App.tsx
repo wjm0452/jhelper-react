@@ -2,7 +2,6 @@ import { HashRouter, Route, Routes, useLocation, useNavigate } from "react-route
 
 import Board from "./components/board";
 import BoardDetails from "./components/board/board.details";
-import Calendar from "./components/calendar";
 import Memo from "./components/memo";
 import Rest from "./components/rest";
 import Sql from "./components/sql";
@@ -49,7 +48,7 @@ function App() {
               <Route path="details" element={<BoardDetails />}></Route>
               <Route path="details/:boardId" element={<BoardDetails />}></Route>
             </Route>
-            <Route path="/calendar" element={<Calendar />}></Route>
+            <Route path="/memo" element={<Memo />}></Route>
             <Route path="/schedule" element={<Schedule />}></Route>
           </Routes>
         </main>
@@ -113,8 +112,8 @@ const AppMenu = () => {
       command: (e: any) => goPage(e),
     },
     {
-      label: "Calendar",
-      data: { link: "/calendar" },
+      label: "Memo",
+      data: { link: "/memo" },
       command: (e: any) => goPage(e),
     },
     {

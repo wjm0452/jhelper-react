@@ -50,4 +50,8 @@ public class Schedule {
     @Column(name = "content")
     @Comment(value = "내용")
     private String content;
+
+    @Column(name = "color")
+    @Comment(value = "색상")
+    private String color;
 }
