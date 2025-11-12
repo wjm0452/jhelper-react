@@ -26,7 +26,6 @@ const CalendarRow = ({
   return (
     <div
       className="d-flex"
-      style={{ width: "100%" }}
       onClick={() => {
         scheduleStore.put("selectedSchedule", schedule);
         scheduleStore.put("selectedScheduleId", schedule.id);

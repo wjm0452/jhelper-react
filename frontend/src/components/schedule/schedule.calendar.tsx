@@ -32,36 +32,7 @@ const ScheduleCalendar = (props: any) => {
   return (
     <div className="w-100">
       <div className="d-flex flex-row">
-        <div className="flex-grow-1 d-flex justify-content-center align-items-center gap-3">
-          <Button
-            icon="pi pi-angle-left"
-            rounded
-            text
-            aria-label="Prev"
-            label=""
-            title="Prev"
-            onClick={() => {
-              let d = new Date(currentDate);
-              d.setMonth(d.getMonth() - 1);
-              scheduleStore.setDate(d);
-            }}
-          />
-          <InputText type="text" value={getHeaderDateString(currentDate)} className="text-center" />
-          <Button
-            icon="pi pi-angle-right"
-            rounded
-            text
-            aria-label="Next"
-            label=""
-            title="Next"
-            onClick={() => {
-              let d = new Date(currentDate);
-              d.setMonth(d.getMonth() + 1);
-              scheduleStore.setDate(d);
-            }}
-          />
-        </div>
-        <div>
+        <div className="flex-grow-1">
           <ToggleButton
             onLabel="Hide Holidays"
             offLabel="Show Holidays"
@@ -88,6 +59,8 @@ const ScheduleCalendar = (props: any) => {
               scheduleStore.setDate(new Date());
             }}
           />
+        </div>
+        <div className="">
           <Button
             icon="pi pi-save"
             aria-label="Save"
@@ -100,7 +73,36 @@ const ScheduleCalendar = (props: any) => {
           />
         </div>
       </div>
-      <div style={{ marginTop: "16px", overflowX: "auto", whiteSpace: "nowrap" }}>
+      <div className="flex-grow-1 d-flex justify-content-center align-items-center gap-3">
+        <Button
+          icon="pi pi-angle-left"
+          rounded
+          text
+          aria-label="Prev"
+          label=""
+          title="Prev"
+          onClick={() => {
+            let d = new Date(currentDate);
+            d.setMonth(d.getMonth() - 1);
+            scheduleStore.setDate(d);
+          }}
+        />
+        <InputText type="text" value={getHeaderDateString(currentDate)} className="text-center" />
+        <Button
+          icon="pi pi-angle-right"
+          rounded
+          text
+          aria-label="Next"
+          label=""
+          title="Next"
+          onClick={() => {
+            let d = new Date(currentDate);
+            d.setMonth(d.getMonth() + 1);
+            scheduleStore.setDate(d);
+          }}
+        />
+      </div>
+      <div className="" style={{ marginTop: "16px", overflowX: "auto", whiteSpace: "nowrap" }}>
         <CalendarHeader date={currentDate} datesInCalendar={datesInCalendar}></CalendarHeader>
         <CalendarBody date={currentDate} datesInCalendar={datesInCalendar}></CalendarBody>
       </div>
