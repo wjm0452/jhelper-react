@@ -27,7 +27,7 @@ const ScheduleInputForm = (props: ScheduleInputFormProps) => {
 
   return (
     <>
-      <div className="d-flex flex-column h-100">
+      <div className="d-flex flex-column h-100 p-2">
         <div className="row g-3 flex-grow-0">
           <div className="flex gap-3">
             <div className="flex-auto">

@@ -6,7 +6,7 @@ const CalendarHeader = ({ date, datesInCalendar }: { date: Date; datesInCalendar
 
   return (
     <>
-      <div className="d-flex" style={{ marginBottom: "8px" }}>
+      <div className="d-flex justify-content-center" style={{ marginBottom: "8px" }}>
         {datesInCalendar.map((date, i) => {
           const weekDayIdx = date.getDay();
           const weekDay = weekDays[weekDayIdx];
@@ -27,7 +27,7 @@ const CalendarHeader = ({ date, datesInCalendar }: { date: Date; datesInCalendar
           );
         })}
       </div>
-      <div className="d-flex">
+      <div className="d-flex justify-content-center">
         {datesInCalendar.map((date, i) => {
           const day = date.getDate();
           const weekDayIdx = date.getDay();

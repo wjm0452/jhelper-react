@@ -25,7 +25,7 @@ const CalendarRow = ({
 
   return (
     <div
-      className="d-flex"
+      className="d-flex justify-content-center"
       onClick={() => {
         scheduleStore.put("selectedSchedule", schedule);
         scheduleStore.put("selectedScheduleId", schedule.id);
@@ -36,7 +36,7 @@ const CalendarRow = ({
         let opacity = 0.5;
 
         if (date >= fromDate && date <= toDate) {
-          backgroundColor = `#${schedule.color}` || "#d3d3d3";
+          backgroundColor = schedule.color ? `#${schedule.color}` : "#d3d3d3";
         }
 
         if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {

@@ -5,7 +5,6 @@ import CalendarHeader from "./schedule.calendar.header";
 import { useGetScheduleList, useSaveSchedules } from "./schedule.query";
 import CalendarBody from "./schedule.calendar.body";
 import { useEffect } from "react";
-import { SelectButton } from "primereact/selectbutton";
 import { ToggleButton } from "primereact/togglebutton";
 
 const getHeaderDateString = (date: Date) => {
@@ -30,81 +29,83 @@ const ScheduleCalendar = (props: any) => {
   }, [schedules]);
 
   return (
-    <div className="w-100">
-      <div className="d-flex flex-row">
-        <div className="flex-grow-1">
-          <ToggleButton
-            onLabel="Hide Holidays"
-            offLabel="Show Holidays"
-            checked={!scheduleStore.showHoliday}
-            onChange={(e) => {
-              scheduleStore.setShowHoliday(!e.value);
-            }}
-          />
-          <ToggleButton
-            onLabel="Editable"
-            offLabel="Read-Only"
-            checked={scheduleStore.editable}
-            onChange={(e) => {
-              scheduleStore.setEditable(e.value);
-            }}
-          />
+    <div className="w-100 mt-2 d-flex justify-content-center">
+      <div className="" style={{ width: "1600px" }}>
+        <div className="d-flex flex-row">
+          <div className="flex-grow-1">
+            <ToggleButton
+              onLabel="Hide Holidays"
+              offLabel="Show Holidays"
+              checked={!scheduleStore.showHoliday}
+              onChange={(e) => {
+                scheduleStore.setShowHoliday(!e.value);
+              }}
+            />
+            <ToggleButton
+              onLabel="Editable"
+              offLabel="Read-Only"
+              checked={scheduleStore.editable}
+              onChange={(e) => {
+                scheduleStore.setEditable(e.value);
+              }}
+            />
+            <Button
+              icon="pi pi-refresh"
+              aria-label="Today"
+              label="Today"
+              title="Today"
+              text
+              onClick={() => {
+                scheduleStore.setDate(new Date());
+              }}
+            />
+          </div>
+          <div className="">
+            <Button
+              icon="pi pi-save"
+              aria-label="Save"
+              label="Save"
+              title="Save"
+              text
+              onClick={() => {
+                mutateSaveSchedules(scheduleStore.schedules);
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex-grow-1 d-flex justify-content-center align-items-center gap-3">
           <Button
-            icon="pi pi-refresh"
-            aria-label="Today"
-            label="Today"
-            title="Today"
+            icon="pi pi-angle-left"
+            rounded
             text
+            aria-label="Prev"
+            label=""
+            title="Prev"
             onClick={() => {
-              scheduleStore.setDate(new Date());
+              let d = new Date(currentDate);
+              d.setMonth(d.getMonth() - 1);
+              scheduleStore.setDate(d);
+            }}
+          />
+          <InputText type="text" value={getHeaderDateString(currentDate)} className="text-center" />
+          <Button
+            icon="pi pi-angle-right"
+            rounded
+            text
+            aria-label="Next"
+            label=""
+            title="Next"
+            onClick={() => {
+              let d = new Date(currentDate);
+              d.setMonth(d.getMonth() + 1);
+              scheduleStore.setDate(d);
             }}
           />
         </div>
-        <div className="">
-          <Button
-            icon="pi pi-save"
-            aria-label="Save"
-            label="Save"
-            title="Save"
-            text
-            onClick={() => {
-              mutateSaveSchedules(scheduleStore.schedules);
-            }}
-          />
+        <div className="" style={{ marginTop: "16px", whiteSpace: "nowrap" }}>
+          <CalendarHeader date={currentDate} datesInCalendar={datesInCalendar}></CalendarHeader>
+          <CalendarBody date={currentDate} datesInCalendar={datesInCalendar}></CalendarBody>
         </div>
-      </div>
-      <div className="flex-grow-1 d-flex justify-content-center align-items-center gap-3">
-        <Button
-          icon="pi pi-angle-left"
-          rounded
-          text
-          aria-label="Prev"
-          label=""
-          title="Prev"
-          onClick={() => {
-            let d = new Date(currentDate);
-            d.setMonth(d.getMonth() - 1);
-            scheduleStore.setDate(d);
-          }}
-        />
-        <InputText type="text" value={getHeaderDateString(currentDate)} className="text-center" />
-        <Button
-          icon="pi pi-angle-right"
-          rounded
-          text
-          aria-label="Next"
-          label=""
-          title="Next"
-          onClick={() => {
-            let d = new Date(currentDate);
-            d.setMonth(d.getMonth() + 1);
-            scheduleStore.setDate(d);
-          }}
-        />
-      </div>
-      <div className="" style={{ marginTop: "16px", overflowX: "auto", whiteSpace: "nowrap" }}>
-        <CalendarHeader date={currentDate} datesInCalendar={datesInCalendar}></CalendarHeader>
-        <CalendarBody date={currentDate} datesInCalendar={datesInCalendar}></CalendarBody>
       </div>
     </div>
   );
