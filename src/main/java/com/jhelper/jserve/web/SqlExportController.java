@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jhelper.jserve.sql.QueryDto;
 import com.jhelper.jserve.sql.SqlHelperService;
+import com.jhelper.jserve.sql.export.SqlCsvExportService;
 import com.jhelper.jserve.sql.export.SqlExcelExportService;
 import com.jhelper.jserve.sql.export.SqlJsonExportService;
 import com.jhelper.jserve.sql.export.SqlTextExportService;
@@ -41,16 +42,17 @@ public class SqlExportController {
     @Autowired
     SqlJsonExportService sqlJsonExportService;
 
+    @Autowired
+    SqlCsvExportService sqlCsvExportService;
+
     @PostMapping("/excel")
     public ResponseEntity<Resource> exportExcel(@RequestBody QueryDto queryDto) throws IOException {
         File file = sqlExcelExportService.export(queryDto);
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.xlsx\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.xlsx\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
     }
 
     @PostMapping("/text")
@@ -59,10 +61,8 @@ public class SqlExportController {
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.txt\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.txt\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
     }
 
     @PostMapping("/json")
@@ -71,9 +71,17 @@ public class SqlExportController {
 
         Resource resource = new InputStreamResource(new FileInputStream(file));
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.json\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.json\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+    }
+
+    @PostMapping("/csv")
+    public ResponseEntity<Resource> exportCsv(@RequestBody QueryDto queryDto) throws IOException {
+        File file = sqlCsvExportService.export(queryDto);
+
+        Resource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"sql_export.csv\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
     }
 }

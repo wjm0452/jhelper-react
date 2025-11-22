@@ -7,7 +7,7 @@ class HttpClient {
     this._url = url;
   }
 
-  async request(config) {
+  async requestWithToken(config) {
     config.url = this.getApiUrl(config.url);
 
     const headers = {};
@@ -20,11 +20,14 @@ class HttpClient {
       headers,
     };
 
-    return axios
-      .request({
-        ...config,
-        headers,
-      })
+    return axios.request({
+      ...config,
+      headers,
+    });
+  }
+
+  async request(config) {
+    return this.requestWithToken(config)
       .then((res) => {
         const resHeaders = res.headers;
         const token = resHeaders["authorization"];
@@ -109,7 +112,7 @@ class HttpClient {
   }
 
   async downloadFile(config, options) {
-    const res = await this.request(config);
+    const res = await this.requestWithToken(config);
     this._downloadFile(res, options?.fileName);
   }
 
@@ -122,6 +125,7 @@ class HttpClient {
     link.style.display = "none";
 
     link.download = ((res) => {
+      console.log(res.headers);
       const disposition = res.headers["content-disposition"] || "";
 
       if (disposition.indexOf("filename") > -1) {

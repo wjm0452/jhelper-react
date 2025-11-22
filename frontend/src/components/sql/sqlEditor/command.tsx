@@ -164,6 +164,20 @@ const Command = (editorRef: any) => {
           },
           connectionStore,
         );
+      } else if ("exportCsv" == command) {
+        if (!commandQueryStore.query) {
+          messageStore.toast("Export", "실행할 쿼리가 없습니다.", { severity: "warn" });
+          return;
+        }
+
+        exportTo(
+          {
+            type: "csv",
+            query: commandQueryStore.query,
+            fileName: "sql_result.csv",
+          },
+          connectionStore,
+        );
       }
     },
   };

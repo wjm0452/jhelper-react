@@ -78,6 +78,15 @@ const CommandToolbar = ({ onCommand }: FetchFormProps) => {
             style={{ fontSize: "1rem" }}
             onClick={(e) => onCommand("exportJson")}
           />
+          <Button
+            icon="pi pi-file-export"
+            rounded
+            text
+            aria-label="CSV"
+            label="CSV"
+            style={{ fontSize: "1rem" }}
+            onClick={(e) => onCommand("exportCsv")}
+          />
         </div>
       </div>
     </>
