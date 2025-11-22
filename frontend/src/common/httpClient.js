@@ -20,10 +20,7 @@ class HttpClient {
       headers,
     };
 
-    return axios.request({
-      ...config,
-      headers,
-    });
+    return axios.request(config);
   }
 
   async request(config) {

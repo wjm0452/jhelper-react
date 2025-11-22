@@ -22,22 +22,16 @@ type LoadExcelDataType = {
   startRow: number;
   startCol: number;
   queryParams: string;
-  target: { name: string; owner: string; tableName: string; columns: string[] };
+  target: { connName: string; owner: string; tableName: string; columns: string[] };
 };
 
-export const loadExcelData = async ({
-  path,
-  startRow,
-  startCol,
-  queryParams,
-  target,
-}: LoadExcelDataType) => {
+export const loadExcelData = async ({ path, startRow, startCol, queryParams, target }: LoadExcelDataType) => {
   const data = {
     path,
     startRow,
     startCol,
     queryParams,
-    targetName: target.name,
+    targetName: target.connName,
     targetOwner: target.owner,
     targetTableName: target.tableName,
     targetColumns: target.columns,
@@ -45,7 +39,7 @@ export const loadExcelData = async ({
   try {
     await httpClient.post("/api/dataloader/excel/load", data);
   } catch (e: any) {
-    alert(`[${e.state}] ${e.detail}`);
+    console.error(`[${e.state}] ${e.detail}`);
     throw e;
   }
 };

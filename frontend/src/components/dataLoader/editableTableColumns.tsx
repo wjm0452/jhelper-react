@@ -69,89 +69,83 @@ type EditableTableColumnsProps = {
   editable?: boolean;
 };
 
-const EditableTableColumns = forwardRef(
-  ({ filter, editable = true }: EditableTableColumnsProps, ref: any) => {
-    const { data, isPending, isFetching } = useGetColumns(
-      { ...filter, columnName: "" },
-      { enabled: true },
-    );
+const EditableTableColumns = forwardRef(({ filter, editable = true }: EditableTableColumnsProps, ref: any) => {
+  const { data, isPending, isFetching } = useGetColumns({ ...filter, columnName: "" }, { enabled: true });
 
-    const columnNames =
-      isPending || isFetching ? ["Select table..."] : ["No", ...data?.columnNames];
-    if (!isPending && !isFetching && editable) {
-      columnNames.push("");
-    }
+  const columnNames = isPending || isFetching ? ["Select table..."] : ["No", ...data?.columnNames];
+  if (!isPending && !isFetching && editable) {
+    columnNames.push("");
+  }
 
-    const [items, setItems] = useState([]);
-    const [selectedItem, setSelectedItem] = useState<string[]>([]);
+  const [items, setItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState<string[]>([]);
 
-    useEffect(() => {
-      setItems(data?.result || []);
-    }, [data]);
+  useEffect(() => {
+    setItems(data?.result || []);
+  }, [data]);
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        getCellValues: (index: number) => {
-          return items.map((item) => item[index]);
-        },
-        getItems: () => {
-          return Object.freeze(items);
-        },
-        getMappingInfo: () => {},
-      }),
-      [items],
-    );
+  useImperativeHandle(
+    ref,
+    () => ({
+      getCellValues: (index: number) => {
+        return items.map((item) => item[index]);
+      },
+      getItems: () => {
+        return Object.freeze(items);
+      },
+      getMappingInfo: () => {},
+    }),
+    [items],
+  );
 
-    return (
-      <>
-        <div className="h-100 overflow-hidden d-flex flex-column">
-          {editable ? (
-            <div className="text-end">
-              <ButtonGroup>
-                <Button
-                  icon="pi pi-plus"
-                  size="small"
-                  onClick={(e) => {
-                    setItems([...items, ["", "", "", "", ""]]);
-                  }}
-                />
-                <Button
-                  icon="pi pi-arrow-up"
-                  size="small"
-                  onClick={(e) => {
-                    const index = items.findIndex((item) => item[1] == selectedItem[1]);
-                    setItems(jUtils.move(items, index, index - 1));
-                  }}
-                />
-                <Button
-                  icon="pi pi-arrow-down"
-                  size="small"
-                  onClick={(e) => {
-                    const index = items.findIndex((item) => item[1] == selectedItem[1]);
-                    setItems(jUtils.move(items, index, index + 1));
-                  }}
-                />
-              </ButtonGroup>
-            </div>
-          ) : (
-            <></>
-          )}
-          <div className="flex-grow-1 overflow-auto">
-            <TableView.TableWrap>
-              <TableView.Headers data={columnNames} />
-              <EditableColumns
-                items={items}
-                setItems={setItems}
-                editable={editable}
-                onClick={(data) => setSelectedItem(data.item)}
-              ></EditableColumns>
-            </TableView.TableWrap>
+  return (
+    <>
+      <div className="h-100 overflow-hidden d-flex flex-column">
+        {editable ? (
+          <div className="text-end">
+            <ButtonGroup>
+              <Button
+                icon="pi pi-plus"
+                size="small"
+                onClick={(e) => {
+                  setItems([...items, ["", "", "", "", ""]]);
+                }}
+              />
+              <Button
+                icon="pi pi-arrow-up"
+                size="small"
+                onClick={(e) => {
+                  const index = items.findIndex((item) => item[1] == selectedItem[1]);
+                  setItems(jUtils.move(items, index, index - 1));
+                }}
+              />
+              <Button
+                icon="pi pi-arrow-down"
+                size="small"
+                onClick={(e) => {
+                  const index = items.findIndex((item) => item[1] == selectedItem[1]);
+                  setItems(jUtils.move(items, index, index + 1));
+                }}
+              />
+            </ButtonGroup>
           </div>
+        ) : (
+          <></>
+        )}
+        <div className="flex-grow-1 overflow-auto">
+          <TableView.TableWrap>
+            <TableView.Headers data={columnNames} />
+            <EditableColumns
+              items={items}
+              setItems={setItems}
+              editable={editable}
+              onClick={(data) => setSelectedItem(data.item)}
+            ></EditableColumns>
+          </TableView.TableWrap>
         </div>
-      </>
-    );
-  },
-);
+      </div>
+    </>
+  );
+});
 
 export default EditableTableColumns;
