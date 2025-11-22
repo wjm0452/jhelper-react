@@ -4,3 +4,7 @@ type Memo = {
   registerId?: string;
   registerDate?: string;
 };
+
+type SearchMemoType = PagingData & {
+  filter?: string;
+};

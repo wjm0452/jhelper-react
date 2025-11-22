@@ -10,8 +10,7 @@ export const dateUtils = {
   toJSON: (d: Date) => {
     return d ? DateTime.fromJSDate(d).toString().substring(0, 16) : null;
   },
-  toDate: (dateString: string) => {
-    //return dateString ? new Date(dateString) : null;
+  toDate: (dateString: string, format?: string) => {
     return DateTime.fromFormat(dateString, "yyyy-MM-dd").toJSDate();
   },
 };

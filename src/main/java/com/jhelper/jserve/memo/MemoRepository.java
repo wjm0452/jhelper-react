@@ -10,4 +10,6 @@ import com.jhelper.jserve.memo.entity.Memo;
 @Repository
 public interface MemoRepository extends JpaRepository<Memo, Integer> {
     public Page<Memo> findAllByRegisterId(String username, PageRequest pageRequest);
+
+    public Page<Memo> findAllByRegisterIdAndContentContains(String username, PageRequest pageRequest, String content);
 }

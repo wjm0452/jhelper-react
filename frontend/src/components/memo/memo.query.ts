@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteMemo, getMemoList, saveMemo } from "./memo.api";
 
-export const useGetMemoList = ({ page, size }: PagingData) => {
+export const useGetMemoList = ({ page, size, filter }: SearchMemoType) => {
   return useQuery({
-    queryKey: ["memoList", page, size],
-    queryFn: (): Promise<PagingResults<Memo>> => getMemoList(page, size),
+    queryKey: ["memoList", page, size, filter],
+    queryFn: (): Promise<PagingResults<Memo>> => getMemoList({ page, size, filter }),
   });
 };
 

@@ -17,10 +17,16 @@ public class MemoService {
     @Autowired
     MemoRepository memoRepository;
 
-    public PageDto<Memo> findAll(String username, int page, int size) {
+    public PageDto<Memo> findAll(String username, int page, int size, String filter) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("registerDate").descending());
-        Page<Memo> pageEntity = memoRepository.findAllByRegisterId(username, pageRequest);
+        Page<Memo> pageEntity = null;
+
+        if (filter.length() > 0) {
+            pageEntity = memoRepository.findAllByRegisterIdAndContentContains(username, pageRequest, filter);
+        } else {
+            pageEntity = memoRepository.findAllByRegisterId(username, pageRequest);
+        }
 
         return PageDto.<Memo>builder().totalElements(pageEntity.getTotalElements()).size(pageEntity.getSize())
                 .page(pageEntity.getNumber()).numberOfElements(pageEntity.getNumberOfElements())

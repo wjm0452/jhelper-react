@@ -10,12 +10,9 @@ export const getMemo = async (id: string): Promise<Memo> => {
   return data;
 };
 
-export const getMemoList = async (page: number, size: number): Promise<PagingResults<Memo>> => {
+export const getMemoList = async (obj: SearchMemoType): Promise<PagingResults<Memo>> => {
   return await httpClient.get("/api/memo", null, {
-    params: {
-      page,
-      size,
-    },
+    params: obj,
   });
 };
 

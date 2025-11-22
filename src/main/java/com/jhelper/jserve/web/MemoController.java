@@ -32,11 +32,11 @@ public class MemoController {
     MemoService memoService;
 
     @GetMapping
-    public PageDto<Memo> allMemo(
-            @RequestParam(name = "page", defaultValue = "0") int page,
+    public PageDto<Memo> allMemo(@RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "filter", defaultValue = "") String filter,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return memoService.findAll(userDetails.getUsername(), page, size);
+        return memoService.findAll(userDetails.getUsername(), page, size, filter);
     }
 
     @GetMapping("/{id}")
