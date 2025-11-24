@@ -1,45 +1,34 @@
 import { Button } from "primereact/button";
 import { Splitter, SplitterPanel } from "primereact/splitter";
-import { useRef, useState } from "react";
-import ConnectionForm from "../sql/objectView/connectionForm";
-import TablesView from "../sql/objectView/tablesView";
-import { ConnectionStoreProvider } from "../sql/sql.context";
-import EditableTableColumns from "./editableTableColumns";
+import { useRef } from "react";
 import { loadData } from "./sqlLoader.api";
+import SqlLoaderSourceForm from "./sqlLoader.sourceForm";
+import SqlLoaderTargetForm from "./sqlLoader.targetForm";
+import { useSqlLoaderSourceStore } from "./sqlLoader.store";
+import { useMessageStoreInContext } from "../common/message/message.context";
 
-const DataLoader = () => {
-  const [sourceData, setSourceData] = useState({
-    name: "",
-    owner: "",
-    tableName: "",
-  });
-
-  const [targetData, setTargetData] = useState({
-    name: "",
-    owner: "",
-    tableName: "",
-  });
-
-  const [query, setQuery] = useState("");
-
-  const sourceColumnRef = useRef<any>();
-  const targetColumnRef = useRef<any>();
+const SqlLoader = () => {
+  const sourceData = useSqlLoaderSourceStore();
+  const targetData = useSqlLoaderSourceStore();
+  const messageStore = useMessageStoreInContext();
+  const targetRef = useRef<any>();
 
   const goLoadData = async () => {
     if (!window.confirm("데이터 등록을 실행합니다.")) {
       return;
     }
-
-    const targetCellValues = targetColumnRef.current.getCellValues(1);
+    const targetCellValues = targetRef.current.getCellValues(1);
     try {
       await loadData({
-        query,
+        query: sourceData.query,
         source: { ...sourceData },
         target: { ...targetData, columns: targetCellValues },
       });
+      messageStore.toast("성공", "엑셀 데이터가 성공적으로 등록되었습니다.", { severity: "success" });
     } catch (e: any) {
-      console.error(e);
-      alert(e.toJSON().message);
+      messageStore.toast("오류", "데이터 등록 중 오류가 발생했습니다\n" + `[${e.state}] ${e.detail}`, {
+        severity: "error",
+      });
     }
   };
 
@@ -48,93 +37,10 @@ const DataLoader = () => {
       <div className="flex-grow-1 overflow-hidden">
         <Splitter className="h-100">
           <SplitterPanel size={50} className="overflow-hidden p-1">
-            <ConnectionStoreProvider name="sqlLoader.source">
-              <Splitter layout="vertical">
-                <SplitterPanel className="overflow-hidden d-flex flex-column">
-                  <div className="mb-1">
-                    <ConnectionForm
-                      onChange={(connInfo: ConnInfo) =>
-                        setSourceData({ ...sourceData, name: connInfo.name })
-                      }
-                    />
-                  </div>
-                  <div className="flex-grow-1 overflow-hidden">
-                    <TablesView
-                      name="sqlLoader.source.tableView"
-                      onClick={({ item }: any) =>
-                        setSourceData({
-                          ...sourceData,
-                          owner: item.owner,
-                          tableName: item.tableName,
-                        })
-                      }
-                    />
-                  </div>
-                </SplitterPanel>
-                <SplitterPanel className="overflow-hidden d-flex flex-column">
-                  <div className="flex-grow-1 overflow-hidden">
-                    <EditableTableColumns
-                      ref={sourceColumnRef}
-                      filter={{ owner: sourceData.owner, tableName: sourceData.tableName }}
-                    />
-                  </div>
-                  <div className="text-end mt-1">
-                    <Button
-                      label="생성"
-                      size="small"
-                      onClick={(e) => {
-                        const sourceCellValues = sourceColumnRef.current.getCellValues(1);
-                        const sourceColumns = sourceCellValues.join(",\r\n       ");
-                        const generatedQuery = `select ${sourceColumns}\r\n  from ${sourceData.owner}.${sourceData.tableName}`;
-
-                        setQuery(generatedQuery);
-                      }}
-                    />
-                  </div>
-                  <div style={{ height: "250px", minHeight: "150px" }}>
-                    <textarea
-                      className="form-control w-100 h-100"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                    ></textarea>
-                  </div>
-                </SplitterPanel>
-              </Splitter>
-            </ConnectionStoreProvider>
+            <SqlLoaderSourceForm />
           </SplitterPanel>
           <SplitterPanel size={50} className="overflow-hidden p-1">
-            <ConnectionStoreProvider name="sqlLoader.target">
-              <Splitter layout="vertical">
-                <SplitterPanel className="overflow-hidden d-flex flex-column">
-                  <div className="mb-1">
-                    <ConnectionForm
-                      onChange={(connInfo: ConnInfo) =>
-                        setTargetData({ ...targetData, name: connInfo.name })
-                      }
-                    />
-                  </div>
-                  <div className="flex-grow-1 overflow-hidden">
-                    <TablesView
-                      name="sqlLoader.target.tableView"
-                      onClick={({ item }: any) =>
-                        setTargetData({
-                          ...targetData,
-                          owner: item.owner,
-                          tableName: item.tableName,
-                        })
-                      }
-                    />
-                  </div>
-                </SplitterPanel>
-                <SplitterPanel className="overflow-hidden">
-                  <EditableTableColumns
-                    ref={targetColumnRef}
-                    filter={{ owner: targetData.owner, tableName: targetData.tableName }}
-                    editable={false}
-                  />
-                </SplitterPanel>
-              </Splitter>
-            </ConnectionStoreProvider>
+            <SqlLoaderTargetForm ref={targetRef} />
           </SplitterPanel>
         </Splitter>
       </div>
@@ -150,4 +56,4 @@ const DataLoader = () => {
   );
 };
 
-export default DataLoader;
+export default SqlLoader;

@@ -34,10 +34,23 @@ export const useGetColumns = (
   });
 };
 
-export const useGetIndexes = (
-  tablelFilter: TableFilter,
-  options: { enabled: boolean } = { enabled: true },
-) => {
+export const useGetColumnsWithName = (
+  columnFilter: ColumnFilter,
+  options: { enabled: boolean; name: string } = { enabled: true, name: "" },
+): UseQueryResult<SqlResult, Error> => {
+  const connectionStore = useConnectionStoreInContext();
+  const name = connectionStore.name;
+
+  const enabled = !!(name && columnFilter.owner && options.enabled);
+
+  return useQuery({
+    queryKey: ["columns", name, options.name, columnFilter],
+    queryFn: (): Promise<SqlResult> => sqlApi.findColumns(columnFilter, connectionStore),
+    enabled: enabled,
+  });
+};
+
+export const useGetIndexes = (tablelFilter: TableFilter, options: { enabled: boolean } = { enabled: true }) => {
   const connectionStore = useConnectionStoreInContext();
   const name = connectionStore.name;
 
@@ -50,10 +63,7 @@ export const useGetIndexes = (
   });
 };
 
-export const useGetTableBookmarks = (
-  tablelFilter: TableFilter,
-  options: { enabled: boolean } = { enabled: true },
-) => {
+export const useGetTableBookmarks = (tablelFilter: TableFilter, options: { enabled: boolean } = { enabled: true }) => {
   const connectionStore = useConnectionStoreInContext();
   const name = connectionStore.name;
 

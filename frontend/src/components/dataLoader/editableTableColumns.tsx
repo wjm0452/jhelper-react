@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { useGetColumns, useGetTables } from "../sql/sql.query";
+import { useGetColumnsWithName } from "../sql/sql.query";
 import TableView from "../common/tableViewer";
 import JButtons from "../common/buttons";
 import jUtils from "../../common/jUtils";
@@ -65,13 +65,16 @@ const EditableColumns = ({ items, setItems, editable, onClick }: EditableColumns
 };
 
 type EditableTableColumnsProps = {
+  name?: string;
   filter: TableFilter;
   editable?: boolean;
 };
 
-const EditableTableColumns = forwardRef(({ filter, editable = true }: EditableTableColumnsProps, ref: any) => {
-  const { data, isPending, isFetching } = useGetColumns({ ...filter, columnName: "" }, { enabled: true });
-
+const EditableTableColumns = forwardRef(({ filter, name, editable = true }: EditableTableColumnsProps, ref: any) => {
+  const { data, isPending, isFetching } = useGetColumnsWithName(
+    { ...filter, columnName: "" },
+    { enabled: true, name: name },
+  );
   const columnNames = isPending || isFetching ? ["Select table..."] : ["No", ...data?.columnNames];
   if (!isPending && !isFetching && editable) {
     columnNames.push("");
