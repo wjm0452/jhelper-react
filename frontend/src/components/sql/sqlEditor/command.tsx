@@ -3,6 +3,7 @@ import { useConnectionStoreInContext } from "../sql.context";
 import { useCommandQueryStore } from "../sql.store";
 import sqlApi from "../sql.api";
 import { useMessageStoreInContext } from "../../common/message/message.context";
+import { useSqlEditorState } from "./sqlEditor.store";
 
 const exportTo = (
   {
@@ -36,6 +37,7 @@ const Command = (editorRef: any) => {
   const connectionStore = useConnectionStoreInContext();
   const commandQueryStore = useCommandQueryStore();
   const messageStore = useMessageStoreInContext();
+  const sqlEditorStore = useSqlEditorState();
 
   const module = {
     // sql execute
@@ -67,6 +69,7 @@ const Command = (editorRef: any) => {
         editorRef.current.focus();
         await module.executeSql();
       } else if (command == "clear") {
+        sqlEditorStore.setValue("");
         editorRef.current.reset();
         editorRef.current.focus();
       } else if (command == "fetchSize") {
