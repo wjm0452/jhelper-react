@@ -51,6 +51,10 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
     fileBrowserStore.next();
   };
 
+  const moveUp = () => {
+    fileBrowserStore.up();
+  };
+
   const newFile = async ({ path, type, name }: { path: string; type: string; name: string }) => {
     fileCommandStore.setCommand("new");
     if (!path || !name) {
@@ -170,6 +174,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
       <div className="d-flex mb-3">
         <Button icon="pi pi-arrow-left" rounded text aria-label="Left" onClick={movePrev} />
         <Button icon="pi pi-arrow-right" rounded text aria-label="Right" onClick={moveNext} />
+        <Button icon="pi pi-arrow-up" rounded text aria-label="Up" onClick={moveUp} />
         <Button icon="pi pi-refresh" rounded text aria-label="Refresh" onClick={() => refetch()} />
         <IconField iconPosition="left" style={{ marginLeft: "0.5rem" }}>
           <InputIcon className="pi pi-desktop" />
@@ -327,11 +332,7 @@ const FileBrowserToolbar = ({}: FileBrowserToolbarProps) => {
           checked={includeSubDirs}
           title="하위 검색은 색인된 대상만 조회 됩니다."
         ></Checkbox>
-        <label
-          htmlFor="includeSubDirs"
-          className="ml-2"
-          title="하위 검색은 색인된 대상만 조회 됩니다."
-        >
+        <label htmlFor="includeSubDirs" className="ml-2" title="하위 검색은 색인된 대상만 조회 됩니다.">
           하위포함
         </label>
         <IconField iconPosition="left" style={{ marginLeft: "0.5rem" }}>

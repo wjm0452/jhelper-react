@@ -16,6 +16,7 @@ type FileBrowserAction = {
   setPath: (path: string) => void;
   prev: () => void;
   next: () => void;
+  up: () => void;
   putAll: (data: any) => void;
   put: (key: string, value: any) => void;
   reset: () => void;
@@ -32,7 +33,7 @@ const initialFilter: FileBrowserFilterType = {
 
 export const useFileBrowserStore = create(
   persist<FileBrowserState & FileBrowserAction>(
-    (set) => ({
+    (set, get) => ({
       path: "",
       _pathHistory: [],
       _historyIndex: -1,
@@ -91,6 +92,18 @@ export const useFileBrowserStore = create(
 
           return { ...state };
         });
+      },
+      up: () => {
+        const state = get();
+        const pathParts = state.path.split("\\").filter((part) => part.length > 0);
+
+        if (pathParts.length === 0) {
+          return state;
+        }
+
+        pathParts.pop();
+        const newPath: string = pathParts.join("\\");
+        get().setPath(newPath);
       },
       putAll: (data: any) => set(data),
       put: (key: string, value: any) => set({ [key]: value }),

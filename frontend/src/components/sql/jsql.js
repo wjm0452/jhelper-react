@@ -52,6 +52,7 @@ export default function Jsql(options) {
   this.findTableInfo = function (data, params) {
     var tmpl = this.tableTmpl();
     var sql = Mustache.render(tmpl, data);
+    params.isHistory = false;
 
     return this.query(sql, params);
   };
@@ -59,6 +60,7 @@ export default function Jsql(options) {
   this.findColumnInfo = function (data, params) {
     var tmpl = this.columnsTmpl();
     var sql = Mustache.render(tmpl, data);
+    params.isHistory = false;
 
     return this.query(sql, params);
   };
@@ -66,6 +68,7 @@ export default function Jsql(options) {
   this.findIndexesInfo = function (data, params) {
     var tmpl = this.indexesTmpl();
     var sql = Mustache.render(tmpl, data);
+    params.isHistory = false;
 
     return this.query(sql, params);
   };
@@ -90,10 +93,9 @@ export default function Jsql(options) {
 
     var that = this;
 
-    return Promise.all([
-      this.findColumnInfo(data, params),
-      this.findIndexesInfo(data, params),
-    ]).then(function (returnValue) {
+    return Promise.all([this.findColumnInfo(data, params), this.findIndexesInfo(data, params)]).then(function (
+      returnValue,
+    ) {
       var columns = returnValue[0].result,
         indexes = returnValue[1].result;
 
@@ -160,10 +162,9 @@ export default function Jsql(options) {
 
     var that = this;
 
-    return Promise.all([
-      this.findColumnInfo(data, params),
-      this.findIndexesInfo(data, params),
-    ]).then(function (returnValue) {
+    return Promise.all([this.findColumnInfo(data, params), this.findIndexesInfo(data, params)]).then(function (
+      returnValue,
+    ) {
       var columns = returnValue[0].result,
         indexes = returnValue[1].result;
 

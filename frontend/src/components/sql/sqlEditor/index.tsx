@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import TableView from "../../common/tableViewer";
 import { useConnectionStoreInContext } from "../sql.context";
 import { useCommandQueryStore } from "../sql.store";
@@ -7,6 +7,8 @@ import CommandToolbar from "./command.toolbar";
 import Editor from "./editor";
 import { useSqlEditorState } from "./sqlEditor.store";
 import { Splitter, SplitterPanel } from "primereact/splitter";
+import EditorHistory from "./editor.history";
+import { Sidebar } from "primereact/sidebar";
 
 type SqlResultViewProps = {
   state: string;
@@ -81,7 +83,7 @@ const SqlEditor = forwardRef((props, ref) => {
               detail={commandQueryStore.detail}
               sqlResult={commandQueryStore.sqlResult}
             />
-          </div>{" "}
+          </div>
           <div>
             <span>{commandQueryStore.sqlResult?.count}</span> fetched rows
           </div>

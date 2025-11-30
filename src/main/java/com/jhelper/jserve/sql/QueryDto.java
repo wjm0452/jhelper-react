@@ -8,4 +8,9 @@ public class QueryDto {
     private String name;
     private String[] params;
     private int fetchSize = -1;
+    private boolean isHistory = true;
+
+    public boolean getIsHistory() {
+        return isHistory;
+    }
 }

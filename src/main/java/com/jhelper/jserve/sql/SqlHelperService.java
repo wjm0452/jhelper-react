@@ -2,6 +2,7 @@ package com.jhelper.jserve.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,9 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.jhelper.jserve.sql.entity.SqlHistory;
 import com.jhelper.jserve.sql.jdbc.JdbcTemplateManager;
 
 @Service
@@ -25,11 +28,31 @@ public class SqlHelperService {
     @Autowired
     JdbcTemplateManager jdbcManager;
 
+    @Autowired
+    SqlHistoryRepository sqlHistoryRepository;
+
+    private void saveHistory(QueryDto queryDto) {
+        SqlHistory sqlHistory = new SqlHistory();
+        sqlHistory.setName(queryDto.getName());
+        sqlHistory.setQuery(queryDto.getQuery());
+        sqlHistory.setRegisterDate(LocalDateTime.now());
+
+        sqlHistoryRepository.save(sqlHistory);
+    }
+
+    @Transactional
     public SqlResultDto execute(QueryDto queryDto) {
-        if (queryDto.getQuery().trim().toLowerCase().startsWith("select")) {
-            return this.select(queryDto);
+
+        if (queryDto.getIsHistory()) {
+            saveHistory(queryDto);
+        }
+
+        if (queryDto.getQuery().trim().toLowerCase().startsWith("update")
+                || queryDto.getQuery().trim().toLowerCase().startsWith("insert")
+                || queryDto.getQuery().trim().toLowerCase().startsWith("delete")) {
+            return update(queryDto);
         } else {
-            return this.update(queryDto);
+            return select(queryDto);
         }
     }
 

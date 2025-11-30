@@ -14,7 +14,7 @@ const ExcelLoader = () => {
   const targetFormRef = useRef<any>();
 
   const goLoadData = async () => {
-    if (!window.confirm("데이터 등록을 실행합니다.")) {
+    if (!(await messageStore.confirm("데이터 등록을 실행합니다."))) {
       return;
     }
 

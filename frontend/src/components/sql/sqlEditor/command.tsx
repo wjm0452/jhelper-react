@@ -71,6 +71,8 @@ const Command = (editorRef: any) => {
         editorRef.current.focus();
       } else if (command == "fetchSize") {
         commandQueryStore.setFetchSize(data);
+      } else if ("addQuery" == command) {
+        editorRef.current.addTextToFirstLine(data + "\n;\n");
       } else if ("addSelectQuery" == command) {
         if (!data.owner || !data.tableName) {
           messageStore.toast("Command", "owner, tableName을 입력해주세요.", { severity: "warn" });
