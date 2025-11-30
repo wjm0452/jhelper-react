@@ -21,7 +21,7 @@ const EditorHistory = (props: EditorHistoryProps) => {
         return (
           <>
             <div className="overflow-hidden" style={{ maxHeight: "150px" }}>
-              <p>{item.registerDate}</p>
+              <p>{new Date(item.registerDate).toLocaleString()}</p>
               <p
                 key={item.id}
                 style={{ whiteSpace: "pre-line", textOverflow: "ellipsis" }}
